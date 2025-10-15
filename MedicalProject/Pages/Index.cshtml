@@ -1,0 +1,356 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "پلتفرم دنگ - سرمایه‌گذاری هوشمند";
+}
+
+<div class="min-h-screen">
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-blue-50 via-white to-blue-50 overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23000000%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221.5%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-5"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="space-y-8">
+                    <div class="space-y-4">
+                        <span class="badge badge-primary inline-flex items-center">
+                            <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            پلتفرم پیشرو سرمایه‌گذاری جمعی
+                        </span>
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+                            پلتفرم دنگ
+                            <span class="text-gradient block">سرمایه‌گذاری هوشمند در تجهیزات صنعتی</span>
+                        </h1>
+                        <p class="text-xl text-gray-600 leading-relaxed">
+                            با کمترین مبلغ در پروژه‌های پرسود سرمایه‌گذاری کنید و از سود تضمینی بهره‌مند شوید.
+                            مالکیت جزئی، سود کامل.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="window.location.href='/Projects'"
+                                class="btn btn-primary text-lg px-8 py-4 flex items-center">
+                            شروع سرمایه‌گذاری
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <button onclick="window.location.href='/HowItWorks'"
+                                class="btn btn-outline text-lg px-8 py-4">
+                            نحوه کار
+                        </button>
+                    </div>
+
+                    <!-- Trust Indicators -->
+                    <div class="flex items-center space-x-6 space-x-reverse text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>مجوز رسمی</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-blue-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <span>امنیت بالا</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-purple-500 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
+                            <span>۱,۲۰۰+ سرمایه‌گذار</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Image/Animation -->
+                <div class="relative">
+                    <div class="relative z-10">
+                        <div class="bg-white rounded-2xl shadow-lg p-8">
+                            <div class="space-y-6">
+                                <div class="text-center">
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-2">پروژه‌های فعال</h3>
+                                    <p class="text-gray-600">انتخاب کنید و سرمایه‌گذاری کنید</p>
+                                </div>
+
+                                <!-- Sample Project Cards -->
+                                <div class="space-y-4">
+                                    @{
+                                        var sampleProjects = new[]
+                                        {
+                                                                        new { Name = "دستگاه MRI پیشرفته", Progress = 75, Amount = "۲.۵ میلیارد" },
+                                                                        new { Name = "سیستم تصفیه آب صنعتی", Progress = 45, Amount = "۱.۸ میلیارد" },
+                                                                        new { Name = "پنل خورشیدی ۱۰۰ کیلووات", Progress = 90, Amount = "۳.۲ میلیارد" }
+                                                                        };
+                                    }
+
+                                    @foreach (var project in sampleProjects)
+                                    {
+                                        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                            <div class="flex justify-between items-start mb-2">
+                                                <h4 class="font-medium text-gray-900">@project.Name</h4>
+                                                <span class="badge badge-success">@project.Amount</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300"
+                                                     style="width: @project.Progress%"></div>
+                                            </div>
+                                            <p class="text-sm text-gray-500 mt-2">@project.Progress% تکمیل شده</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-4 -right-4 w-20 h-20 bg-blue-100 rounded-full animate-float"></div>
+                    <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-green-100 rounded-full animate-float" style="animation-delay: 1s"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                @{
+                    var stats = new[]
+                    {
+                                new { Label = "پروژه‌های فعال", Value = "۲۵+", Icon = "target" },
+                                new { Label = "سرمایه‌گذاران", Value = "۱,۲۰۰+", Icon = "users" },
+                                new { Label = "مبلغ سرمایه‌گذاری", Value = "۵۰ میلیارد", Icon = "trending" },
+                                new { Label = "نرخ موفقیت", Value = "۹۵%", Icon = "star" }
+                                };
+                }
+
+                @foreach (var stat in stats)
+                {
+                    <div class="text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                            @if (stat.Icon == "target")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            }
+                            else if (stat.Icon == "users")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                </svg>
+                            }
+                            else if (stat.Icon == "trending")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                            }
+                            else if (stat.Icon == "star")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                </svg>
+                            }
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900 mb-2">@stat.Value</div>
+                        <div class="text-gray-600">@stat.Label</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    چرا ما را انتخاب کنید؟
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    پلتفرم ما با ارائه بهترین امکانات و بالاترین امنیت، تجربه سرمایه‌گذاری منحصر به فردی را برای شما فراهم می‌کند
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                @{
+                    var features = new[]
+                    {
+                                new {
+                                Icon = "shield",
+                                Title = "امنیت بالا",
+                                Description = "تمام تراکنش‌ها با بالاترین استانداردهای امنیتی انجام می‌شود"
+                                },
+                                new {
+                                Icon = "chart",
+                                Title = "سودآوری تضمینی",
+                                Description = "سرمایه‌گذاری در پروژه‌های با بازدهی بالا و ریسک کم"
+                                },
+                                new {
+                                Icon = "zap",
+                                Title = "سرمایه‌گذاری آسان",
+                                Description = "با کمترین مبلغ شروع کنید و سود خود را دریافت کنید"
+                                },
+                                new {
+                                Icon = "users",
+                                Title = "جامعه سرمایه‌گذاران",
+                                Description = "با سایر سرمایه‌گذاران در ارتباط باشید و تجربه‌ها را به اشتراک بگذارید"
+                                }
+                                };
+                }
+
+                @foreach (var feature in features)
+                {
+                    <div class="card card-hover text-center">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+                            @if (feature.Icon == "shield")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            }
+                            else if (feature.Icon == "chart")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            }
+                            else if (feature.Icon == "zap")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            }
+                            else if (feature.Icon == "users")
+                            {
+                                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                </svg>
+                            }
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">@feature.Title</h3>
+                        <p class="text-gray-600 leading-relaxed">@feature.Description</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    دسته‌بندی‌های پروژه‌ها
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    در زمینه‌های مختلف سرمایه‌گذاری کنید و از فرصت‌های متنوع بهره‌مند شوید
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @{
+                    var categories = new[]
+                    {
+                                new {
+                                Name = "تجهیزات پزشکی",
+                                NameEn = "Medical Equipment",
+                                Description = "سرمایه‌گذاری در تجهیزات پیشرفته پزشکی",
+                                Icon = "🏥",
+                                Color = "bg-blue-500",
+                                Projects = 12,
+                                MinPrice = "۱۰ میلیون"
+                                },
+                                new {
+                                Name = "تجهیزات صنعتی",
+                                NameEn = "Industrial Equipment",
+                                Description = "پروژه‌های صنعتی با بازدهی بالا",
+                                Icon = "🏭",
+                                Color = "bg-green-500",
+                                Projects = 8,
+                                MinPrice = "۵۰ میلیون"
+                                },
+                                new {
+                                Name = "املاک تجاری",
+                                NameEn = "Commercial Properties",
+                                Description = "مالکیت جزئی در املاک پرسود",
+                                Icon = "🏢",
+                                Color = "bg-purple-500",
+                                Projects = 5,
+                                MinPrice = "۱۰۰ میلیون"
+                                }
+                                };
+                }
+
+                @foreach (var category in categories)
+                {
+                    <div class="card card-hover group cursor-pointer">
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 @category.Color rounded-2xl mb-6 group-hover:scale-110 transition-transform">
+                                <span class="text-4xl">@category.Icon</span>
+                            </div>
+                            <h3 class="text-2xl font-bold text-gray-900 mb-2">@category.Name</h3>
+                            <p class="text-gray-600 mb-4">@category.Description</p>
+                            <div class="flex justify-between items-center text-sm text-gray-500 mb-6">
+                                <span>@category.Projects پروژه فعال</span>
+                                <span>از @category.MinPrice ریال</span>
+                            </div>
+                            <button onclick="window.location.href='/Projects?category=@category.NameEn'"
+                                    class="btn btn-outline w-full flex items-center justify-center">
+                                مشاهده پروژه‌ها
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-blue-800">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                آماده شروع سرمایه‌گذاری هستید؟
+            </h2>
+            <p class="text-xl text-blue-100 mb-8">
+                همین حالا ثبت‌نام کنید و از فرصت‌های سرمایه‌گذاری منحصر به فرد بهره‌مند شوید
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="window.location.href='/Register'"
+                        class="btn bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-4">
+                    ثبت‌نام رایگان
+                </button>
+                <button onclick="window.location.href='/Projects'"
+                        class="btn border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
+                    مشاهده پروژه‌ها
+                </button>
+            </div>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('صفحه اصلی بارگذاری شد');
+
+            // اضافه کردن event listener برای کارت‌ها
+            document.querySelectorAll('.card-hover').forEach(card => {
+                card.addEventListener('click', function() {
+                    const button = this.querySelector('button');
+                    if (button) {
+                        button.click();
+                    }
+                });
+            });
+        });
+    </script>
+}

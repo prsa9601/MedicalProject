@@ -1,0 +1,1126 @@
+﻿@page
+@model MedicalProject.Pages.Front.Notifications.IndexModel
+@{
+    ViewData["Title"] = "اعلان‌ها - پلتفرم دنگ";
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اعلان‌ها - پلتفرم دنگ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+            direction: rtl;
+        }
+
+        /* Utility Classes */
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100%
+
+        {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: .5;
+        }
+
+        }
+
+        /* Layout */
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .max-w-4xl {
+            max-width: 56rem;
+        }
+
+        .mx-auto {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .px-4 {
+            padding-right: 1rem;
+            padding-left: 1rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* Flexbox */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .flex-row {
+            flex-direction: row;
+        }
+
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        /* Spacing */
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-x-2 > * + * {
+            margin-right: 0.5rem;
+        }
+
+        .space-x-3 > * + * {
+            margin-right: 0.75rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-right: 1rem;
+        }
+
+        .space-x-reverse > * + * {
+            margin-right: 0;
+            margin-left: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mb-8 {
+            margin-bottom: 2rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 0.75rem;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .ml-1 {
+            margin-left: 0.25rem;
+        }
+
+        .ml-2 {
+            margin-left: 0.5rem;
+        }
+
+        /* Sizing */
+        .w-full {
+            width: 100%;
+        }
+
+        .w-1\/4 {
+            width: 25%;
+        }
+
+        .w-2 {
+            width: 0.5rem;
+        }
+
+        .w-3 {
+            width: 0.75rem;
+        }
+
+        .w-4 {
+            width: 1rem;
+        }
+
+        .w-5 {
+            width: 1.25rem;
+        }
+
+        .h-2 {
+            height: 0.5rem;
+        }
+
+        .h-3 {
+            height: 0.75rem;
+        }
+
+        .h-4 {
+            height: 1rem;
+        }
+
+        .h-5 {
+            height: 1.25rem;
+        }
+
+        .h-8 {
+            height: 2rem;
+        }
+
+        /* Typography */
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+
+        .text-6xl {
+            font-size: 3.75rem;
+            line-height: 1;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        /* Colors */
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .bg-white {
+            background-color: #ffffff;
+        }
+
+        .bg-primary-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-primary-500 {
+            background-color: #3b82f6;
+        }
+
+        .bg-red-50 {
+            background-color: #fef2f2;
+        }
+
+        .bg-green-50 {
+            background-color: #f0fdf4;
+        }
+
+        .bg-yellow-50 {
+            background-color: #fefce8;
+        }
+
+        .bg-blue-50 {
+            background-color: #f0f9ff;
+        }
+
+        .bg-purple-50 {
+            background-color: #faf5ff;
+        }
+
+        .bg-gray-100 {
+            background-color: #f3f4f6;
+        }
+
+        .text-gray-900 {
+            color: #111827;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-primary-600 {
+            color: #2563eb;
+        }
+
+        .text-red-600 {
+            color: #dc2626;
+        }
+
+        .text-green-600 {
+            color: #059669;
+        }
+
+        .text-yellow-600 {
+            color: #d97706;
+        }
+
+        .text-blue-600 {
+            color: #2563eb;
+        }
+
+        .text-purple-600 {
+            color: #7c3aed;
+        }
+
+        .text-yellow-500 {
+            color: #eab308;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        /* Borders */
+        .border {
+            border-width: 1px;
+        }
+
+        .border-b {
+            border-bottom-width: 1px;
+        }
+
+        .border-r-4 {
+            border-right-width: 4px;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+
+        .border-primary-500 {
+            border-color: #3b82f6;
+        }
+
+        /* Border Radius */
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        /* Shadows */
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .hover-shadow-md:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Overflow */
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        /* Position */
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        /* Focus States */
+        .focus-ring-2:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .focus-ring-primary-500:focus {
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .focus-border-primary-500:focus {
+            border-color: #3b82f6;
+        }
+
+        /* Hover States */
+        .hover-bg-gray-100:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Transitions */
+        .transition-all {
+            transition: all 0.2s;
+        }
+
+        /* Custom Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .badge-sm {
+            padding: 0.125rem 0.5rem;
+            font-size: 0.625rem;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+
+        .page-item {
+            display: inline-flex;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background-color: white;
+            color: #374151;
+            text-decoration: none;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+            .page-link:hover {
+                background-color: #f9fafb;
+            }
+
+        .page-item.active .page-link {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .page-item.disabled .page-link {
+            color: #9ca3af;
+            pointer-events: none;
+            background-color: #f9fafb;
+        }
+
+        /* Responsive */
+        @@media (min-width: 768px) {
+            .md-flex-row
+
+        {
+            flex-direction: row;
+        }
+
+        .md-items-center {
+            align-items: center;
+        }
+
+        .md-space-y-0 > * + * {
+            margin-top: 0;
+        }
+
+        }
+
+        /* Hide pages */
+        .page {
+            display: none;
+        }
+
+            .page.active {
+                display: block;
+            }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen bg-gray-50">
+        <!-- Header -->
+        <div class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-4xl mx-auto px-4 py-8">
+                <div class="flex flex-col md-flex-row justify-between items-start md-items-center space-y-4 md-space-y-0">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">اعلان‌ها</h1>
+                        <p class="text-gray-600 mt-2">
+                            ۵ اعلان خوانده نشده دارید
+                        </p>
+                    </div>
+                    <div class="flex space-x-3 space-x-reverse">
+                        <a href="#page1" class="btn btn-outline toggle-read-btn" data-action="toggle-read">
+                            <i class="fas fa-eye ml-2"></i>
+                            <span>مخفی کردن خوانده شده‌ها</span>
+                        </a>
+                        <a href="#page1" class="btn btn-primary mark-all-read-btn">
+                            <i class="fas fa-check ml-2"></i>
+                            همه را خوانده کن
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Filters -->
+            <div class="card mb-6">
+                <div class="p-4">
+                    <div class="flex flex-wrap gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg focus-ring-2 focus-ring-primary-500 focus-border-primary-500 filter-select">
+                            <option value="all">همه اعلان‌ها</option>
+                            <option value="investment">سرمایه‌گذاری</option>
+                            <option value="payment">پرداخت</option>
+                            <option value="profit">سود</option>
+                            <option value="project">پروژه</option>
+                            <option value="message">پیام</option>
+                            <option value="system">سیستم</option>
+                            <option value="warning">هشدار</option>
+                        </select>
+
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <input type="checkbox" id="important-checkbox" class="rounded border-gray-300 text-primary-600 focus-ring-primary-500 important-checkbox" />
+                            <label for="important-checkbox" class="text-sm text-gray-700">
+                                فقط مهم‌ها
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications List -->
+            <div class="notifications-section">
+                <!-- Page 1 -->
+                <div id="page1" class="page active">
+                    <div class="space-y-4">
+                        <!-- خوانده نشده‌ها -->
+                        <div class="card transition-all hover-shadow-md border-r-4 border-r-primary-500 bg-primary-50/30">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-primary-600 bg-primary-50">
+                                        <i class="fas fa-chart-line w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-900">
+                                                    سرمایه‌گذاری جدید ثبت شد
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-800">
+                                                    سرمایه‌گذاری شما در پروژه سی تی اسکن 64 اسلایس با مبلغ 50 میلیون تومان با موفقیت ثبت شد
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        سی تی اسکن 64 اسلایس
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <i class="fas fa-star text-yellow-500 w-4 h-4"></i>
+                                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                10 دقیقه پیش
+                                            </span>
+
+                                            <a href="#page1" class="btn btn-outline btn-sm mark-read-btn">
+                                                <i class="fas fa-check-circle w-3 h-3 ml-1"></i>
+                                                خوانده شد
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md border-r-4 border-r-primary-500 bg-primary-50/30">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-yellow-600 bg-yellow-50">
+                                        <i class="fas fa-star w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-900">
+                                                    دریافت سود ماهانه
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-800">
+                                                    سود ماهانه پروژه ام آر آی 1.5 تسلا به مبلغ 12,500,000 تومان به حساب شما واریز شد
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        دستگاه ام آر آی 1.5 تسلا
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <i class="fas fa-star text-yellow-500 w-4 h-4"></i>
+                                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                45 دقیقه پیش
+                                            </span>
+
+                                            <a href="#page1" class="btn btn-outline btn-sm mark-read-btn">
+                                                <i class="fas fa-check-circle w-3 h-3 ml-1"></i>
+                                                خوانده شد
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md border-r-4 border-r-primary-500 bg-primary-50/30">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-purple-600 bg-purple-50">
+                                        <i class="fas fa-comment w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-900">
+                                                    پیام جدید از پشتیبانی
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-800">
+                                                    پاسخ سوال شما در مورد زمان شروع پروژه آماده است. لطفا بخش پیام‌ها را بررسی کنید
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                2 ساعت پیش
+                                            </span>
+
+                                            <a href="#page1" class="btn btn-outline btn-sm mark-read-btn">
+                                                <i class="fas fa-check-circle w-3 h-3 ml-1"></i>
+                                                خوانده شد
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md border-r-4 border-r-primary-500 bg-primary-50/30">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-red-600 bg-red-50">
+                                        <i class="fas fa-exclamation-triangle w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-900">
+                                                    هشدار امنیتی
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-800">
+                                                    ورود جدید از دستگاه ناشناخته شناسایی شد. لطفا حساب کاربری خود را بررسی کنید
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <i class="fas fa-star text-yellow-500 w-4 h-4"></i>
+                                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                5 ساعت پیش
+                                            </span>
+
+                                            <a href="#page1" class="btn btn-outline btn-sm mark-read-btn">
+                                                <i class="fas fa-check-circle w-3 h-3 ml-1"></i>
+                                                خوانده شد
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md border-r-4 border-r-primary-500 bg-primary-50/30">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-blue-600 bg-blue-50">
+                                        <i class="fas fa-calendar w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-900">
+                                                    پروژه جدید برای سرمایه‌گذاری
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-800">
+                                                    پروژه جدید دستگاه سونوگرافی چهار بعدی برای سرمایه‌گذاری آماده است. فرصت را از دست ندهید
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        دستگاه سونوگرافی چهار بعدی
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                1 روز پیش
+                                            </span>
+
+                                            <a href="#page1" class="btn btn-outline btn-sm mark-read-btn">
+                                                <i class="fas fa-check-circle w-3 h-3 ml-1"></i>
+                                                خوانده شد
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page 2 -->
+                <div id="page2" class="page">
+                    <div class="space-y-4">
+                        <!-- خوانده شده‌ها -->
+                        <div class="card transition-all hover-shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-green-600 bg-green-50">
+                                        <i class="fas fa-check-circle w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-700">
+                                                    پرداخت موفقیت‌آمیز
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-600">
+                                                    پرداخت شما برای خرید سهام پروژه لابراتوار دندانپزشکی دیجیتال با موفقیت انجام شد
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        لابراتوار دندانپزشکی دیجیتال
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                2 روز پیش
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-gray-600 bg-gray-50">
+                                        <i class="fas fa-info-circle w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-700">
+                                                    به‌روزرسانی سیستم
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-600">
+                                                    سیستم در تاریخ 1402/10/15 از ساعت 02:00 تا 04:00 بامداد به‌روزرسانی خواهد شد
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                3 روز پیش
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-yellow-600 bg-yellow-50">
+                                        <i class="fas fa-star w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-700">
+                                                    سود استثنایی
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-600">
+                                                    پروژه آنژیوگرافی دیجیتال سود 27% بالاتر از پیش‌بینی داشته است. تبریک!
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        دستگاه آنژیوگرافی دیجیتال
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                                <i class="fas fa-star text-yellow-500 w-4 h-4"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                4 روز پیش
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-primary-600 bg-primary-50">
+                                        <i class="fas fa-chart-line w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-700">
+                                                    تکمیل ظرفیت پروژه
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-600">
+                                                    پروژه دستگاه ماموگرافی دیجیتال به ظرفیت کامل سرمایه‌گذاری رسید
+                                                </p>
+
+                                                <div class="mt-2">
+                                                    <span class="badge badge-secondary badge-sm">
+                                                        ماموگرافی دیجیتال
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                6 روز پیش
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card transition-all hover-shadow-md">
+                            <div class="p-4">
+                                <div class="flex items-start space-x-4 space-x-reverse">
+                                    <div class="p-2 rounded-full text-gray-600 bg-gray-50">
+                                        <i class="fas fa-info-circle w-4 h-4"></i>
+                                    </div>
+
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h3 class="text-sm font-medium text-gray-700">
+                                                    برگزاری وبینار
+                                                </h3>
+                                                <p class="text-sm mt-1 text-gray-600">
+                                                    وبینار آموزشی نحوه سرمایه‌گذاری در پروژه‌های پزشکی فردا ساعت 18 برگزار می‌شود
+                                                </p>
+                                            </div>
+
+                                            <div class="flex items-center space-x-2 space-x-reverse mr-4">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex items-center justify-between mt-3">
+                                            <span class="text-xs text-gray-500">
+                                                7 روز پیش
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="page-item">
+                        <a href="#page1" class="page-link page-prev">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                    <div class="page-item active">
+                        <a href="#page1" class="page-link">1</a>
+                    </div>
+                    <div class="page-item">
+                        <a href="#page2" class="page-link">2</a>
+                    </div>
+                    <div class="page-item">
+                        <a href="#page2" class="page-link page-next">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ساده‌ترین اسکریپت ممکن فقط برای پیجینیشن
+        document.addEventListener('DOMContentLoaded', function() {
+            // مدیریت پیجینیشن
+            const pageLinks = document.querySelectorAll('.page-link');
+
+            pageLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetPage = this.getAttribute('href').substring(1);
+
+                    // مخفی کردن همه صفحات
+                    document.querySelectorAll('.page').forEach(page => {
+                        page.classList.remove('active');
+                    });
+
+                    // نمایش صفحه هدف
+                    document.getElementById(targetPage).classList.add('active');
+
+                    // به‌روزرسانی وضعیت فعال پیجینیشن
+                    document.querySelectorAll('.page-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+
+                    if (this.classList.contains('page-prev') || this.classList.contains('page-next')) {
+                        // برای دکمه‌های قبلی/بعدی، صفحه مربوطه را فعال کن
+                        const pageNumber = targetPage === 'page1' ? 1 : 2;
+                        document.querySelectorAll('.page-item')[pageNumber].classList.add('active');
+                    } else if (!isNaN(this.textContent)) {
+                        this.parentElement.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

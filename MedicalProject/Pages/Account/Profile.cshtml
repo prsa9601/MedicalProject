@@ -1,0 +1,1175 @@
+﻿@page
+@model MedicalProject.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "پروفایل من - پلتفرم دنگ";
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پروفایل من - پلتفرم دنگ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+            color: #374151;
+            line-height: 1.6;
+            direction: rtl;
+        }
+
+        /* Utility Classes */
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @@keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Layout */
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .max-w-7xl {
+            max-width: 80rem;
+        }
+
+        .mx-auto {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .px-4 {
+            padding-right: 1rem;
+            padding-left: 1rem;
+        }
+
+        .py-8 {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* Flexbox */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .flex-row {
+            flex-direction: row;
+        }
+
+        .flex-1 {
+            flex: 1 1 0%;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .items-start {
+            align-items: flex-start;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .md-grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .lg-grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        /* Spacing */
+        .space-y-3 > * + * {
+            margin-top: 0.75rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .space-x-3 > * + * {
+            margin-right: 0.75rem;
+        }
+
+        .space-x-reverse > * + * {
+            margin-right: 0;
+            margin-left: 0.5rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .gap-8 {
+            gap: 2rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+
+        .ml-1 {
+            margin-left: 0.25rem;
+        }
+
+        .ml-2 {
+            margin-left: 0.5rem;
+        }
+
+        /* Sizing */
+        .w-full {
+            width: 100%;
+        }
+
+        .w-3 {
+            width: 0.75rem;
+        }
+
+        .w-4 {
+            width: 1rem;
+        }
+
+        .w-5 {
+            width: 1.25rem;
+        }
+
+        .w-12 {
+            width: 3rem;
+        }
+
+        .w-24 {
+            width: 6rem;
+        }
+
+        .h-3 {
+            height: 0.75rem;
+        }
+
+        .h-4 {
+            height: 1rem;
+        }
+
+        .h-5 {
+            height: 1.25rem;
+        }
+
+        .h-12 {
+            height: 3rem;
+        }
+
+        .h-24 {
+            height: 6rem;
+        }
+
+        /* Typography */
+        .text-3xl {
+            font-size: 1.875rem;
+            line-height: 2.25rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+            line-height: 1.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+            line-height: 2rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Colors */
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .bg-gray-200 {
+            background-color: #e5e7eb;
+        }
+
+        .bg-white {
+            background-color: #ffffff;
+        }
+
+        .bg-primary-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-primary-100 {
+            background-color: #dbeafe;
+        }
+
+        .bg-primary-200 {
+            background-color: #bfdbfe;
+        }
+
+        .text-gray-900 {
+            color: #111827;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
+
+        .text-primary-600 {
+            color: #2563eb;
+        }
+
+        .text-primary-700 {
+            color: #1d4ed8;
+        }
+
+        .text-green-600 {
+            color: #059669;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        /* Borders */
+        .border {
+            border-width: 1px;
+        }
+
+        .border-b {
+            border-bottom-width: 1px;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+
+        /* Border Radius */
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        /* Shadows */
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* Focus States */
+        .focus-ring-2:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .focus-ring-primary-500:focus {
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .focus-border-primary-500:focus {
+            border-color: #3b82f6;
+        }
+
+        /* Hover States */
+        .hover-bg-gray-50:hover {
+            background-color: #f9fafb;
+        }
+
+        .hover-bg-primary-100:hover {
+            background-color: #dbeafe;
+        }
+
+        /* Transitions */
+        .transition-colors {
+            transition: color 0.3s;
+        }
+
+        /* Background Gradient */
+        .bg-gradient-to-br {
+            background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+        }
+
+        .from-primary-100 {
+            --tw-gradient-from: #dbeafe;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(219, 234, 254, 0));
+        }
+
+        .to-primary-200 {
+            --tw-gradient-to: #bfdbfe;
+        }
+
+        /* Custom Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .input::placeholder {
+            color: #9ca3af;
+        }
+
+        .input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .input:disabled {
+            background-color: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        textarea.input {
+            resize: none;
+        }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        /* File Input */
+        .file-input {
+            display: block;
+            width: 100%;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .file-input::-webkit-file-upload-button {
+            margin-left: 1rem;
+            padding: 0.5rem 1rem;
+            border: 0;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            cursor: pointer;
+        }
+
+        .file-input::-webkit-file-upload-button:hover {
+            background-color: #dbeafe;
+        }
+
+        /* Responsive */
+        @@media (min-width: 768px) {
+            .md-flex-row {
+                flex-direction: row;
+            }
+            
+            .md-items-center {
+                align-items: center;
+            }
+            
+            .md-space-y-0 > * + * {
+                margin-top: 0;
+            }
+        }
+
+        @@media (min-width: 1024px) {
+            .lg-col-span-2 {
+                grid-column: span 2 / span 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading State -->
+        <div id="loading-section" class="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-gray-900 mb-4">در حال بارگذاری...</h2>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="content-section" style="display: none;">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b border-gray-200">
+                <div class="max-w-7xl mx-auto px-4 py-8">
+                    <div class="flex flex-col md-flex-row justify-between items-start md-items-center space-y-4 md-space-y-0">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900">پروفایل من</h1>
+                            <p class="text-gray-600 mt-2">
+                                مدیریت اطلاعات شخصی و حساب کاربری
+                            </p>
+                        </div>
+                        <div class="flex space-x-3 space-x-reverse">
+                            <button
+                                id="cancel-edit-btn"
+                                class="btn btn-outline"
+                                style="display: none;">
+                                <i class="fas fa-times ml-2"></i>
+                                انصراف
+                            </button>
+                            <button
+                                id="save-btn"
+                                class="btn btn-primary"
+                                style="display: none;">
+                                <i class="fas fa-save ml-2"></i>
+                                ذخیره
+                            </button>
+                            <button
+                                id="edit-btn"
+                                class="btn btn-primary">
+                                <i class="fas fa-edit ml-2"></i>
+                                ویرایش
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="grid grid-cols-1 lg-grid-cols-3 gap-8">
+                    <!-- Main Profile -->
+                    <div class="lg-col-span-2 space-y-6">
+                        <!-- Personal Information -->
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-6">
+                                    <h2 class="text-xl font-semibold text-gray-900">اطلاعات شخصی</h2>
+                                    <span id="kyc-badge" class="badge badge-success">
+                                        <i class="fas fa-check-circle ml-1"></i>
+                                        تأیید شده
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-1 md-grid-cols-2 gap-6">
+                                    <!-- First Name -->
+                                    <div>
+                                        <label class="label">نام</label>
+                                        <div class="relative">
+                                            <input
+                                                type="text"
+                                                id="first-name"
+                                                class="input pr-10"
+                                                placeholder="نام"
+                                                disabled />
+                                            <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Last Name -->
+                                    <div>
+                                        <label class="label">نام خانوادگی</label>
+                                        <div class="relative">
+                                            <input
+                                                type="text"
+                                                id="last-name"
+                                                class="input pr-10"
+                                                placeholder="نام خانوادگی"
+                                                disabled />
+                                            <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div>
+                                        <label class="label">ایمیل</label>
+                                        <div class="relative">
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                class="input pr-10"
+                                                placeholder="ایمیل"
+                                                disabled />
+                                            <i class="fas fa-envelope absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Phone -->
+                                    <div>
+                                        <label class="label">شماره تلفن</label>
+                                        <div class="relative">
+                                            <input
+                                                type="tel"
+                                                id="phone"
+                                                class="input pr-10"
+                                                placeholder="شماره تلفن"
+                                                disabled />
+                                            <i class="fas fa-phone absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Birth Date -->
+                                    <div>
+                                        <label class="label">تاریخ تولد</label>
+                                        <div class="relative">
+                                            <input
+                                                type="date"
+                                                id="birth-date"
+                                                class="input pr-10"
+                                                disabled />
+                                            <i class="fas fa-calendar absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div>
+                                        <label class="label">آدرس</label>
+                                        <div class="relative">
+                                            <input
+                                                type="text"
+                                                id="address"
+                                                class="input pr-10"
+                                                placeholder="آدرس"
+                                                disabled />
+                                            <i class="fas fa-map-marker-alt absolute right-3 top-3 text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bio -->
+                                <div class="mt-6">
+                                    <label class="label">درباره من</label>
+                                    <textarea
+                                        id="bio"
+                                        class="input w-full"
+                                        rows="3"
+                                        placeholder="درباره خودتان بنویسید..."
+                                        disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="card">
+                            <div class="p-6">
+                                <h2 class="text-xl font-semibold text-gray-900 mb-6">تغییر رمز عبور</h2>
+                                <div class="space-y-4">
+                                    <!-- Current Password -->
+                                    <div>
+                                        <label class="label">رمز عبور فعلی</label>
+                                        <div class="relative">
+                                            <input
+                                                type="password"
+                                                id="current-password"
+                                                class="input pr-10"
+                                                placeholder="رمز عبور فعلی" />
+                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
+                                            <button
+                                                type="button"
+                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
+                                                onclick="togglePasswordVisibility('current-password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- New Password -->
+                                    <div>
+                                        <label class="label">رمز عبور جدید</label>
+                                        <div class="relative">
+                                            <input
+                                                type="password"
+                                                id="new-password"
+                                                class="input pr-10"
+                                                placeholder="رمز عبور جدید" />
+                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
+                                            <button
+                                                type="button"
+                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
+                                                onclick="togglePasswordVisibility('new-password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Confirm Password -->
+                                    <div>
+                                        <label class="label">تکرار رمز عبور جدید</label>
+                                        <div class="relative">
+                                            <input
+                                                type="password"
+                                                id="confirm-password"
+                                                class="input pr-10"
+                                                placeholder="تکرار رمز عبور جدید" />
+                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
+                                            <button
+                                                type="button"
+                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
+                                                onclick="togglePasswordVisibility('confirm-password')">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        id="change-password-btn"
+                                        class="btn btn-primary">
+                                        <i class="fas fa-shield-alt ml-2"></i>
+                                        تغییر رمز عبور
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- KYC Documents -->
+                        <div class="card">
+                            <div class="p-6">
+                                <h2 class="text-xl font-semibold text-gray-900 mb-6">اسناد هویت (KYC)</h2>
+                                <div class="space-y-4">
+                                    <!-- National Card -->
+                                    <div>
+                                        <label class="label">تصویر کارت ملی</label>
+                                        <input
+                                            type="file"
+                                            id="national-card"
+                                            class="file-input"
+                                            accept="image/*" />
+                                    </div>
+
+                                    <!-- Bank Statement -->
+                                    <div>
+                                        <label class="label">تصویر گردش حساب بانکی</label>
+                                        <input
+                                            type="file"
+                                            id="bank-statement"
+                                            class="file-input"
+                                            accept="image/*" />
+                                    </div>
+
+                                    <button
+                                        id="upload-kyc-btn"
+                                        class="btn btn-primary">
+                                        <i class="fas fa-upload ml-2"></i>
+                                        آپلود اسناد
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Profile Summary -->
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fas fa-user w-12 h-12 text-primary-600"></i>
+                                    </div>
+                                    <h3 id="profile-name" class="text-xl font-semibold text-gray-900 mb-2">
+                                        محمد رضایی
+                                    </h3>
+                                    <p id="profile-email" class="text-gray-600 mb-4">mohammad@example.com</p>
+                                    <span id="profile-kyc-badge" class="badge badge-success">
+                                        <i class="fas fa-check-circle ml-1"></i>
+                                        تأیید شده
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wallet Info -->
+                        <div class="card">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">کیف پول</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">موجودی</span>
+                                        <span id="wallet-balance" class="font-semibold text-primary-600">
+                                            ۵۰,۰۰۰,۰۰۰ ریال
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">کل سرمایه‌گذاری</span>
+                                        <span id="total-invested" class="font-semibold">
+                                            ۴۷۲,۵۰۰,۰۰۰ ریال
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">کل سود</span>
+                                        <span id="total-profit" class="font-semibold text-green-600">
+                                            ۴۵,۵۰۰,۰۰۰ ریال
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Info -->
+                        <div class="card">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات حساب</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">نقش</span>
+                                        <span class="badge badge-primary">سرمایه‌گذار</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">وضعیت</span>
+                                        <span class="badge badge-success">تأیید شده</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">تاریخ عضویت</span>
+                                        <span id="join-date" class="text-sm">۱۴۰۲/۱۰/۱۵</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">آخرین ورود</span>
+                                        <span id="last-login" class="text-sm">۱۴۰۲/۱۱/۲۰</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <div class="p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">دسترسی سریع</h3>
+                                <div class="space-y-3">
+                                    <button
+                                        onclick="window.location.href = '/investments'"
+                                        class="btn btn-outline w-full text-right">
+                                        <i class="fas fa-chart-line ml-2"></i>
+                                        سرمایه‌گذاری‌های من
+                                    </button>
+                                    <button
+                                        onclick="window.location.href = '/projects'"
+                                        class="btn btn-outline w-full text-right">
+                                        <i class="fas fa-bullseye ml-2"></i>
+                                        پروژه‌ها
+                                    </button>
+                                    <button
+                                        onclick="window.location.href = '/notifications'"
+                                        class="btn btn-outline w-full text-right">
+                                        <i class="fas fa-clock ml-2"></i>
+                                        اعلان‌ها
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // داده‌های فیک برای پروفایل
+        const sampleUser = {
+            first_name: "محمد",
+            last_name: "رضایی",
+            email: "mohammad@example.com",
+            phone_number: "09123456789",
+            birth_date: "1365-05-15",
+            address: "تهران، خیابان ولیعصر، پلاک ۱۲۳",
+            bio: "سرمایه‌گذار فعال در حوزه تجهیزات پزشکی با ۳ سال سابقه",
+            kyc_status: "approved",
+            wallet_balance: 50000000,
+            total_invested: 472500000,
+            total_profit: 45500000,
+            role: "سرمایه‌گذار",
+            is_verified: true,
+            created_at: "2023-12-15",
+            last_login: "2024-02-10"
+        };
+
+        // وضعیت برنامه
+        let state = {
+            loading: true,
+            isEditing: false,
+            user: null
+        };
+
+        // تابع فرمت ارز
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fa-IR').format(amount) + ' ریال';
+        }
+
+        // تابع فرمت تاریخ
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fa-IR');
+        }
+
+        // تابع وضعیت KYC
+        function getKYCStatusBadge(status) {
+            const statusMap = {
+                approved: { variant: 'success', text: 'تأیید شده', icon: 'fa-check-circle' },
+                pending: { variant: 'warning', text: 'در انتظار', icon: 'fa-clock' },
+                rejected: { variant: 'danger', text: 'رد شده', icon: 'fa-exclamation-circle' },
+                not_submitted: { variant: 'secondary', text: 'ارسال نشده', icon: 'fa-exclamation-circle' }
+            };
+            return statusMap[status] || { variant: 'secondary', text: status, icon: 'fa-exclamation-circle' };
+        }
+
+        // تابع بارگذاری داده‌های پروفایل
+        function loadProfileData() {
+            state.loading = true;
+            updateUI();
+            
+            // شبیه‌سازی بارگذاری از API
+            setTimeout(() => {
+                state.user = sampleUser;
+                state.loading = false;
+                updateUI();
+                populateUserData();
+            }, 1000);
+        }
+
+        // تابع پر کردن داده‌های کاربر
+        function populateUserData() {
+            if (!state.user) return;
+
+            // اطلاعات شخصی
+            document.getElementById('first-name').value = state.user.first_name;
+            document.getElementById('last-name').value = state.user.last_name;
+            document.getElementById('email').value = state.user.email;
+            document.getElementById('phone').value = state.user.phone_number;
+            document.getElementById('birth-date').value = state.user.birth_date;
+            document.getElementById('address').value = state.user.address;
+            document.getElementById('bio').value = state.user.bio;
+
+            // اطلاعات خلاصه
+            document.getElementById('profile-name').textContent = `${state.user.first_name} ${state.user.last_name}`;
+            document.getElementById('profile-email').textContent = state.user.email;
+            document.getElementById('wallet-balance').textContent = formatCurrency(state.user.wallet_balance);
+            document.getElementById('total-invested').textContent = formatCurrency(state.user.total_invested);
+            document.getElementById('total-profit').textContent = formatCurrency(state.user.total_profit);
+            document.getElementById('join-date').textContent = formatDate(state.user.created_at);
+            document.getElementById('last-login').textContent = formatDate(state.user.last_login);
+
+            // وضعیت KYC
+            const kycStatus = getKYCStatusBadge(state.user.kyc_status);
+            const kycBadge = document.getElementById('kyc-badge');
+            const profileKycBadge = document.getElementById('profile-kyc-badge');
+            
+            kycBadge.className = `badge badge-${kycStatus.variant}`;
+            kycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
+            
+            profileKycBadge.className = `badge badge-${kycStatus.variant}`;
+            profileKycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
+        }
+
+        // تابع تغییر حالت ویرایش
+        function toggleEditMode() {
+            state.isEditing = !state.isEditing;
+            updateUI();
+            
+            const inputs = document.querySelectorAll('#content-section input, #content-section textarea');
+            inputs.forEach(input => {
+                if (input.id !== 'current-password' && 
+                    input.id !== 'new-password' && 
+                    input.id !== 'confirm-password') {
+                    input.disabled = !state.isEditing;
+                }
+            });
+        }
+
+        // تابع ذخیره پروفایل
+        function saveProfile() {
+            // شبیه‌سازی ذخیره
+            setTimeout(() => {
+                state.isEditing = false;
+                updateUI();
+                alert('پروفایل با موفقیت به‌روزرسانی شد');
+            }, 1000);
+        }
+
+        // تابع تغییر رمز عبور
+        function changePassword() {
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('لطفاً تمام فیلدهای رمز عبور را پر کنید');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('رمز عبور و تکرار آن یکسان نیستند');
+                return;
+            }
+            
+            // شبیه‌سازی تغییر رمز عبور
+            setTimeout(() => {
+                document.getElementById('current-password').value = '';
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+                alert('رمز عبور با موفقیت تغییر کرد');
+            }, 1000);
+        }
+
+        // تابع آپلود اسناد KYC
+        function uploadKYCDocuments() {
+            const nationalCard = document.getElementById('national-card').files[0];
+            const bankStatement = document.getElementById('bank-statement').files[0];
+            
+            if (!nationalCard && !bankStatement) {
+                alert('لطفاً حداقل یک سند انتخاب کنید');
+                return;
+            }
+            
+            // شبیه‌سازی آپلود
+            setTimeout(() => {
+                document.getElementById('national-card').value = '';
+                document.getElementById('bank-statement').value = '';
+                alert('اسناد با موفقیت آپلود شدند');
+            }, 1000);
+        }
+
+        // تابع نمایش/مخفی کردن رمز عبور
+        function togglePasswordVisibility(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentNode.querySelector('button i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // تابع به‌روزرسانی UI
+        function updateUI() {
+            const loadingSection = document.getElementById('loading-section');
+            const contentSection = document.getElementById('content-section');
+            const editBtn = document.getElementById('edit-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const saveBtn = document.getElementById('save-btn');
+            
+            if (state.loading) {
+                loadingSection.style.display = 'flex';
+                contentSection.style.display = 'none';
+            } else {
+                loadingSection.style.display = 'none';
+                contentSection.style.display = 'block';
+                
+                if (state.isEditing) {
+                    editBtn.style.display = 'none';
+                    cancelBtn.style.display = 'flex';
+                    saveBtn.style.display = 'flex';
+                } else {
+                    editBtn.style.display = 'flex';
+                    cancelBtn.style.display = 'none';
+                    saveBtn.style.display = 'none';
+                }
+            }
+        }
+
+        // مقداردهی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+            
+            // رویدادهای دکمه‌ها
+            document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
+            document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);
+            document.getElementById('save-btn').addEventListener('click', saveProfile);
+            document.getElementById('change-password-btn').addEventListener('click', changePassword);
+            document.getElementById('upload-kyc-btn').addEventListener('click', uploadKYCDocuments);
+        });
+    </script>
+</body>
+</html>
