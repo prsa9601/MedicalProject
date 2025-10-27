@@ -1,0 +1,989 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Users.AddModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>افزودن کاربر جدید - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-input {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+            margin-left: 0.5rem;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f9fafb;
+        }
+
+            .image-preview img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: cover;
+            }
+
+        .document-preview {
+            width: 200px;
+            height: 150px;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-color: #f9fafb;
+        }
+
+            .document-preview img {
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: cover;
+            }
+
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e5e7eb;
+        }
+
+        .password-strength {
+            height: 4px;
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .password-weak {
+            background-color: #ef4444;
+            width: 25%;
+        }
+
+        .password-medium {
+            background-color: #f59e0b;
+            width: 50%;
+        }
+
+        .password-strong {
+            background-color: #10b981;
+            width: 75%;
+        }
+
+        .password-very-strong {
+            background-color: #059669;
+            width: 100%;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a href="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+
+                        <a href="/Admin/Products" class="sidebar-link">
+                            <i class="fas fa-box"></i>
+                            <span>محصولات</span>
+                        </a>
+
+                        <a href="/Admin/Users" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
+                        </a>
+
+                        <a href="/Admin/Users/Add" class="sidebar-link active">
+                            <i class="fas fa-user-plus"></i>
+                            <span>افزودن کاربر</span>
+                        </a>
+
+                        <a href="/Admin/Projects" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Categories" class="sidebar-link">
+                            <i class="fas fa-folder"></i>
+                            <span>دسته‌بندی‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Settings" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">افزودن کاربر جدید</h1>
+                                <p class="mt-1 text-sm text-gray-600">اطلاعات کاربر جدید را وارد کنید</p>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <a href="/Admin/Users" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <form method="post" enctype="multipart/form-data" class="space-y-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <!-- Profile Image Section -->
+                            <div class="lg:col-span-1">
+                                <div class="card">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">تصویر پروفایل</h3>
+                                        <div class="flex flex-col items-center space-y-4">
+                                            <div class="image-preview">
+                                                <img id="avatarPreview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YzZjRmNiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOWNhM2FmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4KICAgIFx1MDY0Nlx1MDY0NVx1MDYzNFx1MDY0Nlx1MDY0NQogIDwvdGV4dD4KPC9zdmc+Cg==" alt="تصویر پروفایل" class="user-avatar">
+                                            </div>
+                                            <div class="text-center">
+                                                <button type="button" onclick="document.getElementById('avatarInput').click()" class="btn btn-outline btn-sm">
+                                                    <i class="fas fa-camera ml-2"></i>
+                                                    انتخاب تصویر
+                                                </button>
+                                                <input type="file" id="avatarInput" name="ImageName" class="hidden" accept="image/*" onchange="handleAvatarUpload(this)">
+                                                <div class="form-text text-xs mt-2">فرمت‌های مجاز: JPG, PNG - حداکثر سایز: 2MB</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Account Settings -->
+                                <div class="card mt-6">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">تنظیمات حساب</h3>
+                                        <div class="space-y-4">
+                                            <div class="form-group">
+                                                <label class="form-label">وضعیت حساب</label>
+                                                <select name="Status" class="form-control" required>
+                                                    <option value="NotConfirmed" selected>تایید نشده</option>
+                                                    <option value="Confirmed">تایید شده</option>
+                                                    <option value="Suspended">تعلیق شده</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="checkbox-label">
+                                                    <input type="checkbox" name="IsActive" class="checkbox-input" checked>
+                                                    <span class="text-sm text-gray-700">کاربر فعال است</span>
+                                                </label>
+                                                <div class="form-text">در صورت غیرفعال کردن، کاربر نمی‌تواند وارد سیستم شود</div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label">نقش کاربر</label>
+                                                <select name="UserRole" class="form-control" required>
+                                                    <option value="">انتخاب نقش</option>
+                                                    <option value="1">سرمایه‌گذار</option>
+                                                    <option value="2">پروژه‌گذار</option>
+                                                    <option value="3">ادمین</option>
+                                                    <option value="4">اپراتور</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Basic Information Form -->
+                            <div class="lg:col-span-2">
+                                <div class="card">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات شخصی</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="FirstName">
+                                                    نام
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="text"
+                                                       id="FirstName"
+                                                       name="FirstName"
+                                                       class="form-control"
+                                                       placeholder="نام کاربر"
+                                                       required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="LastName">
+                                                    نام خانوادگی
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="text"
+                                                       id="LastName"
+                                                       name="LastName"
+                                                       class="form-control"
+                                                       placeholder="نام خانوادگی کاربر"
+                                                       required>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="PhoneNumber">
+                                                    شماره تلفن
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="tel"
+                                                       id="PhoneNumber"
+                                                       name="PhoneNumber"
+                                                       class="form-control"
+                                                       placeholder="09xxxxxxxxx"
+                                                       required
+                                                       pattern="09[0-9]{9}">
+                                                <div class="form-text">شماره تلفن باید با 09 شروع شود و 11 رقمی باشد</div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="NationalityCode">
+                                                    کد ملی
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="text"
+                                                       id="NationalityCode"
+                                                       name="NationalityCode"
+                                                       class="form-control"
+                                                       placeholder="کد ملی 10 رقمی"
+                                                       required
+                                                       maxlength="10"
+                                                       pattern="[0-9]{10}">
+                                                <div class="form-text">کد ملی باید 10 رقم باشد</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="Password">
+                                                    رمز عبور
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="password"
+                                                       id="Password"
+                                                       name="Password"
+                                                       class="form-control"
+                                                       placeholder="رمز عبور"
+                                                       required
+                                                       minlength="6"
+                                                       oninput="checkPasswordStrength(this.value)">
+                                                <div id="passwordStrength" class="password-strength"></div>
+                                                <div class="form-text">رمز عبور باید حداقل 6 کاراکتر باشد</div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="ConfirmPassword">
+                                                    تکرار رمز عبور
+                                                    <span class="text-red-500">*</span>
+                                                </label>
+                                                <input type="password"
+                                                       id="ConfirmPassword"
+                                                       name="ConfirmPassword"
+                                                       class="form-control"
+                                                       placeholder="تکرار رمز عبور"
+                                                       required
+                                                       oninput="checkPasswordMatch()">
+                                                <div id="passwordMatch" class="form-text"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Documents Section -->
+                                <div class="card mt-6">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">مدارک کاربر</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <!-- National Card Photo -->
+                                            <div class="form-group">
+                                                <label class="form-label">تصویر کارت ملی</label>
+                                                <div class="space-y-3">
+                                                    <div class="document-preview" id="nationalCardPreview">
+                                                        <i class="fas fa-id-card text-gray-300 text-3xl"></i>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" onclick="document.getElementById('nationalCardInput').click()" class="btn btn-outline btn-sm">
+                                                            <i class="fas fa-upload ml-2"></i>
+                                                            آپلود تصویر کارت ملی
+                                                        </button>
+                                                        <input type="file" id="nationalCardInput" name="NationalCardPhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'nationalCardPreview')">
+                                                    </div>
+                                                    <div class="form-text">تصویر واضح از正面 و پشت کارت ملی</div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Birth Certificate Photo -->
+                                            <div class="form-group">
+                                                <label class="form-label">تصویر شناسنامه</label>
+                                                <div class="space-y-3">
+                                                    <div class="document-preview" id="birthCertificatePreview">
+                                                        <i class="fas fa-file-alt text-gray-300 text-3xl"></i>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" onclick="document.getElementById('birthCertificateInput').click()" class="btn btn-outline btn-sm">
+                                                            <i class="fas fa-upload ml-2"></i>
+                                                            آپلود تصویر شناسنامه
+                                                        </button>
+                                                        <input type="file" id="birthCertificateInput" name="BirthCertificatePhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'birthCertificatePreview')">
+                                                    </div>
+                                                    <div class="form-text">تصویر واضح از تمام صفحات شناسنامه</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Bank Information -->
+                                <div class="card mt-6">
+                                    <div class="p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات حساب بانکی (اختیاری)</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="form-group">
+                                                <label class="form-label" for="BankName">نام بانک</label>
+                                                <input type="text"
+                                                       id="BankName"
+                                                       name="BankName"
+                                                       class="form-control"
+                                                       placeholder="نام بانک">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="AccountNumber">شماره حساب</label>
+                                                <input type="text"
+                                                       id="AccountNumber"
+                                                       name="AccountNumber"
+                                                       class="form-control"
+                                                       placeholder="شماره حساب">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="CardNumber">شماره کارت</label>
+                                                <input type="text"
+                                                       id="CardNumber"
+                                                       name="CardNumber"
+                                                       class="form-control"
+                                                       placeholder="شماره کارت 16 رقمی"
+                                                       maxlength="16">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="form-label" for="ShabaNumber">شماره شبا</label>
+                                                <input type="text"
+                                                       id="ShabaNumber"
+                                                       name="ShabaNumber"
+                                                       class="form-control"
+                                                       placeholder="IRxxxxxxxxxxxxxxxxxxxxxx">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="flex justify-end space-x-3 space-x-reverse pt-6 border-t">
+                            <a href="/Admin/Users" class="btn btn-outline">
+                                <i class="fas fa-times ml-2"></i>
+                                انصراف
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus ml-2"></i>
+                                ایجاد کاربر جدید
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">کاربر با موفقیت ایجاد شد</h3>
+                <p class="text-gray-600 mb-6">کاربر جدید به سیستم اضافه شد</p>
+                <div class="flex justify-center space-x-3 space-x-reverse">
+                    <a href="/Admin/Users" class="btn btn-primary">
+                        <i class="fas fa-list ml-2"></i>
+                        مشاهده لیست کاربران
+                    </a>
+                    <button onclick="closeSuccessModal()" class="btn btn-outline">
+                        <i class="fas fa-user-plus ml-2"></i>
+                        افزودن کاربر جدید
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+        }
+
+        // مدیریت آپلود تصویر پروفایل
+        function handleAvatarUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // مدیریت آپلود مدارک
+        function handleDocumentUpload(input, previewId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const preview = document.getElementById(previewId);
+                    preview.innerHTML = `<img src="${e.target.result}" alt="پیش‌نمایش مدرک">`;
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // بررسی قدرت رمز عبور
+        function checkPasswordStrength(password) {
+            const strengthBar = document.getElementById('passwordStrength');
+            let strength = 0;
+
+            if (password.length >= 6) strength++;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+            strengthBar.className = 'password-strength ';
+            if (strength <= 1) {
+                strengthBar.classList.add('password-weak');
+            } else if (strength <= 2) {
+                strengthBar.classList.add('password-medium');
+            } else if (strength <= 3) {
+                strengthBar.classList.add('password-strong');
+            } else {
+                strengthBar.classList.add('password-very-strong');
+            }
+        }
+
+        // بررسی تطابق رمز عبور
+        function checkPasswordMatch() {
+            const password = document.getElementById('Password').value;
+            const confirmPassword = document.getElementById('ConfirmPassword').value;
+            const matchText = document.getElementById('passwordMatch');
+
+            if (confirmPassword === '') {
+                matchText.textContent = '';
+                matchText.className = 'form-text';
+            } else if (password === confirmPassword) {
+                matchText.textContent = '✓ رمزهای عبور مطابقت دارند';
+                matchText.className = 'form-text text-green-600';
+            } else {
+                matchText.textContent = '✗ رمزهای عبور مطابقت ندارند';
+                matchText.className = 'form-text text-red-600';
+            }
+        }
+
+        // اعتبارسنجی شماره تلفن
+        function validatePhoneNumber(phone) {
+            const phoneRegex = /^09[0-9]{9}$/;
+            return phoneRegex.test(phone);
+        }
+
+        // اعتبارسنجی کد ملی
+        function validateNationalCode(code) {
+            const codeRegex = /^[0-9]{10}$/;
+            return codeRegex.test(code);
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+
+        // مدیریت ارسال فرم
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // اعتبارسنجی‌های اضافی
+            const phone = document.getElementById('PhoneNumber').value;
+            const nationalCode = document.getElementById('NationalityCode').value;
+            const password = document.getElementById('Password').value;
+            const confirmPassword = document.getElementById('ConfirmPassword').value;
+
+            if (!validatePhoneNumber(phone)) {
+                alert('لطفاً شماره تلفن معتبر وارد کنید (با 09 شروع شود و 11 رقمی باشد)');
+                return;
+            }
+
+            if (!validateNationalCode(nationalCode)) {
+                alert('لطفاً کد ملی معتبر وارد کنید (10 رقم)');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                alert('رمزهای عبور مطابقت ندارند');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('رمز عبور باید حداقل 6 کاراکتر باشد');
+                return;
+            }
+
+            // شبیه‌سازی ارسال موفق فرم
+            setTimeout(() => {
+                document.getElementById('successModal').classList.remove('hidden');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

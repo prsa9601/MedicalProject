@@ -1,0 +1,868 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Product.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت محصولات - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* انیمیشن‌ها */
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #3b82f6;
+        }
+
+            .toggle-checkbox:checked + .toggle-label {
+                background-color: #3b82f6;
+            }
+
+        .toggle-label {
+            transition: all 0.3s;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a href="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+
+                        <a href="/Admin/Product" class="sidebar-link active">
+                            <i class="fas fa-box"></i>
+                            <span>محصولات</span>
+                        </a>
+
+                        <a href="/Admin/Projects" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Categories" class="sidebar-link">
+                            <i class="fas fa-folder"></i>
+                            <span>دسته‌بندی‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Users" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
+                        </a>
+
+                        <a href="/Admin/Orders" class="sidebar-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سفارشات</span>
+                        </a>
+
+                        <a href="/Admin/Settings" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">مدیریت محصولات</h1>
+                                <p class="mt-1 text-sm text-gray-600">ایجاد، ویرایش و مدیریت محصولات پلتفرم</p>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <a asp-page="Add" class="btn btn-primary">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    افزودن محصول جدید
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- Products List -->
+                    <div class="card">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h2 class="text-lg font-semibold text-gray-900">لیست محصولات</h2>
+
+                                <!-- Search and Filters -->
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="relative">
+                                        <input type="text" placeholder="جستجو..." class="input pl-10">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-search text-gray-400"></i>
+                                        </div>
+                                    </div>
+
+                                    <select class="input">
+                                        <option>همه دسته‌بندی‌ها</option>
+                                        <option>تجهیزات پزشکی</option>
+                                        <option>تجهیزات صنعتی</option>
+                                    </select>
+
+                                    <select class="input">
+                                        <option>همه وضعیت‌ها</option>
+                                        <option>فعال</option>
+                                        <option>غیرفعال</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Products Table -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>عنوان</th>
+                                            <th>اسلاگ</th>
+                                            <th>دسته‌بندی</th>
+                                            <th>وضعیت</th>
+                                            <th>تاریخ ایجاد</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>
+                                                <div class="flex items-center space-x-3 space-x-reverse">
+                                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-box text-blue-600"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">دستگاه سی تی اسکن</div>
+                                                        <div class="text-sm text-gray-500">کد: CT-001</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>ct-scanner</td>
+                                            <td>
+                                                <span class="badge badge-primary">تجهیزات پزشکی</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-success">فعال</span>
+                                            </td>
+                                            <td>۱۴۰۲/۰۵/۱۵</td>
+                                            <td>
+                                                <div class="flex items-center space-x-2 space-x-reverse">
+                                                    <a href="/Admin/Product/Edit/1" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>
+                                                <div class="flex items-center space-x-3 space-x-reverse">
+                                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-box text-green-600"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">دستگاه ام آر آی</div>
+                                                        <div class="text-sm text-gray-500">کد: MRI-001</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>mri-scanner</td>
+                                            <td>
+                                                <span class="badge badge-primary">تجهیزات پزشکی</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-success">فعال</span>
+                                            </td>
+                                            <td>۱۴۰۲/۰۵/۱۰</td>
+                                            <td>
+                                                <div class="flex items-center space-x-2 space-x-reverse">
+                                                    <a href="/Admin/Product/Edit/2" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>
+                                                <div class="flex items-center space-x-3 space-x-reverse">
+                                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                        <i class="fas fa-box text-yellow-600"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="font-medium text-gray-900">دستگاه CNC</div>
+                                                        <div class="text-sm text-gray-500">کد: CNC-001</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>cnc-machine</td>
+                                            <td>
+                                                <span class="badge badge-warning">تجهیزات صنعتی</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-secondary">غیرفعال</span>
+                                            </td>
+                                            <td>۱۴۰۲/۰۴/۲۸</td>
+                                            <td>
+                                                <div class="flex items-center space-x-2 space-x-reverse">
+                                                    <a href="/Admin/Product/Edit/3" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="btn btn-danger btn-sm">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="flex items-center justify-between mt-6">
+                                <div class="text-sm text-gray-700">
+                                    نمایش ۱ تا ۳ از ۱۲ محصول
+                                </div>
+                                <div class="flex items-center space-x-2 space-x-reverse">
+                                    <button class="btn btn-outline btn-sm">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </button>
+                                    <button class="btn btn-outline btn-sm">1</button>
+                                    <button class="btn btn-primary btn-sm">2</button>
+                                    <button class="btn btn-outline btn-sm">3</button>
+                                    <button class="btn btn-outline btn-sm">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 class="text-xl font-semibold text-gray-900" id="modalTitle">افزودن محصول جدید</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form method="post" class="mt-4 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="title">عنوان محصول</label>
+                        <input type="text" id="title" name="title" class="form-control" placeholder="عنوان محصول" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="slug">اسلاگ</label>
+                        <input type="text" id="slug" name="slug" class="form-control" placeholder="اسلاگ محصول" required>
+                        <div class="form-text">اسلاگ باید یکتا و فقط شامل حروف، اعداد و خط تیره باشد</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">توضیحات محصول</label>
+                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="توضیحات کامل محصول" required></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label" for="category">دسته‌بندی</label>
+                        <select id="category" name="category" class="form-control" required>
+                            <option value="">انتخاب دسته‌بندی</option>
+                            <option value="medical">تجهیزات پزشکی</option>
+                            <option value="industrial">تجهیزات صنعتی</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="status">وضعیت</label>
+                        <select id="status" name="status" class="form-control" required>
+                            <option value="active">فعال</option>
+                            <option value="inactive">غیرفعال</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="border-t pt-4">
+                    <h4 class="text-lg font-medium text-gray-900 mb-4">تنظیمات سئو</h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label" for="metaTitle">عنوان متا</label>
+                            <input type="text" id="metaTitle" name="metaTitle" class="form-control" placeholder="عنوان متا">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="metaKeywords">کلمات کلیدی متا</label>
+                            <input type="text" id="metaKeywords" name="metaKeywords" class="form-control" placeholder="کلمات کلیدی متا">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="metaDescription">توضیحات متا</label>
+                        <textarea id="metaDescription" name="metaDescription" class="form-control" rows="3" placeholder="توضیحات متا"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label" for="canonical">Canonical URL</label>
+                            <input type="text" id="canonical" name="canonical" class="form-control" placeholder="Canonical URL">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="schema">اسکیما</label>
+                            <textarea id="schema" name="schema" class="form-control" rows="2" placeholder="اسکیما"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="indexPage" name="indexPage" class="form-control w-4 h-4">
+                            <label for="indexPage" class="mr-2 text-sm text-gray-700">ایندکس شدن در موتورهای جستجو</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 space-x-reverse pt-4 border-t">
+                    <button type="button" onclick="closeModal()" class="btn btn-outline">انصراف</button>
+                    <button type="submit" class="btn btn-primary">ذخیره محصول</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        function openModal(title = 'افزودن محصول جدید') {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+
+        // مدیریت فرم اسلاگ
+        document.getElementById('title').addEventListener('input', function() {
+            const title = this.value;
+            const slug = title
+                .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, '')
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+            document.getElementById('slug').value = slug;
+        });
+    </script>
+</body>
+</html>
