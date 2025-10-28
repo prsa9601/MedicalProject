@@ -8,6 +8,7 @@ namespace MedicalProject.Services.User
     public interface IUserService
     {
         Task<ApiResult> Create(CreateUserCommand command);
+        Task<ApiResult<Guid>> CreateForAdmin(CreateUserForAdminCommand command);
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
         Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command);
@@ -25,14 +26,16 @@ namespace MedicalProject.Services.User
             _client = client;
         }
 
-        public Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command)
+        public async Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command)
         {
-            throw new NotImplementedException();
+            var result = await _client.PostAsJsonAsync("User/CompletionOfInformation", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
-        public Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command)
+        public async Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command)
         {
-            throw new NotImplementedException();
+            var result = await _client.PostAsJsonAsync("User/ConfirmedAccount", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
         public async Task<ApiResult> Create(CreateUserCommand command)
@@ -43,7 +46,7 @@ namespace MedicalProject.Services.User
 
         public async Task<ApiResult> SetImage(SetImageUserCommand command)
         {
-            var result = await _client.PatchAsJsonAsync("User/CreateUser", command);
+            var result = await _client.PatchAsJsonAsync("User/SetImageUser", command);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
@@ -66,6 +69,10 @@ namespace MedicalProject.Services.User
             return result?.Data;
         }
 
-
+        public async Task<ApiResult<Guid>> CreateForAdmin(CreateUserForAdminCommand command)
+        {
+            var result = await _client.PostAsJsonAsync("User/CreateUserForAdmin", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult<Guid>>();
+        }
     }
 }

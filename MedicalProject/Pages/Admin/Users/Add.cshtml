@@ -545,11 +545,11 @@
                                                 <img id="avatarPreview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2YzZjRmNiIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOWNhM2FmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4KICAgIFx1MDY0Nlx1MDY0NVx1MDYzNFx1MDY0Nlx1MDY0NQogIDwvdGV4dD4KPC9zdmc+Cg==" alt="تصویر پروفایل" class="user-avatar">
                                             </div>
                                             <div class="text-center">
-                                                <button type="button" onclick="document.getElementById('avatarInput').click()" class="btn btn-outline btn-sm">
+                                                <button type="button" onclick="document.getElementById('userAccountImage').click()" class="btn btn-outline btn-sm">
                                                     <i class="fas fa-camera ml-2"></i>
                                                     انتخاب تصویر
                                                 </button>
-                                                <input type="file" id="avatarInput" name="ImageName" class="hidden" accept="image/*" onchange="handleAvatarUpload(this)">
+                                                <input type="file" id="userAccountImage" name="userAccountImage" class="hidden" accept="image/*" onchange="handleAvatarUpload(this)">
                                                 <div class="form-text text-xs mt-2">فرمت‌های مجاز: JPG, PNG - حداکثر سایز: 2MB</div>
                                             </div>
                                         </div>
@@ -563,29 +563,10 @@
                                         <div class="space-y-4">
                                             <div class="form-group">
                                                 <label class="form-label">وضعیت حساب</label>
-                                                <select name="Status" class="form-control" required>
+                                                <select name="userStatus" class="form-control" required>
                                                     <option value="NotConfirmed" selected>تایید نشده</option>
                                                     <option value="Confirmed">تایید شده</option>
                                                     <option value="Suspended">تعلیق شده</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" name="IsActive" class="checkbox-input" checked>
-                                                    <span class="text-sm text-gray-700">کاربر فعال است</span>
-                                                </label>
-                                                <div class="form-text">در صورت غیرفعال کردن، کاربر نمی‌تواند وارد سیستم شود</div>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label">نقش کاربر</label>
-                                                <select name="UserRole" class="form-control" required>
-                                                    <option value="">انتخاب نقش</option>
-                                                    <option value="1">سرمایه‌گذار</option>
-                                                    <option value="2">پروژه‌گذار</option>
-                                                    <option value="3">ادمین</option>
-                                                    <option value="4">اپراتور</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -600,39 +581,39 @@
                                         <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات شخصی</h3>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div class="form-group">
-                                                <label class="form-label" for="FirstName">
+                                                <label class="form-label" for="firstName">
                                                     نام
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="text"
-                                                       id="FirstName"
-                                                       name="FirstName"
+                                                       id="firstName"
+                                                       name="firstName"
                                                        class="form-control"
                                                        placeholder="نام کاربر"
                                                        required>
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label" for="LastName">
+                                                <label class="form-label" for="lastName">
                                                     نام خانوادگی
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="text"
-                                                       id="LastName"
-                                                       name="LastName"
+                                                       id="lastName"
+                                                       name="lastName"
                                                        class="form-control"
                                                        placeholder="نام خانوادگی کاربر"
                                                        required>
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label" for="PhoneNumber">
+                                                <label class="form-label" for="phoneNumber">
                                                     شماره تلفن
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="tel"
-                                                       id="PhoneNumber"
-                                                       name="PhoneNumber"
+                                                       id="phoneNumber"
+                                                       name="phoneNumber"
                                                        class="form-control"
                                                        placeholder="09xxxxxxxxx"
                                                        required
@@ -641,13 +622,13 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label" for="NationalityCode">
+                                                <label class="form-label" for="nationalityCode">
                                                     کد ملی
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="text"
-                                                       id="NationalityCode"
-                                                       name="NationalityCode"
+                                                       id="nationalityCode"
+                                                       name="nationalityCode"
                                                        class="form-control"
                                                        placeholder="کد ملی 10 رقمی"
                                                        required
@@ -659,13 +640,13 @@
 
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div class="form-group">
-                                                <label class="form-label" for="Password">
+                                                <label class="form-label" for="password">
                                                     رمز عبور
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="password"
-                                                       id="Password"
-                                                       name="Password"
+                                                       id="password"
+                                                       name="password"
                                                        class="form-control"
                                                        placeholder="رمز عبور"
                                                        required
@@ -676,13 +657,13 @@
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="form-label" for="ConfirmPassword">
+                                                <label class="form-label" for="confirmPassword">
                                                     تکرار رمز عبور
                                                     <span class="text-red-500">*</span>
                                                 </label>
                                                 <input type="password"
-                                                       id="ConfirmPassword"
-                                                       name="ConfirmPassword"
+                                                       id="confirmPassword"
+                                                       name="confirmPassword"
                                                        class="form-control"
                                                        placeholder="تکرار رمز عبور"
                                                        required
@@ -706,11 +687,11 @@
                                                         <i class="fas fa-id-card text-gray-300 text-3xl"></i>
                                                     </div>
                                                     <div>
-                                                        <button type="button" onclick="document.getElementById('nationalCardInput').click()" class="btn btn-outline btn-sm">
+                                                        <button type="button" onclick="document.getElementById('nationalCardPhoto').click()" class="btn btn-outline btn-sm">
                                                             <i class="fas fa-upload ml-2"></i>
                                                             آپلود تصویر کارت ملی
                                                         </button>
-                                                        <input type="file" id="nationalCardInput" name="NationalCardPhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'nationalCardPreview')">
+                                                        <input type="file" id="nationalCardPhoto" name="nationalCardPhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'nationalCardPreview')">
                                                     </div>
                                                     <div class="form-text">تصویر واضح از正面 و پشت کارت ملی</div>
                                                 </div>
@@ -724,11 +705,11 @@
                                                         <i class="fas fa-file-alt text-gray-300 text-3xl"></i>
                                                     </div>
                                                     <div>
-                                                        <button type="button" onclick="document.getElementById('birthCertificateInput').click()" class="btn btn-outline btn-sm">
+                                                        <button type="button" onclick="document.getElementById('birthCertificatePhoto').click()" class="btn btn-outline btn-sm">
                                                             <i class="fas fa-upload ml-2"></i>
                                                             آپلود تصویر شناسنامه
                                                         </button>
-                                                        <input type="file" id="birthCertificateInput" name="BirthCertificatePhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'birthCertificatePreview')">
+                                                        <input type="file" id="birthCertificatePhoto" name="birthCertificatePhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'birthCertificatePreview')">
                                                     </div>
                                                     <div class="form-text">تصویر واضح از تمام صفحات شناسنامه</div>
                                                 </div>
@@ -737,50 +718,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Bank Information -->
-                                <div class="card mt-6">
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات حساب بانکی (اختیاری)</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="form-group">
-                                                <label class="form-label" for="BankName">نام بانک</label>
-                                                <input type="text"
-                                                       id="BankName"
-                                                       name="BankName"
-                                                       class="form-control"
-                                                       placeholder="نام بانک">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="AccountNumber">شماره حساب</label>
-                                                <input type="text"
-                                                       id="AccountNumber"
-                                                       name="AccountNumber"
-                                                       class="form-control"
-                                                       placeholder="شماره حساب">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="CardNumber">شماره کارت</label>
-                                                <input type="text"
-                                                       id="CardNumber"
-                                                       name="CardNumber"
-                                                       class="form-control"
-                                                       placeholder="شماره کارت 16 رقمی"
-                                                       maxlength="16">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="ShabaNumber">شماره شبا</label>
-                                                <input type="text"
-                                                       id="ShabaNumber"
-                                                       name="ShabaNumber"
-                                                       class="form-control"
-                                                       placeholder="IRxxxxxxxxxxxxxxxxxxxxxx">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Bank Information (Optional - Removed as not in backend model) -->
                             </div>
                         </div>
 
@@ -895,8 +833,8 @@
 
         // بررسی تطابق رمز عبور
         function checkPasswordMatch() {
-            const password = document.getElementById('Password').value;
-            const confirmPassword = document.getElementById('ConfirmPassword').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
             const matchText = document.getElementById('passwordMatch');
 
             if (confirmPassword === '') {
@@ -954,10 +892,10 @@
             e.preventDefault();
 
             // اعتبارسنجی‌های اضافی
-            const phone = document.getElementById('PhoneNumber').value;
-            const nationalCode = document.getElementById('NationalityCode').value;
-            const password = document.getElementById('Password').value;
-            const confirmPassword = document.getElementById('ConfirmPassword').value;
+            const phone = document.getElementById('phoneNumber').value;
+            const nationalCode = document.getElementById('nationalityCode').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
             if (!validatePhoneNumber(phone)) {
                 alert('لطفاً شماره تلفن معتبر وارد کنید (با 09 شروع شود و 11 رقمی باشد)');
@@ -979,10 +917,8 @@
                 return;
             }
 
-            // شبیه‌سازی ارسال موفق فرم
-            setTimeout(() => {
-                document.getElementById('successModal').classList.remove('hidden');
-            }, 1000);
+            // ارسال فرم
+            this.submit();
         });
     </script>
 </body>

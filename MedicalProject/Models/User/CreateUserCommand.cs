@@ -9,12 +9,20 @@ namespace MedicalProject.Models.User
         public required string lastName { get; set; }
         public required string password { get; set; }
     }
+    public class CreateUserForAdminCommand
+    {
+        public required string phoneNumber { get; set; }
+        public required string firstName { get; set; }
+        public required string lastName { get; set; }
+        public required string password { get; set; }
+    }
+
     public class CompletionOfInformationCommand
     {
-        public required Guid userId { get; set; }
-        public required string nationalityCode { get; set; }
-        public required IFormFile nationalCardPhoto { get; set; }
-        public required IFormFile birthCertificatePhoto { get; set; }
+        public Guid userId { get; set; }
+        public string nationalityCode { get; set; }
+        public IFormFile nationalCardPhoto { get; set; }
+        public IFormFile birthCertificatePhoto { get; set; }
     }
     public class ConfirmedAccountUserCommand
     {
