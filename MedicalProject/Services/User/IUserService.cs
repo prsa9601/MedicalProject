@@ -2,15 +2,20 @@
 using MedicalProject.Models.User;
 using MedicalProject.Models.User.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace MedicalProject.Services.User
 {
     public interface IUserService
     {
         Task<ApiResult> Create(CreateUserCommand command);
+        Task<ApiResult> Edit(EditUserCommand command);
+        Task<ApiResult<string>> Remove(Guid userId);
         Task<ApiResult<Guid>> CreateForAdmin(CreateUserForAdminCommand command);
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
+        Task<ApiResult> ChangeActivityAccount(ChangeActivityUserAccountCommand command);
         Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command);
 
 
@@ -28,9 +33,25 @@ namespace MedicalProject.Services.User
 
         public async Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command)
         {
-            var result = await _client.PostAsJsonAsync("User/CompletionOfInformation", command);
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(command.userId.ToString()), "userId");
+            form.Add(new StringContent(command.nationalityCode.ToString()), "nationalityCode");
+            form.Add(
+                    new StreamContent(command.nationalCardPhoto.OpenReadStream()),
+                    "nationalCardPhoto",
+                    command.nationalCardPhoto.FileName
+                );
+            form.Add(
+                    new StreamContent(command.birthCertificatePhoto.OpenReadStream()),
+                    "birthCertificatePhoto",
+                    command.birthCertificatePhoto.FileName
+                );
+
+
+            var result = await _client.PostAsync("User/CompletionOfInformation", form);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
+    
 
         public async Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command)
         {
@@ -46,7 +67,16 @@ namespace MedicalProject.Services.User
 
         public async Task<ApiResult> SetImage(SetImageUserCommand command)
         {
-            var result = await _client.PatchAsJsonAsync("User/SetImageUser", command);
+            using var form = new MultipartFormDataContent();
+            form.Add(new StringContent(command.userId.ToString()), "userId");
+            form.Add(
+                    new StreamContent(command.userAccountImage.OpenReadStream()),
+                    "userAccountImage",
+                    command.userAccountImage.FileName
+                );
+
+
+            var result = await _client.PatchAsync("User/SetImageUser", form);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
@@ -73,6 +103,24 @@ namespace MedicalProject.Services.User
         {
             var result = await _client.PostAsJsonAsync("User/CreateUserForAdmin", command);
             return await result.Content.ReadFromJsonAsync<ApiResult<Guid>>();
+        }
+
+        public async Task<ApiResult> ChangeActivityAccount(ChangeActivityUserAccountCommand command)
+        {
+            var result = await _client.PatchAsJsonAsync("User/ChangeActivityAccount", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<ApiResult> Edit(EditUserCommand command)
+        {
+            var result = await _client.PatchAsJsonAsync("User/EditUser", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<ApiResult<string>> Remove(Guid userId)
+        {
+            var result = await _client.DeleteAsync($"User/RemoveUser?userId={userId}");
+            return await result.Content.ReadFromJsonAsync<ApiResult<string>>();
         }
     }
 }

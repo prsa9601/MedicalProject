@@ -13,6 +13,7 @@ public static class RegisterDependencyServices
     public static IServiceCollection RegisterApiServices(this IServiceCollection services)
     {
         var baseAddress = "http://localhost:5000/api/";
+        //var baseAddress = "http://localhost:5290/api/";
 
         services.AddHttpContextAccessor();
 

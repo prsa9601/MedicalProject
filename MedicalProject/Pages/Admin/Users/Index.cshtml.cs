@@ -22,6 +22,30 @@ namespace MedicalProject.Pages.Admin.Users
         {
             Users = await _service.GetUserByFilter(FilterParams);
         }
+
+        public async Task<IActionResult> OnPostDelete(Guid userId)
+        {
+            try
+            {
+                var result = await _service.Remove(userId);
+
+                if (result.IsSuccess)
+                {
+                    TempData["SuccessMessage"] = "کاربر با موفقیت حذف شد";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "خطا در حذف کاربر";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"خطا: {ex.Message}";
+            }
+
+            return RedirectToPage();
+        }
+
         //public async Task<IActionResult> OnPostToggleUserStatusAsync(Guid userId, bool isActive)
         //{
         //    try

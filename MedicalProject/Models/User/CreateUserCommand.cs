@@ -9,6 +9,14 @@ namespace MedicalProject.Models.User
         public required string lastName { get; set; }
         public required string password { get; set; }
     }
+    public class EditUserCommand
+    {
+        public Guid userId { get; set; }
+        public required string phoneNumber { get; set; }
+        public required string firstName { get; set; }
+        public required string lastName { get; set; }
+        public string? password { get; set; }
+    }
     public class CreateUserForAdminCommand
     {
         public required string phoneNumber { get; set; }
@@ -28,6 +36,11 @@ namespace MedicalProject.Models.User
     {
         public Guid userId { get; set; }
         public UserStatus userStatus { get; set; }
+    }
+    public class ChangeActivityUserAccountCommand
+    {
+        public Guid userId { get; set; }
+        public bool Activity { get; set; }
     }
     public class SetImageUserCommand 
     {

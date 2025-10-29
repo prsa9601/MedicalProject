@@ -1,5 +1,6 @@
 ﻿@page
 @using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.EnumUtil
 @using MedicalProject.Models.User.Enum
 @model MedicalProject.Pages.Admin.Users.IndexModel
 @{
@@ -16,7 +17,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+   
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -571,7 +575,7 @@
                                         </div>
 
 
-                                        <select id ="statusFilter" asp-for="@Model.FilterParams.IsActive" class="input w-full sm:w-auto">
+                                        <select id="statusFilter" asp-for="@Model.FilterParams.IsActive" class="input w-full sm:w-auto">
                                             <option value="">همه وضعیت‌ها</option>
                                             <option value="true">فعال</option>
                                             <option value="false">غیرفعال</option>
@@ -612,7 +616,9 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">کاربران فعال</p>
-                                                <p class="text-2xl font-bold text-gray-900">۹۸۷</p>
+                                                <p class="text-2xl font-bold text-gray-900">
+                                                    @(Model.Users.Data.Count(user => user.IsActive == true))
+                                                </p>
                                             </div>
                                             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-user-check text-green-600"></i>
@@ -626,7 +632,9 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">در انتظار تایید</p>
-                                                <p class="text-2xl font-bold text-gray-900">۱۵۶</p>
+                                                <p class="text-2xl font-bold text-gray-900">
+                                                    @(Model.Users.Data.Count(user => user.Status==UserStatus.AwaitingConfirmation))
+                                                </p>
                                             </div>
                                             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-user-clock text-yellow-600"></i>
@@ -640,7 +648,10 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">کاربران مسدود</p>
-                                                <p class="text-2xl font-bold text-gray-900">۱۰۵</p>
+                                              
+                                                <p class="text-2xl font-bold text-gray-900">
+                                                    @(Model.Users.Data.Count(user => user.UserBlocks?.Any(i => i.UserId == user.Id && i.BlockToDate > DateTime.Now) == true))
+                                                </p>
                                             </div>
                                             <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-user-slash text-red-600"></i>
@@ -658,7 +669,7 @@
                                             <th>#</th>
                                             <th>کاربر</th>
                                             <th>شماره تلفن</th>
-                                            <th>کد ملی</th>
+                                            @* <th>کد ملی</th> *@
                                             <th>نقش</th>
                                             <th>وضعیت</th>
                                             <th>فعال</th>
@@ -668,10 +679,11 @@
                                     </thead>
                                     <tbody>
                                         @{
+                                            int number = 1;
                                             foreach (var item in Model.Users.Data)
                                             {
                                                 <tr>
-                                                    <td>@item.Id</td>
+                                                    <td>@(number++)</td>
                                                     <td>
                                                         <div class="flex items-center space-x-3 space-x-reverse">
                                                             <img src=@Directories.GetUserImageAccountPath(item.ImageName)
@@ -689,13 +701,14 @@
                                                             <span class="status-dot status-active"></span>
                                                         </div>
                                                     </td>
-                                                    <td>@item.NationalityCode</td>
+                                                    @*<td>@item.NationalityCode</td>*@
                                                     <td>
-                                                        <span class="badge badge-primary">سرمایه‌گذار</span>
+                                                        <span class="badge badge-primary">@(item.UserRole?.RoleName??"Guest")</span>
                                                     </td>
                                                     <td>
                                                         <span class="badge badge-success">
-                                                            @(item.Status == UserStatus.IsConfirmed ? "تایید شده" : "تایید نشده")
+                                                            @(item.Status.Map())
+
                                                         </span>
                                                     </td>
                                                     <td>
@@ -706,7 +719,7 @@
                                                     <td>@item.CreationDate</td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <a asp-page="Edit" asp-route-id="@item.Id" class="btn btn-outline btn-sm" title="ویرایش">
+                                                            <a asp-page="Edit" asp-route-userId="@item.Id" class="btn btn-outline btn-sm" title="ویرایش">
                                                                 <i class="fas fa-edit"></i>
                                                             </a>
                                                             <button class="btn btn-outline btn-sm" title="مشاهده جزئیات">
@@ -715,7 +728,8 @@
                                                             <button class="btn btn-warning btn-sm" title="مسدود کردن">
                                                                 <i class="fas fa-lock"></i>
                                                             </button>
-                                                            <button class="btn btn-danger btn-sm" title="حذف">
+                                                            <!-- دکمه حذف -->
+                                                            <button onclick="deleteUser('@item.Id')" class="btn btn-danger btn-sm" title="حذف">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </div>
@@ -723,7 +737,8 @@
                                                 </tr>
                                             }
                                         }
-@* 
+                                        @Html.AntiForgeryToken()
+                                        @* 
                                         <tr>
                                             <td>2</td>
                                             <td>
@@ -825,22 +840,55 @@
                             <!-- Pagination -->
                             <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
                                 <div class="text-sm text-gray-700">
-                                    نمایش ۱ تا ۳ از ۱,۲۴۸ کاربر
+                                    نمایش
+                                    <span id="currentRange">@((Model.Users.CurrentPage - 1) * Model.Users.Take + 1) - @Math.Min(Model.Users.CurrentPage * Model.Users.Take, Model.Users.EntityCount)</span>
+                                    از
+                                    <span id="totalCount">@Model.Users.EntityCount</span>
+                                    کاربر
                                 </div>
                                 <div class="flex items-center space-x-2 space-x-reverse">
-                                    <button class="btn btn-outline btn-sm">
+                                    <!-- دکمه صفحه قبلی -->
+                                    <button onclick="loadPage(@(Model.Users.CurrentPage - 1))"
+                                            class="btn btn-outline btn-sm @(Model.Users.CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")"
+                                            @(Model.Users.CurrentPage <= 1 ? "disabled" : "")>
                                         <i class="fas fa-chevron-right"></i>
                                     </button>
-                                    <button class="btn btn-outline btn-sm">1</button>
-                                    <button class="btn btn-primary btn-sm">2</button>
-                                    <button class="btn btn-outline btn-sm">3</button>
-                                    <button class="btn btn-outline btn-sm">...</button>
-                                    <button class="btn btn-outline btn-sm">12</button>
-                                    <button class="btn btn-outline btn-sm">
+
+                                    <!-- صفحات عددی -->
+                                    @for (int i = Model.Users.StartPage; i <= Model.Users.EndPage; i++)
+                                    {
+                                        if (i == Model.Users.CurrentPage)
+                                        {
+                                            <button class="btn btn-primary btn-sm">@i</button>
+                                        }
+                                        else
+                                        {
+                                            <button onclick="loadPage(@i)" class="btn btn-outline btn-sm">@i</button>
+                                        }
+                                    }
+
+                                    <!-- دکمه صفحه بعدی -->
+                                    <button onclick="loadPage(@(Model.Users.CurrentPage + 1))"
+                                            class="btn btn-outline btn-sm @(Model.Users.CurrentPage >= Model.Users.PageCount ? "opacity-50 cursor-not-allowed" : "")"
+                                            @(Model.Users.CurrentPage >= Model.Users.PageCount ? "disabled" : "")>
                                         <i class="fas fa-chevron-left"></i>
                                     </button>
                                 </div>
                             </div>
+
+                            <!-- انتخاب تعداد آیتم در صفحه -->
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                                <div class="flex items-center space-x-2 space-x-reverse">
+                                    <span class="text-sm text-gray-600">تعداد در هر صفحه:</span>
+                                    <select onchange="changePageSize(this.value)" class="input w-20 text-sm py-1" id="pageSizeSelect">
+                                        <option value="8" selected="@(Model.Users.Take == 8)">8</option>
+                                        <option value="16" selected="@(Model.Users.Take == 16)">16</option>
+                                        <option value="32" selected="@(Model.Users.Take == 32)">32</option>
+                                        <option value="50" selected="@(Model.Users.Take == 50)">50</option>
+                                    </select>
+                                </div>
+                            </div>
+                          
                         </div>
                     </div>
                 </div>
@@ -1004,6 +1052,283 @@
             }
         });
 
+        // // اسکریپت حذف کاربر با SweetAlert
+        //       async function deleteUser(userId) {
+        //           // استفاده از SweetAlert برای تایید حذف
+        //           const result = await Swal.fire({
+        //               title: 'آیا از حذف این کاربر اطمینان دارید؟',
+        //               text: "این عمل قابل بازگشت نیست!",
+        //               icon: 'warning',
+        //               showCancelButton: true,
+        //               confirmButtonColor: '#d33',
+        //               cancelButtonColor: '#3085d6',
+        //               confirmButtonText: 'بله، حذف شود',
+        //               cancelButtonText: 'لغو',
+        //               customClass: {
+        //                   confirmButton: 'btn btn-danger',
+        //                   cancelButton: 'btn btn-secondary'
+        //               }
+        //           });
+
+        //           if (result.isConfirmed) {
+        //               try {
+        //                   const formData = new FormData();
+        //                   formData.append('userId', userId);
+
+        //                   const response = await fetch('?handler=Delete', {
+        //                       method: 'POST',
+        //                       body: formData,
+        //                       headers: {
+        //                           'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        //                       }
+        //                   });
+
+        //                   if (response.ok) {
+        //                       // نمایش پیام موفقیت با SweetAlert
+        //                       await Swal.fire({
+        //                           title: 'حذف شد!',
+        //                           text: 'کاربر با موفقیت حذف شد.',
+        //                           icon: 'success',
+        //                           confirmButtonText: 'باشه',
+        //                           confirmButtonColor: '#28a745'
+        //                       });
+
+        //                       // رفرش صفحه پس از حذف
+        //                       location.reload();
+        //                   } else {
+        //                       await Swal.fire({
+        //                           title: 'خطا!',
+        //                           text: 'خطا در حذف کاربر',
+        //                           icon: 'error',
+        //                           confirmButtonText: 'باشه',
+        //                           confirmButtonColor: '#dc3545'
+        //                       });
+        //                   }
+        //               } catch (error) {
+        //                   console.error('Error:', error);
+        //                   await Swal.fire({
+        //                       title: 'خطا!',
+        //                       text: 'خطا در ارتباط با سرور',
+        //                       icon: 'error',
+        //                       confirmButtonText: 'باشه',
+        //                       confirmButtonColor: '#dc3545'
+        //                   });
+        //               }
+        //           }
+        //       }
+
+              // بقیه توابع بدون تغییر
+        
+
+
+
+
+
+
+
+
+                      // تابع اصلی برای لود صفحه با Ajax
+        async function loadPage(pageId) {
+            try {
+                showLoading();
+
+                const take = document.getElementById('pageSizeSelect')?.value || @Model.Users.Take;
+                const phoneNumber = document.getElementById('searchInput')?.value || '';
+                const isActive = document.getElementById('statusFilter')?.value || '';
+
+                const params = new URLSearchParams({
+                    pageId: pageId,
+                    take: take,
+                    phoneNumber: phoneNumber,
+                    isActive: isActive
+                });
+
+                // اضافه کردن پارامترها به URL بدون رفرش صفحه
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.history.pushState({}, '', newUrl);
+
+                const response = await fetch(`?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('خطا در دریافت داده‌ها');
+                }
+
+                const html = await response.text();
+                await updatePageContent(html);
+
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    title: 'خطا!',
+                    text: 'خطا در بارگذاری داده‌ها',
+                    icon: 'error',
+                    confirmButtonText: 'باشه'
+                });
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // تغییر سایز صفحه
+        async function changePageSize(pageSize) {
+            await loadPage(1); // بازگشت به صفحه اول با سایز جدید
+        }
+
+        // اعمال فیلترها
+        async function applyFilters() {
+            await loadPage(1); // بازگشت به صفحه اول با فیلترهای جدید
+        }
+
+        // آپدیت محتوای صفحه
+        async function updatePageContent(html) {
+            // ایجاد یک المان موقت برای پارس کردن HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            // آپدیت کارت‌های آمار
+            const newStats = tempDiv.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-4.mb-6');
+            if (newStats) {
+                const currentStats = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4.gap-4.mb-6');
+                currentStats.innerHTML = newStats.innerHTML;
+            }
+
+            // آپدیت جدول کاربران
+            const newTableBody = tempDiv.querySelector('tbody');
+            if (newTableBody) {
+                document.querySelector('tbody').innerHTML = newTableBody.innerHTML;
+            }
+
+            // آپدیت اطلاعات صفحه‌بندی
+            const newPaginationInfo = tempDiv.querySelector('.flex.flex-col.sm\\:flex-row.items-center.justify-between.mt-6');
+            if (newPaginationInfo) {
+                const currentPagination = document.querySelector('.flex.flex-col.sm\\:flex-row.items-center.justify-between.mt-6');
+                currentPagination.outerHTML = newPaginationInfo.outerHTML;
+            }
+
+            // آپدیت انتخاب سایز صفحه
+            const newPageSizeSelect = tempDiv.querySelector('#pageSizeSelect');
+            if (newPageSizeSelect) {
+                const currentSelect = document.querySelector('#pageSizeSelect');
+                currentSelect.innerHTML = newPageSizeSelect.innerHTML;
+                // اضافه کردن event listener جدید
+                currentSelect.onchange = function() { changePageSize(this.value); };
+            }
+
+            // ری‌اتچ event listeners برای دکمه‌های حذف
+            reattachEventListeners();
+        }
+
+        // ری‌اتچ event listeners
+        function reattachEventListeners() {
+            // حذف event listeners قبلی و اضافه کردن جدید
+            document.querySelectorAll('button[onclick^="deleteUser"]').forEach(button => {
+                const oldOnclick = button.getAttribute('onclick');
+                const userId = oldOnclick.match(/'([^']+)'/)[1];
+                button.removeAttribute('onclick');
+                button.addEventListener('click', () => deleteUser(userId));
+            });
+        }
+
+        // نمایش loading
+        function showLoading() {
+            const existingLoader = document.getElementById('tableLoader');
+            if (!existingLoader) {
+                const loader = document.createElement('div');
+                loader.id = 'tableLoader';
+                loader.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+                loader.innerHTML = `
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="text-gray-700">در حال بارگذاری...</span>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(loader);
+            }
+        }
+
+        // مخفی کردن loading
+        function hideLoading() {
+            const loader = document.getElementById('tableLoader');
+            if (loader) {
+                loader.remove();
+            }
+        }
+
+        // هندل رویداد popstate برای دکمه‌های قبلی/بعدی مرورگر
+        window.addEventListener('popstate', function(event) {
+            loadPageFromURL();
+        });
+
+        // لود صفحه از URL
+        function loadPageFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageId = urlParams.get('pageId') || 1;
+            loadPage(parseInt(pageId));
+        }
+
+        // اسکریپت حذف کاربر با SweetAlert (آپدیت شده)
+        async function deleteUser(userId) {
+            const result = await Swal.fire({
+                title: 'آیا از حذف این کاربر اطمینان دارید؟',
+                text: "این عمل قابل بازگشت نیست!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'بله، حذف شود',
+                cancelButtonText: 'لغو'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    showLoading();
+
+                    const formData = new FormData();
+                    formData.append('userId', userId);
+
+                    const response = await fetch('?handler=Delete', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'حذف شد!',
+                            text: 'کاربر با موفقیت حذف شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه'
+                        });
+
+                        // ریلود صفحه با Ajax پس از حذف
+                        await loadPage(1);
+                    } else {
+                        throw new Error('خطا در حذف کاربر');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در حذف کاربر',
+                        icon: 'error',
+                        confirmButtonText: 'باشه'
+                    });
+                } finally {
+                    hideLoading();
+                }
+            }
+        }
+
         // بستن منوها هنگام کلیک خارج
         document.addEventListener('click', function(event) {
             const profileDropdown = document.getElementById('profileDropdown');
@@ -1034,6 +1359,35 @@
         document.querySelectorAll('button[title="مشاهده جزئیات"]').forEach(button => {
             button.addEventListener('click', showUserDetails);
         });
+
+        //         // اسکریپت حذف کاربر
+        // async function deleteUser(userId) {
+        //     if (!confirm('آیا از حذف این کاربر اطمینان دارید؟')) {
+        //         return;
+        //     }
+
+        //     try {
+        //         const formData = new FormData();
+        //         formData.append('userId', userId);
+
+        //         const response = await fetch('?handler=Delete', {
+        //             method: 'POST',
+        //             body: formData,
+        //             headers: {
+        //                 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        //             }
+        //         });
+
+        //         if (response.ok) {
+        //             location.reload(); // رفرش صفحه پس از حذف
+        //         } else {
+        //             alert('خطا در حذف کاربر');
+        //         }
+        //     } catch (error) {
+        //         console.error('Error:', error);
+        //         alert('خطا در حذف کاربر');
+        //     }
+        // }
     </script>
 </body>
 </html>

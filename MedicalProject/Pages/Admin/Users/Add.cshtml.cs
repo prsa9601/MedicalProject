@@ -1,4 +1,5 @@
-﻿using MedicalProject.Models.User.Enum;
+﻿using MedicalProject.Infrastructure.RazorUtils;
+using MedicalProject.Models.User.Enum;
 using MedicalProject.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 namespace MedicalProject.Pages.Admin.Users
 {
     [BindProperties]
-    public class AddModel : PageModel
+    public class AddModel : BaseRazorPage
     {
         private readonly IUserService _service;
 
@@ -27,6 +28,7 @@ namespace MedicalProject.Pages.Admin.Users
         public IFormFile nationalCardPhoto { get; set; }
         public IFormFile birthCertificatePhoto { get; set; }
 
+        public bool isActive { get; set; } = true;
         public UserStatus userStatus { get; set; } = UserStatus.NotConfirmed;
 
         public IFormFile userAccountImage { get; set; }
@@ -36,7 +38,7 @@ namespace MedicalProject.Pages.Admin.Users
 
         }
 
-        public async Task OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (password != confirmPassword)
                 ModelState.AddModelError(confirmPassword,
@@ -47,13 +49,13 @@ namespace MedicalProject.Pages.Admin.Users
             //  && phoneNumber != null)
             //{
 
-                var userResponse = await _service.CreateForAdmin(new Models.User.CreateUserForAdminCommand
-                {
-                    firstName = this.firstName,
-                    lastName = this.lastName,
-                    password = this.password,
-                    phoneNumber = this.phoneNumber,
-                });
+            var userResponse = await _service.CreateForAdmin(new Models.User.CreateUserForAdminCommand
+            {
+                firstName = this.firstName,
+                lastName = this.lastName,
+                password = this.password,
+                phoneNumber = this.phoneNumber,
+            });
             //}
 
             if (birthCertificatePhoto != null
@@ -69,7 +71,11 @@ namespace MedicalProject.Pages.Admin.Users
                 });
             }
 
-
+            //await _service.ChangeActivityAccount(new Models.User.ChangeActivityUserAccountCommand
+            //{
+            //    Activity = isActive,
+            //    userId = userResponse.Data
+            //});
 
             await _service.ConfirmedAccount(new Models.User.ConfirmedAccountUserCommand
             {
@@ -86,6 +92,13 @@ namespace MedicalProject.Pages.Admin.Users
                     userAccountImage = userAccountImage,
                 });
             }
+
+            return RedirectAndShowAlert(new Models.ApiResult
+            {
+                IsReload = false,
+                MetaData = userResponse.MetaData,
+                IsSuccess = userResponse.IsSuccess
+            }, RedirectToPage("Index"));
         }
     }
 }

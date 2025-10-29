@@ -629,7 +629,7 @@
 
                                                 <div class="form-group">
                                                     <label class="checkbox-label">
-                                                        <input type="checkbox" name="IsActive" class="checkbox-input" checked>
+                                                        @* <input type="checkbox" name="IsActive" class="checkbox-input" checked> *@
                                                         <span class="text-sm text-gray-700">کاربر فعال است</span>
                                                     </label>
                                                     <div class="form-text">در صورت غیرفعال کردن، کاربر نمی‌تواند وارد سیستم شود</div>
@@ -666,7 +666,7 @@
                                                            class="form-control"
                                                            placeholder="نام کاربر"
                                                            required
-                                                           value="محمد">
+                                                           value="@Model.firstName">
                                                 </div>
 
                                                 <div class="form-group">
@@ -680,7 +680,7 @@
                                                            class="form-control"
                                                            placeholder="نام خانوادگی کاربر"
                                                            required
-                                                           value="احمدی">
+                                                           value="@Model.lastName">
                                                 </div>
 
                                                 <div class="form-group">
@@ -694,7 +694,7 @@
                                                            class="form-control"
                                                            placeholder="09xxxxxxxxx"
                                                            required
-                                                           value="09121234567">
+                                                           value="@Model.phoneNumber">
                                                     <div class="form-text">شماره تلفن باید با 09 شروع شود</div>
                                                 </div>
 
@@ -710,7 +710,7 @@
                                                            placeholder="کد ملی 10 رقمی"
                                                            required
                                                            maxlength="10"
-                                                           value="0012345678">
+                                                           value="@Model.nationalityCode">
                                                 </div>
                                             </div>
 

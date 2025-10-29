@@ -99,6 +99,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseRouting();
 app.Use(async (context, next) =>
