@@ -1,6 +1,5 @@
-﻿@page "{userId:guid}"
+﻿@page
 @model MedicalProject.Pages.Admin.Users.EditModel
-
 @{
     Layout = null;
 }
@@ -329,7 +328,7 @@
             border: 2px dashed #d1d5db;
             border-radius: 0.5rem;
             display: flex;
-                align-items: center;
+            align-items: center;
             justify-content: center;
             overflow: hidden;
             background-color: #f9fafb;
@@ -511,7 +510,7 @@
                             <span>کاربران</span>
                         </a>
 
-                        <a href="/Admin/Users/Edit/@Model.userId" class="sidebar-link active">
+                        <a href="/Admin/Users/Edit/1" class="sidebar-link active">
                             <i class="fas fa-user-edit"></i>
                             <span>ویرایش کاربر</span>
                         </a>
@@ -547,7 +546,7 @@
                                 <p class="mt-1 text-sm text-gray-600">اطلاعات کاربر را ویرایش کنید</p>
                                 <div class="flex items-center space-x-2 space-x-reverse mt-2">
                                     <span class="text-xs text-gray-500">شناسه کاربر:</span>
-                                    <span class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">@Model.userId</span>
+                                    <span class="text-xs font-mono bg-gray-100 px-2 py-1 rounded">USR-001</span>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-3 space-x-reverse">
@@ -566,221 +565,325 @@
 
                 <!-- Main Content Area -->
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <!-- Validation Messages -->
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle text-red-500 ml-2"></i>
-                                <h3 class="text-red-800 font-semibold">خطا در اعتبارسنجی</h3>
-                            </div>
-                            <div class="mt-2 text-red-700 text-sm">
-                                <ul>
-                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                    {
-                                        <li>@error.ErrorMessage</li>
-                                    }
-                                </ul>
-                            </div>
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-200 mb-6">
+                        <div class="flex space-x-8 space-x-reverse">
+                            <button class="tab-button active" onclick="switchTab('basic')">
+                                <i class="fas fa-user ml-2"></i>
+                                اطلاعات پایه
+                            </button>
+                            <button class="tab-button" onclick="switchTab('documents')">
+                                <i class="fas fa-file-alt ml-2"></i>
+                                مدارک
+                            </button>
+                            <button class="tab-button" onclick="switchTab('security')">
+                                <i class="fas fa-shield-alt ml-2"></i>
+                                امنیت
+                            </button>
+                            <button class="tab-button" onclick="switchTab('bank')">
+                                <i class="fas fa-university ml-2"></i>
+                                اطلاعات بانکی
+                            </button>
                         </div>
-                    }
-
-                    @if (TempData["SuccessMessage"] != null)
-                    {
-                        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle text-green-500 ml-2"></i>
-                                <span class="text-green-800 font-semibold">@TempData["SuccessMessage"]</span>
-                            </div>
-                        </div>
-                    }
+                    </div>
 
                     <form method="post" enctype="multipart/form-data" class="space-y-6">
-                        <input type="hidden" asp-for="userId" value="@Model.userId" />
-
                         <!-- Basic Information Tab -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Profile Image -->
-                            <div class="lg:col-span-1">
-                                <div class="card">
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">تصویر پروفایل</h3>
-                                        <div class="flex flex-col items-center space-y-4">
-                                            <div class="image-preview">
-                                                <img id="avatarPreview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2RiNWFmZSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+CiAgICBcdTA2N2ZcdTA2NDUKICA8L3RleHQ+Cjwvc3ZnPgo=" alt="تصویر پروفایل" class="user-avatar">
+                        <div id="basic-tab" class="tab-content active">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Profile Image -->
+                                <div class="lg:col-span-1">
+                                    <div class="card">
+                                        <div class="p-6">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-4">تصویر پروفایل</h3>
+                                            <div class="flex flex-col items-center space-y-4">
+                                                <div class="image-preview">
+                                                    <img id="avatarPreview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2RiNWFmZSIvPgogIDx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+CiAgICBcdTA2N2ZcdTA2NDUKICA8L3RleHQ+Cjwvc3ZnPgo=" alt="تصویر پروفایل" class="user-avatar">
+                                                </div>
+                                                <div class="text-center">
+                                                    <button type="button" onclick="document.getElementById('userAccountImage').click()" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-camera ml-2"></i>
+                                                        تغییر تصویر
+                                                    </button>
+                                                    <input type="file" id="userAccountImage" name="userAccountImage" class="hidden" accept="image/*" onchange="handleAvatarUpload(this)">
+                                                    <div class="form-text text-xs mt-2">فرمت‌های مجاز: JPG, PNG - حداکثر سایز: 2MB</div>
+                                                </div>
                                             </div>
-                                            <div class="text-center">
-                                                <button type="button" onclick="document.getElementById('userAccountImage').click()" class="btn btn-outline btn-sm">
-                                                    <i class="fas fa-camera ml-2"></i>
-                                                    تغییر تصویر
-                                                </button>
-                                                <input type="file" id="userAccountImage" name="userAccountImage" class="hidden" accept="image/*" onchange="handleAvatarUpload(this)">
-                                                <div class="form-text text-xs mt-2">فرمت‌های مجاز: JPG, PNG - حداکثر سایز: 2MB</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Status Card -->
+                                    <div class="card mt-6">
+                                        <div class="p-6">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-4">وضعیت کاربر</h3>
+                                            <div class="space-y-4">
+                                                <div class="form-group">
+                                                    <label class="form-label">وضعیت حساب</label>
+                                                    <select name="Status" class="form-control">
+                                                        <option value="NotConfirmed">تایید نشده</option>
+                                                        <option value="Confirmed" selected>تایید شده</option>
+                                                        <option value="Suspended">تعلیق شده</option>
+                                                        <option value="Blocked">مسدود شده</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="checkbox-label">
+                                                        @* <input type="checkbox" name="IsActive" class="checkbox-input" checked> *@
+                                                        <span class="text-sm text-gray-700">کاربر فعال است</span>
+                                                    </label>
+                                                    <div class="form-text">در صورت غیرفعال کردن، کاربر نمی‌تواند وارد سیستم شود</div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label">نقش کاربر</label>
+                                                    <select name="UserRole" class="form-control">
+                                                        <option value="1">سرمایه‌گذار</option>
+                                                        <option value="2">پروژه‌گذار</option>
+                                                        <option value="3">ادمین</option>
+                                                        <option value="4">اپراتور</option>
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Status Card -->
-                                <div class="card mt-6">
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">وضعیت کاربر</h3>
-                                        <div class="space-y-4">
-                                            <div class="form-group">
-                                                <label class="form-label">وضعیت حساب</label>
-                                                <select name="userStatus" class="form-control">
-                                                    <option value="NotConfirmed" selected="@(Model.userStatus == MedicalProject.Models.User.Enum.UserStatus.NotConfirmed)">تایید نشده</option>
-                                                    <option value="IsConfirmed" selected="@(Model.userStatus == MedicalProject.Models.User.Enum.UserStatus.IsConfirmed)">تایید شده</option>
-                                                    <option value="AwaitingConfirmation" selected="@(Model.userStatus == MedicalProject.Models.User.Enum.UserStatus.AwaitingConfirmation)">در انتظار تایید حساب</option>
-                                                    <option value="WrongInformation" selected="@(Model.userStatus == MedicalProject.Models.User.Enum.UserStatus.WrongInformation)">اطلاعات غلط وارد شده</option>
-                                                </select>
+                                <!-- Basic Info Form -->
+                                <div class="lg:col-span-2">
+                                    <div class="card">
+                                        <div class="p-6">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات شخصی</h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div class="form-group">
+                                                    <label class="form-label" for="FirstName">
+                                                        نام
+                                                        <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <input type="text"
+                                                           id="FirstName"
+                                                           name="FirstName"
+                                                           class="form-control"
+                                                           placeholder="نام کاربر"
+                                                           required
+                                                           value="@Model.firstName">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label" for="LastName">
+                                                        نام خانوادگی
+                                                        <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <input type="text"
+                                                           id="LastName"
+                                                           name="LastName"
+                                                           class="form-control"
+                                                           placeholder="نام خانوادگی کاربر"
+                                                           required
+                                                           value="@Model.lastName">
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label" for="PhoneNumber">
+                                                        شماره تلفن
+                                                        <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <input type="tel"
+                                                           id="PhoneNumber"
+                                                           name="PhoneNumber"
+                                                           class="form-control"
+                                                           placeholder="09xxxxxxxxx"
+                                                           required
+                                                           value="@Model.phoneNumber">
+                                                    <div class="form-text">شماره تلفن باید با 09 شروع شود</div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="form-label" for="NationalityCode">
+                                                        کد ملی
+                                                        <span class="text-red-500">*</span>
+                                                    </label>
+                                                    <input type="text"
+                                                           id="NationalityCode"
+                                                           name="NationalityCode"
+                                                           class="form-control"
+                                                           placeholder="کد ملی 10 رقمی"
+                                                           required
+                                                           maxlength="10"
+                                                           value="@Model.nationalityCode">
+                                                </div>
                                             </div>
 
                                             <div class="form-group">
-                                                <label class="checkbox-label">
-                                                    <input type="checkbox" name="isActive" class="checkbox-input" @(Model.isActive == true ? "checked" : "")>
-                                                    <span class="text-sm text-gray-700">کاربر فعال است</span>
-                                                </label>
-                                                <div class="form-text">در صورت غیرفعال کردن، کاربر نمی‌تواند وارد سیستم شود</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Basic Info Form -->
-                            <div class="lg:col-span-2">
-                                <div class="card">
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات شخصی</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="form-group">
-                                                <label class="form-label" for="firstName">
-                                                    نام
-                                                    <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text"
-                                                       id="firstName"
-                                                       name="firstName"
-                                                       class="form-control"
-                                                       placeholder="نام کاربر"
-                                                       required
-                                                       value="@Model.firstName">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="lastName">
-                                                    نام خانوادگی
-                                                    <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text"
-                                                       id="lastName"
-                                                       name="lastName"
-                                                       class="form-control"
-                                                       placeholder="نام خانوادگی کاربر"
-                                                       required
-                                                       value="@Model.lastName">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="phoneNumber">
-                                                    شماره تلفن
-                                                    <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="tel"
-                                                       id="phoneNumber"
-                                                       name="phoneNumber"
-                                                       class="form-control"
-                                                       placeholder="09xxxxxxxxx"
-                                                       required
-                                                       value="@Model.phoneNumber">
-                                                <div class="form-text">شماره تلفن باید با 09 شروع شود</div>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label class="form-label" for="nationalityCode">
-                                                    کد ملی
-                                                    <span class="text-red-500">*</span>
-                                                </label>
-                                                <input type="text"
-                                                       id="nationalityCode"
-                                                       name="nationalityCode"
-                                                       class="form-control"
-                                                       placeholder="کد ملی 10 رقمی"
-                                                       @* required *@
-                                                       maxlength="10"
-                                                       value="@Model.nationalityCode">
-                                            </div>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="form-group">
-                                                <label class="form-label" for="password">
+                                                <label class="form-label" for="Password">
                                                     رمز عبور جدید
                                                 </label>
                                                 <input type="password"
-                                                       id="password"
-                                                       name="password"
+                                                       id="Password"
+                                                       name="Password"
                                                        class="form-control"
                                                        placeholder="در صورت نیاز به تغییر رمز عبور وارد کنید">
                                                 <div class="form-text">در صورت خالی گذاشتن، رمز عبور تغییر نمی‌کند</div>
                                             </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                            <div class="form-group">
-                                                <label class="form-label" for="confirmPassword">
-                                                    تکرار رمز عبور جدید
-                                                </label>
-                                                <input type="password"
-                                                       id="confirmPassword"
-                                                       name="confirmPassword"
-                                                       class="form-control"
-                                                       placeholder="تکرار رمز عبور جدید">
-                                                <div id="passwordMatch" class="form-text"></div>
+                        <!-- Documents Tab -->
+                        <div id="documents-tab" class="tab-content">
+                            <div class="card">
+                                <div class="p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">مدارک کاربر</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- National Card Photo -->
+                                        <div class="form-group">
+                                            <label class="form-label">تصویر کارت ملی</label>
+                                            <div class="space-y-3">
+                                                <div class="document-preview" id="nationalCardPreview">
+                                                    <i class="fas fa-id-card text-gray-300 text-3xl"></i>
+                                                </div>
+                                                <div>
+                                                    <button type="button" onclick="document.getElementById('nationalCardInput').click()" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-upload ml-2"></i>
+                                                        آپلود تصویر کارت ملی
+                                                    </button>
+                                                    <input type="file" id="nationalCardInput" name="NationalCardPhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'nationalCardPreview')">
+                                                </div>
+                                                <div class="form-text">تصویر واضح از正面 و پشت کارت ملی</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Birth Certificate Photo -->
+                                        <div class="form-group">
+                                            <label class="form-label">تصویر شناسنامه</label>
+                                            <div class="space-y-3">
+                                                <div class="document-preview" id="birthCertificatePreview">
+                                                    <i class="fas fa-file-alt text-gray-300 text-3xl"></i>
+                                                </div>
+                                                <div>
+                                                    <button type="button" onclick="document.getElementById('birthCertificateInput').click()" class="btn btn-outline btn-sm">
+                                                        <i class="fas fa-upload ml-2"></i>
+                                                        آپلود تصویر شناسنامه
+                                                    </button>
+                                                    <input type="file" id="birthCertificateInput" name="BirthCertificatePhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'birthCertificatePreview')">
+                                                </div>
+                                                <div class="form-text">تصویر واضح از تمام صفحات شناسنامه</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Documents Section -->
-                                <div class="card mt-6">
-                                    <div class="p-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 mb-4">مدارک کاربر</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <!-- National Card Photo -->
-                                            <div class="form-group">
-                                                <label class="form-label">تصویر کارت ملی</label>
-                                                <div class="space-y-3">
-                                                    <div class="document-preview" id="nationalCardPreview">
-                                                        <i class="fas fa-id-card text-gray-300 text-3xl"></i>
-                                                    </div>
+                        <!-- Security Tab -->
+                        <div id="security-tab" class="tab-content">
+                            <div class="card">
+                                <div class="p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات امنیتی</h3>
+                                    <div class="space-y-6">
+                                        <!-- OTP History -->
+                                        <div>
+                                            <h4 class="text-md font-semibold text-gray-900 mb-3">تاریخچه کدهای یکبارمصرف</h4>
+                                            <div class="bg-gray-50 rounded-lg p-4">
+                                                <div class="text-sm text-gray-600">آخرین کد ارسال شده: ۱۲۳۴۵۶ - تاریخ: ۱۴۰۲/۰۶/۲۰ ۱۴:۳۰</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Block History -->
+                                        <div>
+                                            <h4 class="text-md font-semibold text-gray-900 mb-3">تاریخچه مسدودسازی</h4>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
                                                     <div>
-                                                        <button type="button" onclick="document.getElementById('nationalCardPhoto').click()" class="btn btn-outline btn-sm">
-                                                            <i class="fas fa-upload ml-2"></i>
-                                                            آپلود تصویر کارت ملی
-                                                        </button>
-                                                        <input type="file" id="nationalCardPhoto" name="nationalCardPhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'nationalCardPreview')">
+                                                        <span class="text-sm font-medium text-red-800">مسدود شده توسط سیستم</span>
+                                                        <div class="text-xs text-red-600">علت: ورود ناموفق متعدد</div>
                                                     </div>
-                                                    <div class="form-text">تصویر واضح از正面 و پشت کارت ملی</div>
+                                                    <span class="text-xs text-red-600">۱۴۰۲/۰۵/۱۰</span>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <!-- Birth Certificate Photo -->
-                                            <div class="form-group">
-                                                <label class="form-label">تصویر شناسنامه</label>
-                                                <div class="space-y-3">
-                                                    <div class="document-preview" id="birthCertificatePreview">
-                                                        <i class="fas fa-file-alt text-gray-300 text-3xl"></i>
-                                                    </div>
+                                        <!-- Login Attempts -->
+                                        <div>
+                                            <h4 class="text-md font-semibold text-gray-900 mb-3">آخرین تلاش‌های ورود</h4>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                                     <div>
-                                                        <button type="button" onclick="document.getElementById('birthCertificatePhoto').click()" class="btn btn-outline btn-sm">
-                                                            <i class="fas fa-upload ml-2"></i>
-                                                            آپلود تصویر شناسنامه
-                                                        </button>
-                                                        <input type="file" id="birthCertificatePhoto" name="birthCertificatePhoto" class="hidden" accept="image/*" onchange="handleDocumentUpload(this, 'birthCertificatePreview')">
+                                                        <span class="text-sm font-medium text-gray-800">موفق</span>
+                                                        <div class="text-xs text-gray-600">IP: 192.168.1.100</div>
                                                     </div>
-                                                    <div class="form-text">تصویر واضح از تمام صفحات شناسنامه</div>
+                                                    <span class="text-xs text-gray-600">۱۴۰۲/۰۶/۲۰ ۱۴:۲۵</span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Active Sessions -->
+                                        <div>
+                                            <h4 class="text-md font-semibold text-gray-900 mb-3">سشن‌های فعال</h4>
+                                            <div class="space-y-2">
+                                                <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                                    <div>
+                                                        <span class="text-sm font-medium text-green-800">فعال</span>
+                                                        <div class="text-xs text-green-600">مرورگر: Chrome - سیستم عامل: Windows</div>
+                                                    </div>
+                                                    <button class="btn btn-danger btn-xs">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Information Tab -->
+                        <div id="bank-tab" class="tab-content">
+                            <div class="card">
+                                <div class="p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات حساب بانکی</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="form-group">
+                                            <label class="form-label" for="BankName">نام بانک</label>
+                                            <input type="text"
+                                                   id="BankName"
+                                                   name="BankName"
+                                                   class="form-control"
+                                                   placeholder="نام بانک"
+                                                   value="ملت">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="AccountNumber">شماره حساب</label>
+                                            <input type="text"
+                                                   id="AccountNumber"
+                                                   name="AccountNumber"
+                                                   class="form-control"
+                                                   placeholder="شماره حساب"
+                                                   value="1234567890">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="CardNumber">شماره کارت</label>
+                                            <input type="text"
+                                                   id="CardNumber"
+                                                   name="CardNumber"
+                                                   class="form-control"
+                                                   placeholder="شماره کارت 16 رقمی"
+                                                   maxlength="16"
+                                                   value="6037991234567890">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label" for="ShabaNumber">شماره شبا</label>
+                                            <input type="text"
+                                                   id="ShabaNumber"
+                                                   name="ShabaNumber"
+                                                   class="form-control"
+                                                   placeholder="IRxxxxxxxxxxxxxxxxxxxxxx"
+                                                   value="IR120120000000001234567890">
                                         </div>
                                     </div>
                                 </div>
@@ -873,6 +976,20 @@
             dropdown.classList.toggle('hidden');
         }
 
+        function switchTab(tabName) {
+            // غیرفعال کردن همه تب‌ها
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // فعال کردن تب انتخاب شده
+            document.querySelector(`.tab-button[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
         function closeSuccessModal() {
             document.getElementById('successModal').classList.add('hidden');
         }
@@ -886,33 +1003,16 @@
         }
 
         function confirmDelete() {
-            // در اینجا می‌توانید درخواست حذف کاربر را به سرور ارسال کنید
-            // فعلاً فقط به صفحه لیست کاربران هدایت می‌شود
-            window.location.href = '/Admin/Users';
+            // شبیه‌سازی حذف کاربر
+            setTimeout(() => {
+                window.location.href = '/Admin/Users';
+            }, 1000);
         }
 
         function resetPassword() {
             if (confirm('آیا از بازنشانی رمز عبور این کاربر اطمینان دارید؟')) {
-                // در اینجا می‌توانید درخواست بازنشانی رمز عبور را به سرور ارسال کنید
+                // شبیه‌سازی بازنشانی رمز عبور
                 alert('رمز عبور با موفقیت بازنشانی شد. رمز جدید برای کاربر پیامک خواهد شد.');
-            }
-        }
-
-        // بررسی تطابق رمز عبور
-        function checkPasswordMatch() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            const matchText = document.getElementById('passwordMatch');
-
-            if (confirmPassword === '') {
-                matchText.textContent = '';
-                matchText.className = 'form-text';
-            } else if (password === confirmPassword) {
-                matchText.textContent = '✓ رمزهای عبور مطابقت دارند';
-                matchText.className = 'form-text text-green-600';
-            } else {
-                matchText.textContent = '✗ رمزهای عبور مطابقت ندارند';
-                matchText.className = 'form-text text-red-600';
             }
         }
 
@@ -969,56 +1069,14 @@
             }
         });
 
-        // مدیریت رویدادهای فرم
-        document.getElementById('password')?.addEventListener('input', function() {
-            checkPasswordMatch();
-        });
-
-        document.getElementById('confirmPassword')?.addEventListener('input', function() {
-            checkPasswordMatch();
-        });
-
-        // اعتبارسنجی شماره تلفن
-        function validatePhoneNumber(phone) {
-            const phoneRegex = /^09[0-9]{9}$/;
-            return phoneRegex.test(phone);
-        }
-
-        // اعتبارسنجی کد ملی
-        function validateNationalCode(code) {
-            const codeRegex = /^[0-9]{10}$/;
-            return codeRegex.test(code);
-        }
-
         // مدیریت ارسال فرم
         document.querySelector('form').addEventListener('submit', function(e) {
-            const phone = document.getElementById('phoneNumber').value;
-            const nationalCode = document.getElementById('nationalityCode').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+            e.preventDefault();
 
-            // اعتبارسنجی شماره تلفن
-            if (!validatePhoneNumber(phone)) {
-                e.preventDefault();
-                alert('لطفاً شماره تلفن معتبر وارد کنید (با 09 شروع شود و 11 رقمی باشد)');
-                return;
-            }
-
-            // اعتبارسنجی کد ملی
-            if (!validateNationalCode(nationalCode)) {
-                e.preventDefault();
-                alert('لطفاً کد ملی معتبر وارد کنید (10 رقم)');
-                return;
-            }
-
-            // اعتبارسنجی تطابق رمز عبور
-            if (password && password !== confirmPassword) {
-                e.preventDefault();
-                alert('رمزهای عبور مطابقت ندارند');
-                return;
-            }
-
-            // اگر همه چیز درست بود، فرم ارسال می‌شود
+            // شبیه‌سازی ارسال موفق فرم
+            setTimeout(() => {
+                document.getElementById('successModal').classList.remove('hidden');
+            }, 1000);
         });
     </script>
 </body>

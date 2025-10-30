@@ -5,39 +5,30 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MedicalProject.Pages.Admin.Users
 {
-    public class EditModel : PageModel
+    [BindProperties]
+    public class OldEditModel : PageModel
     {
         private readonly IUserService _service;
 
-        public EditModel(IUserService service)
+        public OldEditModel(IUserService service)
         {
             _service = service;
         }
 
-        [BindProperty]
         public string? phoneNumber { get; set; }
-        [BindProperty]
         public string? firstName { get; set; }
-        [BindProperty]
         public string? lastName { get; set; }
-        [BindProperty]
         public string? password { get; set; }
-        [BindProperty]
         public string? confirmPassword { get; set; }
 
-        [BindProperty(SupportsGet = true)]
         public Guid userId { get; set; }
-        [BindProperty]
         public string? nationalityCode { get; set; }
-        [BindProperty]
         public IFormFile? nationalCardPhoto { get; set; }
-        [BindProperty]
         public IFormFile? birthCertificatePhoto { get; set; }
         //[BindProperty(false)]
         public bool? isActive { get; set; } = true;
-        [BindProperty]
         public UserStatus userStatus { get; set; } = UserStatus.NotConfirmed;
-        [BindProperty]
+
         public IFormFile? userAccountImage { get; set; }
 
         public async Task<IActionResult> OnGet(Guid userId)
@@ -82,6 +73,8 @@ namespace MedicalProject.Pages.Admin.Users
                 string birthCertificatePhotoPath = null;
                 string userAccountImagePath = null;
 
+             
+              
 
                 var userResponse = await _service.Edit(new Models.User.EditUserCommand
                 {
@@ -110,18 +103,6 @@ namespace MedicalProject.Pages.Admin.Users
                 //    Activity = isActive,
                 //    userId = userResponse.Data
                 //});
-
-                if (password != null && confirmPassword != null)
-                {
-                    if (password == confirmPassword)
-                    {
-                        await _service.ChangePassword(new Models.User.ChangePasswordCommand
-                        {
-                            userId = userId,
-                            password = password
-                        });
-                    }
-                }
 
                 await _service.ConfirmedAccount(new Models.User.ConfirmedAccountUserCommand
                 {
@@ -155,6 +136,71 @@ namespace MedicalProject.Pages.Admin.Users
                 ModelState.AddModelError("", "خطا در بروزرسانی کاربر: " + ex.Message);
                 return Page();
             }
+        }
+
+        //public async Task<IActionResult> OnPostDeleteAsync()
+        //{
+        //    try
+        //    {
+        //        var result = await _service.DeleteUserAsync(UserId);
+        //        if (result.Success)
+        //        {
+        //            TempData["SuccessMessage"] = "کاربر با موفقیت حذف شد";
+        //            return RedirectToPage("/Admin/Users/Index");
+        //        }
+        //        else
+        //        {
+        //            TempData["ErrorMessage"] = result.Message;
+        //            return Page();
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["ErrorMessage"] = "خطا در حذف کاربر: " + ex.Message;
+        //        return Page();
+        //    }
+        //}
+
+        //public async Task<IActionResult> OnPostResetPasswordAsync()
+        //{
+        //    try
+        //    {
+        //        var result = await _service.ResetPasswordAsync(UserId);
+        //        if (result.Success)
+        //        {
+        //            TempData["SuccessMessage"] = "رمز عبور با موفقیت بازنشانی شد";
+        //        }
+        //        else
+        //        {
+        //            TempData["ErrorMessage"] = result.Message;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["ErrorMessage"] = "خطا در بازنشانی رمز عبور: " + ex.Message;
+        //    }
+
+        //    return Page();
+        //}
+
+        private async Task<string> UploadFile(IFormFile file, string folder)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", folder);
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return $"/uploads/{folder}/{uniqueFileName}";
         }
     }
 }

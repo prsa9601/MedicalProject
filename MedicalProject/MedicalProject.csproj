@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Product\DTOs\" />
     <Folder Include="Pages\Shared\Partials\" />
   </ItemGroup>
 

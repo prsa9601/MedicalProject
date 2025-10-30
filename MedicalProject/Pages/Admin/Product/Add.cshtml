@@ -124,15 +124,6 @@
             overflow: hidden;
         }
 
-        .card-hover {
-            transition: all 0.3s;
-        }
-
-            .card-hover:hover {
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                transform: translateY(-0.25rem);
-            }
-
         .input {
             display: block;
             width: 100%;
@@ -193,13 +184,6 @@
         .badge-secondary {
             background-color: #f3f4f6;
             color: #6b7280;
-        }
-
-        .text-gradient {
-            background: linear-gradient(to right, #2563eb, #1e40af);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         /* استایل‌های مخصوص پنل ادمین */
@@ -292,19 +276,6 @@
             color: #6b7280;
         }
 
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #3b82f6;
-        }
-
-            .toggle-checkbox:checked + .toggle-label {
-                background-color: #3b82f6;
-            }
-
-        .toggle-label {
-            transition: all 0.3s;
-        }
-
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -318,6 +289,25 @@
             border: 1px solid #d1d5db;
             margin-left: 0.5rem;
         }
+
+        .image-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f9fafb;
+            transition: all 0.3s;
+        }
+
+            .image-upload:hover {
+                border-color: #3b82f6;
+                background-color: #f0f9ff;
+            }
+
+            .image-upload.dragover {
+                border-color: #3b82f6;
+                background-color: #dbeafe;
+            }
 
         /* Responsive */
         @@media (max-width: 1024px) {
@@ -353,6 +343,34 @@
             .sidebar-link span {
                 display: block;
             }
+        }
+
+        .validation-error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .field-validation-error {
+            border-color: #dc2626;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -510,7 +528,47 @@
 
                 <!-- Main Content Area -->
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <form method="post" class="space-y-6">
+                    <!-- Alerts -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert-success">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle ml-2"></i>
+                                <span>@TempData["SuccessMessage"]</span>
+                            </div>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert-danger">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle ml-2"></i>
+                                <span>@TempData["ErrorMessage"]</span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Validation Summary -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-red-500 ml-2"></i>
+                                <h3 class="text-red-800 font-semibold">خطا در اعتبارسنجی</h3>
+                            </div>
+                            <div class="mt-2 text-red-700 text-sm">
+                                <ul>
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+
+                    <form method="post" class="space-y-6" enctype="multipart/form-data">
                         <!-- Basic Information Card -->
                         <div class="card">
                             <div class="p-6 border-b border-gray-200">
@@ -529,10 +587,16 @@
                                         <input type="text"
                                                id="title"
                                                name="title"
-                                               class="form-control"
+                                               class="form-control @(ViewData.ModelState["title"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                                placeholder="عنوان محصول را وارد کنید"
                                                required
                                                value="@Model.title">
+                                        @if (ViewData.ModelState["title"]?.Errors.Any() == true)
+                                        {
+                                            <div class="validation-error">
+                                                @ViewData.ModelState["title"].Errors.First().ErrorMessage
+                                            </div>
+                                        }
                                         <div class="form-text">عنوان محصول باید واضح و توصیفی باشد</div>
                                     </div>
 
@@ -544,10 +608,16 @@
                                         <input type="text"
                                                id="slug"
                                                name="slug"
-                                               class="form-control"
+                                               class="form-control @(ViewData.ModelState["slug"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                                placeholder="اسلاگ محصول را وارد کنید"
                                                required
                                                value="@Model.slug">
+                                        @if (ViewData.ModelState["slug"]?.Errors.Any() == true)
+                                        {
+                                            <div class="validation-error">
+                                                @ViewData.ModelState["slug"].Errors.First().ErrorMessage
+                                            </div>
+                                        }
                                         <div class="form-text">اسلاگ باید یکتا و فقط شامل حروف، اعداد و خط تیره باشد</div>
                                     </div>
                                 </div>
@@ -559,11 +629,40 @@
                                     </label>
                                     <textarea id="description"
                                               name="description"
-                                              class="form-control"
+                                              class="form-control @(ViewData.ModelState["description"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                               rows="6"
                                               placeholder="توضیحات کامل محصول را وارد کنید"
                                               required>@Model.description</textarea>
+                                    @if (ViewData.ModelState["description"]?.Errors.Any() == true)
+                                    {
+                                        <div class="validation-error">
+                                            @ViewData.ModelState["description"].Errors.First().ErrorMessage
+                                        </div>
+                                    }
                                     <div class="form-text">توضیحات کامل و جامع درباره محصول بنویسید</div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="status">
+                                        وضعیت محصول
+                                        <span class="text-red-500">*</span>
+                                    </label>
+                                    <select id="status"
+                                            name="status"
+                                            class="form-control @(ViewData.ModelState["status"]?.Errors.Any() == true ? "field-validation-error" : "")"
+                                            required>
+                                        <option value="">انتخاب وضعیت</option>
+                                        <option value="IsActive" selected="@(Model.status == MedicalProject.Models.Product.ProductStatus.IsActive)">فعال</option>
+                                        <option value="NotActive" selected="@(Model.status == MedicalProject.Models.Product.ProductStatus.NotActive)">غیرفعال</option>
+                                        <option value="IsDone" selected="@(Model.status == MedicalProject.Models.Product.ProductStatus.IsDone)">تکمیل شده</option>
+                                    </select>
+                                    @if (ViewData.ModelState["status"]?.Errors.Any() == true)
+                                    {
+                                        <div class="validation-error">
+                                            @ViewData.ModelState["status"].Errors.First().ErrorMessage
+                                        </div>
+                                    }
+                                    <div class="form-text">وضعیت فعلی محصول را مشخص کنید</div>
                                 </div>
                             </div>
                         </div>
@@ -640,7 +739,9 @@
                                                id="IndexPage"
                                                name="IndexPage"
                                                class="checkbox-input"
+                                               value="true"
                                                @(Model.IndexPage ? "checked" : "")>
+                                        <input type="hidden" name="IndexPage" value="false">
                                         <span class="text-sm text-gray-700">اجازه ایندکس شدن در موتورهای جستجو</span>
                                     </label>
                                     <div class="form-text">در صورت غیرفعال کردن، این صفحه در نتایج جستجو نمایش داده نمی‌شود</div>
@@ -648,57 +749,39 @@
                             </div>
                         </div>
 
-                        <!-- Additional Settings Card -->
+                        <!-- Image Upload Card -->
                         <div class="card">
                             <div class="p-6 border-b border-gray-200">
                                 <h2 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-cog ml-2 text-purple-500"></i>
-                                    تنظیمات اضافی
+                                    <i class="fas fa-image ml-2 text-purple-500"></i>
+                                    تصویر محصول
                                 </h2>
                             </div>
                             <div class="p-6">
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div class="form-group">
-                                        <label class="form-label" for="category">دسته‌بندی</label>
-                                        <select id="category" name="category" class="form-control">
-                                            <option value="">انتخاب دسته‌بندی</option>
-                                            <option value="medical">تجهیزات پزشکی</option>
-                                            <option value="industrial">تجهیزات صنعتی</option>
-                                            <option value="laboratory">تجهیزات آزمایشگاهی</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label" for="status">وضعیت</label>
-                                        <select id="status" name="status" class="form-control">
-                                            <option value="active">فعال</option>
-                                            <option value="inactive">غیرفعال</option>
-                                            <option value="draft">پیش‌نویس</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label class="form-label" for="priority">اولویت نمایش</label>
-                                        <select id="priority" name="priority" class="form-control">
-                                            <option value="1">کم</option>
-                                            <option value="2">متوسط</option>
-                                            <option value="3">بالا</option>
-                                            <option value="4">خیلی بالا</option>
-                                        </select>
-                                    </div>
-                                </div>
-
                                 <div class="form-group">
-                                    <label class="form-label">تصویر شاخص</label>
-                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    <label class="form-label">تصویر شاخص محصول</label>
+                                    <div class="image-upload" id="imageUploadArea">
                                         <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3"></i>
                                         <p class="text-sm text-gray-600 mb-2">تصویر محصول را اینجا رها کنید یا برای آپلود کلیک کنید</p>
-                                        <button type="button" class="btn btn-outline btn-sm">
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('productImage').click()">
                                             <i class="fas fa-upload ml-2"></i>
                                             انتخاب فایل
                                         </button>
-                                        <input type="file" class="hidden" id="featuredImage" name="featuredImage">
+                                        <input type="file" class="hidden" id="productImage" name="productImage" accept="image/*">
                                     </div>
+                                    <div id="imagePreview" class="mt-3 hidden">
+                                        <img id="previewImage" class="max-w-xs rounded-lg shadow-md" alt="پیش‌نمایش تصویر">
+                                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeImage()">
+                                            <i class="fas fa-trash ml-2"></i>
+                                            حذف تصویر
+                                        </button>
+                                    </div>
+                                    @if (ViewData.ModelState["productImage"]?.Errors.Any() == true)
+                                    {
+                                        <div class="validation-error">
+                                            @ViewData.ModelState["productImage"].Errors.First().ErrorMessage
+                                        </div>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -720,29 +803,6 @@
         </div>
     </div>
 
-    <!-- Success Modal -->
-    <div id="successModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-check text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">محصول با موفقیت ایجاد شد</h3>
-                <p class="text-gray-600 mb-6">محصول جدید به لیست محصولات اضافه شد</p>
-                <div class="flex justify-center space-x-3 space-x-reverse">
-                    <a href="/Admin/Product" class="btn btn-primary">
-                        <i class="fas fa-list ml-2"></i>
-                        مشاهده لیست محصولات
-                    </a>
-                    <button onclick="closeSuccessModal()" class="btn btn-outline">
-                        <i class="fas fa-plus ml-2"></i>
-                        افزودن محصول جدید
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // توابع مدیریت پنل ادمین
         function toggleSidebar() {
@@ -756,10 +816,6 @@
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profileDropdown');
             dropdown.classList.toggle('hidden');
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.add('hidden');
         }
 
         // مدیریت منوی سایدبار
@@ -799,66 +855,96 @@
         });
 
         // مدیریت آپلود تصویر
-        document.querySelector('button[type="button"]').addEventListener('click', function() {
-            document.getElementById('featuredImage').click();
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const productImage = document.getElementById('productImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+
+        // Drag and Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, preventDefaults, false);
         });
 
-        document.getElementById('featuredImage').addEventListener('change', function(e) {
-            if (e.target.files.length > 0) {
-                const fileName = e.target.files[0].name;
-                const uploadArea = e.target.parentElement;
-                uploadArea.innerHTML = `
-                    <i class="fas fa-check text-green-500 text-3xl mb-3"></i>
-                    <p class="text-sm text-gray-600 mb-2">${fileName}</p>
-                    <button type="button" class="btn btn-outline btn-sm" onclick="resetImageUpload(this)">
-                        <i class="fas fa-redo ml-2"></i>
-                        تغییر تصویر
-                    </button>
-                `;
-            }
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, highlight, false);
         });
 
-        function resetImageUpload(button) {
-            const uploadArea = button.parentElement;
-            uploadArea.innerHTML = `
-                <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3"></i>
-                <p class="text-sm text-gray-600 mb-2">تصویر محصول را اینجا رها کنید یا برای آپلود کلیک کنید</p>
-                <button type="button" class="btn btn-outline btn-sm">
-                    <i class="fas fa-upload ml-2"></i>
-                    انتخاب فایل
-                </button>
-                <input type="file" class="hidden" id="featuredImage" name="featuredImage">
-            `;
+        ['dragleave', 'drop'].forEach(eventName => {
+            imageUploadArea.addEventListener(eventName, unhighlight, false);
+        });
 
-            // دوباره رویدادها را اضافه کن
-            document.querySelector('button[type="button"]').addEventListener('click', function() {
-                document.getElementById('featuredImage').click();
-            });
+        function highlight() {
+            imageUploadArea.classList.add('dragover');
+        }
 
-            document.getElementById('featuredImage').addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    const fileName = e.target.files[0].name;
-                    const uploadArea = e.target.parentElement;
-                    uploadArea.innerHTML = `
-                        <i class="fas fa-check text-green-500 text-3xl mb-3"></i>
-                        <p class="text-sm text-gray-600 mb-2">${fileName}</p>
-                        <button type="button" class="btn btn-outline btn-sm" onclick="resetImageUpload(this)">
-                            <i class="fas fa-redo ml-2"></i>
-                            تغییر تصویر
-                        </button>
-                    `;
+        function unhighlight() {
+            imageUploadArea.classList.remove('dragover');
+        }
+
+        imageUploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        productImage.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        imageUploadArea.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('لطفاً یک فایل تصویری انتخاب کنید');
                 }
-            });
+            }
+        }
+
+        function removeImage() {
+            productImage.value = '';
+            imagePreview.classList.add('hidden');
+            imageUploadArea.classList.remove('hidden');
+            previewImage.src = '';
         }
 
         // مدیریت ارسال فرم
         document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
+            // اعتبارسنجی‌های لازم
+            const title = document.getElementById('title').value;
+            const slug = document.getElementById('slug').value;
+            const description = document.getElementById('description').value;
+            const status = document.getElementById('status').value;
 
-            // شبیه‌سازی ارسال موفق فرم
-            setTimeout(() => {
-                document.getElementById('successModal').classList.remove('hidden');
-            }, 1000);
+            if (!title || !slug || !description || !status) {
+                e.preventDefault();
+                alert('لطفاً فیلدهای ضروری را پر کنید');
+                return;
+            }
+
+            // اعتبارسنجی اسلاگ
+            const slugRegex = /^[a-z0-9-]+$/;
+            if (!slugRegex.test(slug)) {
+                e.preventDefault();
+                alert('اسلاگ فقط می‌تواند شامل حروف کوچک، اعداد و خط تیره باشد');
+                return;
+            }
+
+            // اگر همه چیز درست بود، فرم ارسال می‌شود
         });
     </script>
 </body>

@@ -24,6 +24,11 @@ namespace MedicalProject.Models.User
         public required string lastName { get; set; }
         public required string password { get; set; }
     }
+    public class ChangePasswordCommand
+    {
+        public Guid userId { get; set; }
+        public required string password { get; set; }
+    }
 
     public class CompletionOfInformationCommand
     {

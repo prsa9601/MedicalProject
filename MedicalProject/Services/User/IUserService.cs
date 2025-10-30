@@ -1,9 +1,6 @@
 ﻿using MedicalProject.Models;
 using MedicalProject.Models.User;
 using MedicalProject.Models.User.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace MedicalProject.Services.User
 {
@@ -12,6 +9,7 @@ namespace MedicalProject.Services.User
         Task<ApiResult> Create(CreateUserCommand command);
         Task<ApiResult> Edit(EditUserCommand command);
         Task<ApiResult<string>> Remove(Guid userId);
+        Task<ApiResult> ChangePassword(ChangePasswordCommand command);
         Task<ApiResult<Guid>> CreateForAdmin(CreateUserForAdminCommand command);
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
@@ -121,6 +119,12 @@ namespace MedicalProject.Services.User
         {
             var result = await _client.DeleteAsync($"User/RemoveUser?userId={userId}");
             return await result.Content.ReadFromJsonAsync<ApiResult<string>>();
+        }
+
+        public async Task<ApiResult> ChangePassword(ChangePasswordCommand command)
+        {
+            var result = await _client.PostAsJsonAsync("User/ChangePassword", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
     }
 }

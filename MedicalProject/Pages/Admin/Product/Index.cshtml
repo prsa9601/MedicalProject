@@ -1,4 +1,7 @@
 ﻿@page
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.Product
+@using MedicalProject.Models.Product.DTOs
 @model MedicalProject.Pages.Admin.Product.IndexModel
 @{
     Layout = null;
@@ -14,6 +17,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -202,21 +209,6 @@
             background-clip: text;
         }
 
-        /* انیمیشن‌ها */
-        .animate-float {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @@keyframes float {
-            0%, 100% {
-                transform: translateY(0px);
-            }
-
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
         /* استایل‌های مخصوص پنل ادمین */
         .admin-sidebar {
             width: 260px;
@@ -330,19 +322,6 @@
             margin-top: 0.25rem;
             font-size: 0.875rem;
             color: #6b7280;
-        }
-
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #3b82f6;
-        }
-
-            .toggle-checkbox:checked + .toggle-label {
-                background-color: #3b82f6;
-            }
-
-        .toggle-label {
-            transition: all 0.3s;
         }
 
         /* Responsive */
@@ -538,26 +517,30 @@
                                 <h2 class="text-lg font-semibold text-gray-900">لیست محصولات</h2>
 
                                 <!-- Search and Filters -->
-                                <div class="flex items-center space-x-3 space-x-reverse">
+                                <form method="get" class="flex items-center space-x-3 space-x-reverse">
                                     <div class="relative">
-                                        <input type="text" placeholder="جستجو..." class="input pl-10">
+                                        <input type="text"
+                                               name="Title"
+                                               value="@Model.FilterParams.Title"
+                                               placeholder="جستجو بر اساس عنوان..."
+                                               class="input pl-10">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class="fas fa-search text-gray-400"></i>
                                         </div>
                                     </div>
 
-                                    <select class="input">
-                                        <option>همه دسته‌بندی‌ها</option>
-                                        <option>تجهیزات پزشکی</option>
-                                        <option>تجهیزات صنعتی</option>
+                                    <select name="Status" class="input">
+                                        <option value="">همه وضعیت‌ها</option>
+                                        <option value="IsActive" selected="@(Model.FilterParams.Status?.ToString() == "Active")">فعال</option>
+                                        <option value="NotActive" selected="@(Model.FilterParams.Status?.ToString() == "Inactive")">غیرفعال</option>
+                                        <option value="IsDone" selected="@(Model.FilterParams.Status?.ToString() == "Draft")">تکمیل شده</option>
                                     </select>
 
-                                    <select class="input">
-                                        <option>همه وضعیت‌ها</option>
-                                        <option>فعال</option>
-                                        <option>غیرفعال</option>
-                                    </select>
-                                </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-filter ml-2"></i>
+                                        فیلتر
+                                    </button>
+                                </form>
                             </div>
 
                             <!-- Products Table -->
@@ -567,240 +550,173 @@
                                         <tr>
                                             <th>#</th>
                                             <th>عنوان</th>
+                                            <th>توضیحات</th>
                                             <th>اسلاگ</th>
-                                            <th>دسته‌بندی</th>
                                             <th>وضعیت</th>
+                                            <th>اطلاعات مالی</th>
                                             <th>تاریخ ایجاد</th>
                                             <th>عملیات</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>
-                                                <div class="flex items-center space-x-3 space-x-reverse">
-                                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                        <i class="fas fa-box text-blue-600"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-medium text-gray-900">دستگاه سی تی اسکن</div>
-                                                        <div class="text-sm text-gray-500">کد: CT-001</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>ct-scanner</td>
-                                            <td>
-                                                <span class="badge badge-primary">تجهیزات پزشکی</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-success">فعال</span>
-                                            </td>
-                                            <td>۱۴۰۲/۰۵/۱۵</td>
-                                            <td>
-                                                <div class="flex items-center space-x-2 space-x-reverse">
-                                                    <a href="/Admin/Product/Edit/1" class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-edit"></i>
+                                        @if (Model.Result?.Data != null && Model.Result.Data.Any())
+                                        {
+                                            int number = 0;
+                                            foreach (var item in Model.Result.Data)
+                                            {
+                                                <tr>
+                                                    <td>@(number += 1)</td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-3 space-x-reverse">
+                                                            @if (!string.IsNullOrEmpty(item.ImageName))
+                                                            {
+                                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                    <i class="fas fa-box text-blue-600"></i>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                    <i class="fas fa-box text-blue-600"></i>
+                                                                </div>
+                                                            }
+                                                            <div>
+                                                                <div class="font-medium text-gray-900">@item.Title</div>
+                                                                <div class="text-sm text-gray-500">@item.Id.ToString().Substring(0, 8)...</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="max-w-xs truncate" title="@item.Description">
+                                                            @item.Description
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <code class="text-xs bg-gray-100 px-2 py-1 rounded">@item.Slug</code>
+                                                    </td>
+                                                    <td>
+                                                        @switch (item.Status)
+                                                        {
+                                                            case ProductStatus.IsActive:
+                                                                <span class="badge badge-success">فعال</span>
+                                                                break;
+                                                            case ProductStatus.NotActive:
+                                                                <span class="badge badge-secondary">غیرفعال</span>
+                                                                break;
+                                                            case ProductStatus.IsDone:
+                                                                <span class="badge badge-warning">تکمیل شده</span>
+                                                                break;
+                                                            default:
+                                                                <span class="badge badge-secondary">@item.Status</span>
+                                                                break;
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (item.InventoryDto != null)
+                                                        {
+                                                            <div class="text-xs space-y-1">
+                                                                <div>قیمت کل: @item.InventoryDto.TotalPrice تومان</div>
+                                                                <div>تعداد دانگ: @item.InventoryDto.Dong</div>
+                                                                <div>قیمت هر دانگ: @item.InventoryDto.PricePerDong تومان</div>
+                                                                <div>سود: @item.InventoryDto.Profit تومان</div>
+                                                                <div>زمان سود: @item.InventoryDto.ProfitableTime</div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-gray-400 text-xs">اطلاعات مالی ثبت نشده</span>
+                                                        }
+                                                    </td>
+                                                    <td>@item.CreationDate.ToPersianDate()</td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                                            <a asp-page="Edit" asp-route-productId="@item.Id" class="btn btn-outline btn-sm">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <a asp-page="Details" asp-route-productId="@item.Id" class="btn btn-outline btn-sm">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            <form method="post" asp-page-handler="Delete" asp-route-productId="@item.Id" class="inline">
+                                                                <button type="button" class="btn btn-danger btn-sm delete-btn" data-product-id="@item.Id" data-product-title="@item.Title">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr>
+                                                <td colspan="8" class="text-center py-8 text-gray-500">
+                                                    <i class="fas fa-box-open text-4xl mb-4 text-gray-300"></i>
+                                                    <p>محصولی یافت نشد</p>
+                                                    <a asp-page="Add" class="btn btn-primary mt-4">
+                                                        <i class="fas fa-plus ml-2"></i>
+                                                        افزودن اولین محصول
                                                     </a>
-                                                    <button class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>
-                                                <div class="flex items-center space-x-3 space-x-reverse">
-                                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                                                        <i class="fas fa-box text-green-600"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-medium text-gray-900">دستگاه ام آر آی</div>
-                                                        <div class="text-sm text-gray-500">کد: MRI-001</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>mri-scanner</td>
-                                            <td>
-                                                <span class="badge badge-primary">تجهیزات پزشکی</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-success">فعال</span>
-                                            </td>
-                                            <td>۱۴۰۲/۰۵/۱۰</td>
-                                            <td>
-                                                <div class="flex items-center space-x-2 space-x-reverse">
-                                                    <a href="/Admin/Product/Edit/2" class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>
-                                                <div class="flex items-center space-x-3 space-x-reverse">
-                                                    <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                                        <i class="fas fa-box text-yellow-600"></i>
-                                                    </div>
-                                                    <div>
-                                                        <div class="font-medium text-gray-900">دستگاه CNC</div>
-                                                        <div class="text-sm text-gray-500">کد: CNC-001</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>cnc-machine</td>
-                                            <td>
-                                                <span class="badge badge-warning">تجهیزات صنعتی</span>
-                                            </td>
-                                            <td>
-                                                <span class="badge badge-secondary">غیرفعال</span>
-                                            </td>
-                                            <td>۱۴۰۲/۰۴/۲۸</td>
-                                            <td>
-                                                <div class="flex items-center space-x-2 space-x-reverse">
-                                                    <a href="/Admin/Product/Edit/3" class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button class="btn btn-outline btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                            </tr>
+                                        }
                                     </tbody>
                                 </table>
                             </div>
 
                             <!-- Pagination -->
-                            <div class="flex items-center justify-between mt-6">
-                                <div class="text-sm text-gray-700">
-                                    نمایش ۱ تا ۳ از ۱۲ محصول
+                            @if (Model.Result?.Data != null && Model.Result.Data.Any())
+                            {
+                                <div class="flex items-center justify-between mt-6">
+                                    <div class="text-sm text-gray-700">
+                                        نمایش @((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) تا
+                                        @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)
+                                        از @Model.Result.EntityCount محصول
+                                    </div>
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        @if (Model.Result.CurrentPage > 1)
+                                        {
+                                            <a href="?PageId=@(Model.Result.CurrentPage - 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-outline btn-sm" disabled>
+                                                <i class="fas fa-chevron-right"></i>
+                                            </button>
+                                        }
+
+                                        @for (int i = 1; i <= Model.Result.PageCount; i++)
+                                        {
+                                            if (i == Model.Result.CurrentPage)
+                                            {
+                                                <span class="btn btn-primary btn-sm">@i</span>
+                                            }
+                                            else
+                                            {
+                                                <a href="?PageId=@i&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">@i</a>
+                                            }
+                                        }
+
+                                        @if (Model.Result.CurrentPage < Model.Result.PageCount)
+                                        {
+                                            <a href="?PageId=@(Model.Result.CurrentPage + 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-outline btn-sm" disabled>
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                        }
+                                    </div>
                                 </div>
-                                <div class="flex items-center space-x-2 space-x-reverse">
-                                    <button class="btn btn-outline btn-sm">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
-                                    <button class="btn btn-outline btn-sm">1</button>
-                                    <button class="btn btn-primary btn-sm">2</button>
-                                    <button class="btn btn-outline btn-sm">3</button>
-                                    <button class="btn btn-outline btn-sm">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Product Modal -->
-    <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold text-gray-900" id="modalTitle">افزودن محصول جدید</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <form method="post" class="mt-4 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label" for="title">عنوان محصول</label>
-                        <input type="text" id="title" name="title" class="form-control" placeholder="عنوان محصول" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="slug">اسلاگ</label>
-                        <input type="text" id="slug" name="slug" class="form-control" placeholder="اسلاگ محصول" required>
-                        <div class="form-text">اسلاگ باید یکتا و فقط شامل حروف، اعداد و خط تیره باشد</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="description">توضیحات محصول</label>
-                    <textarea id="description" name="description" class="form-control" rows="4" placeholder="توضیحات کامل محصول" required></textarea>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="form-group">
-                        <label class="form-label" for="category">دسته‌بندی</label>
-                        <select id="category" name="category" class="form-control" required>
-                            <option value="">انتخاب دسته‌بندی</option>
-                            <option value="medical">تجهیزات پزشکی</option>
-                            <option value="industrial">تجهیزات صنعتی</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="status">وضعیت</label>
-                        <select id="status" name="status" class="form-control" required>
-                            <option value="active">فعال</option>
-                            <option value="inactive">غیرفعال</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="border-t pt-4">
-                    <h4 class="text-lg font-medium text-gray-900 mb-4">تنظیمات سئو</h4>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="form-label" for="metaTitle">عنوان متا</label>
-                            <input type="text" id="metaTitle" name="metaTitle" class="form-control" placeholder="عنوان متا">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="metaKeywords">کلمات کلیدی متا</label>
-                            <input type="text" id="metaKeywords" name="metaKeywords" class="form-control" placeholder="کلمات کلیدی متا">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="metaDescription">توضیحات متا</label>
-                        <textarea id="metaDescription" name="metaDescription" class="form-control" rows="3" placeholder="توضیحات متا"></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="form-label" for="canonical">Canonical URL</label>
-                            <input type="text" id="canonical" name="canonical" class="form-control" placeholder="Canonical URL">
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label" for="schema">اسکیما</label>
-                            <textarea id="schema" name="schema" class="form-control" rows="2" placeholder="اسکیما"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="flex items-center">
-                            <input type="checkbox" id="indexPage" name="indexPage" class="form-control w-4 h-4">
-                            <label for="indexPage" class="mr-2 text-sm text-gray-700">ایندکس شدن در موتورهای جستجو</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end space-x-3 space-x-reverse pt-4 border-t">
-                    <button type="button" onclick="closeModal()" class="btn btn-outline">انصراف</button>
-                    <button type="submit" class="btn btn-primary">ذخیره محصول</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -817,15 +733,6 @@
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profileDropdown');
             dropdown.classList.toggle('hidden');
-        }
-
-        function openModal(title = 'افزودن محصول جدید') {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('productModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('productModal').classList.add('hidden');
         }
 
         // مدیریت منوی سایدبار
@@ -854,15 +761,48 @@
             }
         });
 
-        // مدیریت فرم اسلاگ
-        document.getElementById('title').addEventListener('input', function() {
-            const title = this.value;
-            const slug = title
-                .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, '')
-                .replace(/\s+/g, '-')
-                .toLowerCase();
-            document.getElementById('slug').value = slug;
+        // مدیریت حذف محصول
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.getAttribute('data-product-id');
+                const productTitle = this.getAttribute('data-product-title');
+
+                Swal.fire({
+                    title: 'آیا از حذف محصول اطمینان دارید؟',
+                    text: `محصول "${productTitle}" حذف خواهد شد`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'بله، حذف کن',
+                    cancelButtonText: 'لغو',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // ارسال درخواست حذف
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = `?handler=Delete&productId=${productId}`;
+
+                        const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '__RequestVerificationToken';
+                        csrfInput.value = csrfToken;
+                        form.appendChild(csrfInput);
+
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+
+        // مدیریت فرم فیلتر
+        document.querySelector('form').addEventListener('submit', function(e) {
+            // اعتبارسنجی‌های لازم در اینجا اضافه شود
         });
     </script>
+    <script src="~/global.js"></script>
 </body>
 </html>
