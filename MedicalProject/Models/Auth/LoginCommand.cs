@@ -4,6 +4,7 @@
     {
         public required string phoneNumber { get; set; }
         public required string password { get; set; }
+        public bool rememberMe { get; set; }
         public required string ipAddress { get; set; }
     }
     public class RegisterCommand

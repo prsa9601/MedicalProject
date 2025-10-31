@@ -2,15 +2,14 @@ using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Services.Product;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Threading.Tasks;
 
 namespace MedicalProject.Pages.Front
 {
-    public class ProjectsModel : PageModel
+    public class IndexModel : PageModel
     {
         private readonly IProductService _service;
 
-        public ProjectsModel(IProductService service)
+        public IndexModel(IProductService service)
         {
             _service = service;
         }

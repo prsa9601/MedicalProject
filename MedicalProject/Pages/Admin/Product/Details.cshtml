@@ -1,0 +1,828 @@
+﻿@page
+@using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.Product
+@using MedicalProject.Models.Product.DTOs
+
+@model MedicalProject.Pages.Admin.Product.DetailsModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>جزئیات محصول - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #047857;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar-link i {
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-link span {
+            margin-right: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* تب‌ها */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            border-bottom-color: #2563eb;
+            color: #2563eb;
+            font-weight: 500;
+        }
+
+        .tab:hover:not(.active) {
+            background-color: #f9fafb;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* اطلاعات مالی */
+        .financial-card {
+            border-left: 4px solid #059669;
+        }
+
+        .financial-card.warning {
+            border-left-color: #d97706;
+        }
+
+        .financial-card.danger {
+            border-left-color: #dc2626;
+        }
+
+        /* رسپانسیو */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: none;
+                border-right: 2px solid transparent;
+            }
+
+            .tab.active {
+                border-bottom-color: transparent;
+                border-right-color: #2563eb;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a href="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+
+                        <a href="/Admin/Product" class="sidebar-link">
+                            <i class="fas fa-box"></i>
+                            <span>محصولات</span>
+                        </a>
+
+                        <a href="/Admin/Product/Details?productId=@Model.Product.Id" class="sidebar-link active">
+                            <i class="fas fa-info-circle"></i>
+                            <span>جزئیات محصول</span>
+                        </a>
+
+                        <a href="/Admin/Projects" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Categories" class="sidebar-link">
+                            <i class="fas fa-folder"></i>
+                            <span>دسته‌بندی‌ها</span>
+                        </a>
+
+                        <a href="/Admin/Users" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <a asp-page="Index" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">جزئیات محصول</h1>
+                                    <p class="mt-1 text-sm text-gray-600">مدیریت کامل اطلاعات محصول</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <a asp-page="Edit" asp-route-productId="@Model.Product.Id" class="btn btn-primary">
+                                    <i class="fas fa-edit ml-2"></i>
+                                    ویرایش محصول
+                                </a>
+                                <button onclick="showInventoryModal()" class="btn btn-success">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    مدیریت موجودی
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- اطلاعات اصلی محصول -->
+                        <div class="lg:col-span-2">
+                            <div class="card">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-start mb-6">
+                                        <h2 class="text-lg font-semibold text-gray-900">اطلاعات اصلی محصول</h2>
+                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                            @switch (Model.Product.Status)
+                                            {
+                                                case ProductStatus.IsActive:
+                                                    <span class="badge badge-success">فعال</span>
+                                                    break;
+                                                case ProductStatus.NotActive:
+                                                    <span class="badge badge-secondary">غیرفعال</span>
+                                                    break;
+                                                case ProductStatus.IsDone:
+                                                    <span class="badge badge-warning">تکمیل شده</span>
+                                                    break;
+                                                default:
+                                                    <span class="badge badge-secondary">@Model.Product.Status</span>
+                                                    break;
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="form-group">
+                                            <label class="form-label">عنوان محصول</label>
+                                            <div class="form-control bg-gray-50">@Model.Product.Title</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">اسلاگ</label>
+                                            <div class="form-control bg-gray-50 font-mono">@Model.Product.Slug</div>
+                                        </div>
+
+                                        <div class="form-group md:col-span-2">
+                                            <label class="form-label">توضیحات کامل</label>
+                                            <div class="form-control bg-gray-50 min-h-[100px]">@Model.Product.Description</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">تاریخ ایجاد</label>
+                                            <div class="form-control bg-gray-50">@Model.Product.CreationDate.ToPersianDate()</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">آخرین بروزرسانی</label>
+                                            <div class="form-control bg-gray-50">
+                                                @(Model.Product.CreationDate.ToPersianDate())
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اطلاعات SEO -->
+                            <div class="card mt-6">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-6">اطلاعات سئو</h2>
+                                    
+                                    <div class="grid grid-cols-1 gap-4">
+                                        <div class="form-group">
+                                            <label class="form-label">عنوان سئو</label>
+                                            <div class="form-control bg-gray-50">@Model.Product.Title</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">توضیحات متا</label>
+                                            <div class="form-control bg-gray-50 min-h-[80px]">@Model.Product.Description</div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">کلمات کلیدی</label>
+                                            <div class="form-control bg-gray-50">@Model.Product.SeoData?.MetaKeyWords</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- سایدبار اطلاعات مالی -->
+                        <div class="lg:col-span-1">
+                            <!-- اطلاعات مالی -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h2 class="text-lg font-semibold text-gray-900">اطلاعات مالی</h2>
+                                        @if (Model.Product.InventoryDto != null)
+                                        {
+                                            <span class="badge badge-success">تکمیل شده</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">نیاز به تنظیم</span>
+                                        }
+                                    </div>
+
+                                    @if (Model.Product.InventoryDto != null)
+                                    {
+                                        <div class="space-y-4">
+                                            <div class="financial-card p-4 bg-white rounded-lg border">
+                                                <div class="text-sm text-gray-600">قیمت کل</div>
+                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.TotalPrice.ToPersianNumbers() تومان</div>
+                                            </div>
+
+                                            <div class="financial-card p-4 bg-white rounded-lg border">
+                                                <div class="text-sm text-gray-600">تعداد دانگ</div>
+                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.Dong.ToPersianNumbers()</div>
+                                            </div>
+
+                                            <div class="financial-card p-4 bg-white rounded-lg border">
+                                                <div class="text-sm text-gray-600">قیمت هر دانگ</div>
+                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.PricePerDong.ToPersianNumbers() تومان</div>
+                                            </div>
+
+                                            <div class="financial-card p-4 bg-white rounded-lg border">
+                                                <div class="text-sm text-gray-600">سود هر دانگ</div>
+                                                <div class="text-xl font-bold text-green-600">@Model.Product.InventoryDto.Profit.ToPersianNumbers() تومان</div>
+                                            </div>
+
+                                            <div class="financial-card p-4 bg-white rounded-lg border">
+                                                <div class="text-sm text-gray-600">دوره سوددهی</div>
+                                                <div class="text-xl font-bold text-blue-600">@Model.Product.InventoryDto.ProfitableTime</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-6">
+                                            <button onclick="showInventoryModal()" class="btn btn-outline w-full">
+                                                <i class="fas fa-edit ml-2"></i>
+                                                ویرایش اطلاعات مالی
+                                            </button>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-8">
+                                            <i class="fas fa-coins text-4xl text-gray-300 mb-4"></i>
+                                            <p class="text-gray-500 mb-4">اطلاعات مالی ثبت نشده است</p>
+                                            <button onclick="showInventoryModal()" class="btn btn-primary">
+                                                <i class="fas fa-plus ml-2"></i>
+                                                افزودن اطلاعات مالی
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- اقدامات سریع -->
+                            <div class="card mt-6">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">اقدامات سریع</h2>
+                                    
+                                    <div class="space-y-3">
+                                        <a asp-page="Edit" asp-route-productId="@Model.Product.Id" class="btn btn-outline w-full justify-start">
+                                            <i class="fas fa-edit ml-2"></i>
+                                            ویرایش محصول
+                                        </a>
+                                        
+                                        <button onclick="showInventoryModal()" class="btn btn-outline w-full justify-start">
+                                            <i class="fas fa-coins ml-2"></i>
+                                            مدیریت موجودی
+                                        </button>
+                                        
+                                        <a href="/Admin/Projects/Create?productId=@Model.Product.Id" class="btn btn-outline w-full justify-start">
+                                            <i class="fas fa-project-diagram ml-2"></i>
+                                            ایجاد پروژه جدید
+                                        </a>
+                                        
+                                        <form method="post" asp-page-handler="ToggleStatus" asp-route-productId="@Model.Product.Id" class="w-full">
+                                            <button type="submit" class="btn btn-outline w-full justify-start">
+                                                <i class="fas fa-power-off ml-2"></i>
+                                                تغییر وضعیت
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال مدیریت موجودی -->
+    <div id="inventoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-4 border w-full max-w-md shadow-lg rounded-lg bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">مدیریت اطلاعات مالی</h3>
+                <button onclick="hideInventoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form method="post" asp-page-handler="UpdateInventory" id="inventoryForm">
+                <input type="hidden" name="productId" value="@Model.Product.Id" />
+                
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label class="form-label">قیمت کل (تومان)</label>
+                        <input type="text" name="totalPrice" class="form-control" 
+                               value="@Model.Product.InventoryDto?.TotalPrice" 
+                               placeholder="مثال: 100000000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">تعداد دانگ</label>
+                        <input type="number" name="dong" class="form-control" 
+                               value="@Model.Product.InventoryDto?.Dong" 
+                               placeholder="مثال: 100" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">سود هر دانگ (تومان)</label>
+                        <input type="text" name="profit" class="form-control" 
+                               value="@Model.Product.InventoryDto?.Profit" 
+                               placeholder="مثال: 50000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">دوره سوددهی</label>
+                        <select name="profitableTime" class="form-control" required>
+                            <option value="">انتخاب کنید</option>
+                            <option value="ماهانه" selected="@(Model.Product.InventoryDto?.ProfitableTime == PaymentTime.ماهانه)">ماهانه</option>
+                            <option value="سه_ماهه" selected="@(Model.Product.InventoryDto?.ProfitableTime == PaymentTime.سه_ماهه)">سه ماهه</option>
+                            <option value="شش_ماهه" selected="@(Model.Product.InventoryDto?.ProfitableTime == PaymentTime.شش_ماهه)">شش ماهه</option>
+                            <option value="سالانه" selected="@(Model.Product.InventoryDto?.ProfitableTime == PaymentTime.سالانه)">سالانه</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 space-x-reverse mt-6">
+                    <button type="button" onclick="hideInventoryModal()" class="btn btn-outline">
+                        لغو
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        ذخیره اطلاعات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // مدیریت مودال موجودی
+        function showInventoryModal() {
+            document.getElementById('inventoryModal').classList.remove('hidden');
+        }
+
+        function hideInventoryModal() {
+            document.getElementById('inventoryModal').classList.add('hidden');
+        }
+
+        // مدیریت فرم موجودی
+        document.getElementById('inventoryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const totalPrice = formData.get('totalPrice');
+            const dong = formData.get('dong');
+            const profit = formData.get('profit');
+            const profitableTime = formData.get('profitableTime');
+
+            // اعتبارسنجی‌های ساده
+            if (!totalPrice || !dong || !profit || !profitableTime) {
+                Swal.fire({
+                    title: 'خطا',
+                    text: 'لطفاً تمام فیلدها را پر کنید',
+                    icon: 'error',
+                    confirmButtonText: 'متوجه شدم'
+                });
+                return;
+            }
+
+            // نمایش تأییدیه
+            Swal.fire({
+                title: 'آیا از ذخیره اطلاعات اطمینان دارید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#059669',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'بله، ذخیره کن',
+                cancelButtonText: 'لغو',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ارسال فرم
+                    this.submit();
+                }
+            });
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+
+            // بستن مودال هنگام کلیک خارج
+            const modal = document.getElementById('inventoryModal');
+            if (event.target === modal) {
+                hideInventoryModal();
+            }
+        });
+
+        // مدیریت تب‌ها
+        function switchTab(tabName) {
+            // مخفی کردن تمام تب‌ها
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // غیرفعال کردن تمام تب‌ها
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // فعال کردن تب انتخاب شده
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById(tabName + 'Content').classList.add('active');
+        }
+    </script>
+</body>
+</html>

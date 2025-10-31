@@ -1,3 +1,4 @@
+﻿using MedicalProject.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -6,89 +7,105 @@ namespace MedicalProject.Pages.Auth
 {
     public class LoginModel : PageModel
     {
-        [BindProperty]
-        [Display(Name = "??? ?????? ?? ?????")]
-        public string Username { get; set; } = string.Empty;
+        private readonly IAuthService _service;
+
+        public LoginModel(IAuthService service)
+        {
+            _service = service;
+        }
+
+        public string RedirectTo { get; set; }
 
         [BindProperty]
-        [Display(Name = "??? ????")]
+        [Display(Name = "شماره تماس")]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [BindProperty]
+        [Display(Name = "رمزعبور")]
         public string Password { get; set; } = string.Empty;
 
         [BindProperty]
-        [Display(Name = "??? ?? ???? ?????")]
+        [Display(Name = "مرا به خاطر بسپار")]
         public bool RememberMe { get; set; }
 
-        public string? UsernameError { get; set; }
-        public string? PasswordError { get; set; }
-        public string? ErrorMessage { get; set; }
 
-        public void OnGet()
+        public void OnGet(string redirectTo)
         {
+            RedirectTo = redirectTo;
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // ?????????? ?????
-            if (string.IsNullOrEmpty(Username))
+
+            if (string.IsNullOrEmpty(PhoneNumber))
             {
-                UsernameError = "??? ?????? ?????? ???";
+                ModelState.AddModelError(PhoneNumber, "لطفا نام کاربری خود را واردکنید.");
+                return Page();
             }
 
             if (string.IsNullOrEmpty(Password))
             {
-                PasswordError = "??? ???? ?????? ???";
-            }
-
-            if (!string.IsNullOrEmpty(UsernameError) || !string.IsNullOrEmpty(PasswordError))
-            {
+                ModelState.AddModelError(Password, "لطفا رمز عبور خود را واردکنید.");
                 return Page();
             }
+
+
 
             try
             {
-                // ????? ???? ????? ???? ????? ?????????? ??????
-                // ???? ?????? ?? ????? ???? ????
-                if (await AuthenticateUser(Username, Password))
+                var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
+
+                var result = await _service.Login(new Models.Auth.LoginCommand
                 {
-                    // ????? ??????? ? ???????? ?? ???????
-                    Response.Cookies.Append("user_auth", "authenticated", new CookieOptions
+                    ipAddress = ipAddress ?? "0000-0000-0000-0000",
+                    password = Password,
+                    phoneNumber = PhoneNumber,
+                    rememberMe = RememberMe
+                });
+
+                if (result!.IsSuccess)
+                {
+                    Response.Cookies.Append("auth-Token", result!.Data, new CookieOptions
                     {
-                        Expires = RememberMe ? DateTimeOffset.Now.AddDays(30) : DateTimeOffset.Now.AddHours(24),
+                        Expires = DateTimeOffset.Now.AddMinutes(30),
                         HttpOnly = true,
                         IsEssential = true
                     });
+                    //Response.Cookies.Append("auth-Token", result!.Data, new CookieOptions
+                    //{
+                    //    Expires = RememberMe ? DateTimeOffset.Now.AddDays(30) : DateTimeOffset.Now.AddHours(24),
+                    //    HttpOnly = true,
+                    //    IsEssential = true
+                    //});
+                    return RedirectToPage($"{RedirectTo}");
 
-                    return RedirectToPage("/Dashboard");
                 }
-                else
-                {
-                    ErrorMessage = "??? ?????? ?? ??? ???? ?????? ???";
-                    return Page();
-                }
+
+                return Page();
             }
             catch (Exception ex)
             {
-                ErrorMessage = "??? ?? ???? ?? ?????. ????? ?????? ???? ????.";
-                // ??? ???? ???
-                // _logger.LogError(ex, "Error during login for user {Username}", Username);
+                //ErrorMessage = "??? ?? ???? ?? ?????. ????? ?????? ???? ????.";
+
                 return Page();
             }
         }
 
-        private async Task<bool> AuthenticateUser(string username, string password)
-        {
-            // ????? ???? ???? ????? ????? ???? ?????????? ???
-            // ???? ?????? ????? ?? ???????
-            await Task.Delay(100); // ????????? ????? ????
+        //private async Task<bool> AuthenticateUser(string username, string password)
+        //{
+        //    // ????? ???? ???? ????? ????? ???? ?????????? ???
+        //    // ???? ?????? ????? ?? ???????
+        //    await Task.Delay(100); // ????????? ????? ????
 
-            // ????? ???? - ?? ???? ????? ???? ?? ??????? ?? ???
-            var validUsers = new Dictionary<string, string>
-            {
-                { "admin", "admin123" },
-                { "user", "user123" }
-            };
+        //    // ????? ???? - ?? ???? ????? ???? ?? ??????? ?? ???
+        //    var validUsers = new Dictionary<string, string>
+        //    {
+        //        { "admin", "admin123" },
+        //        { "user", "user123" }
+        //    };
 
-            return validUsers.Any(u => u.Key == username && u.Value == password);
-        }
+        //    return validUsers.Any(u => u.Key == username && u.Value == password);
+        //}
     }
 }

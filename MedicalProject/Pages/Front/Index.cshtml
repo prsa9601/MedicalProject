@@ -1,0 +1,762 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Extensions
+@model MedicalProject.Pages.Front.IndexModel
+@{
+    ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
+}
+
+@section Styles {
+    <style>
+        /* استایل‌های سفارشی برای صفحه پروژه‌ها */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .project-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover .project-image img {
+            transform: scale(1.05);
+        }
+
+        .project-badges {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .project-content {
+            padding: 1.25rem;
+        }
+
+        .project-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .project-description {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .project-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+        .stat-item i {
+            width: 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-percentage {
+            font-weight: 600;
+            color: #2563eb;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .project-pricing {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .price-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .price-value {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .price-value.primary {
+            color: #2563eb;
+        }
+
+        /* حالت‌های نمایش */
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .view-btn:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .view-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* حالت لیست */
+        .projects-grid.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .projects-grid.list-view .project-card {
+            display: flex;
+            height: 200px;
+        }
+
+        .projects-grid.list-view .project-image {
+            width: 300px;
+            height: 100%;
+            flex-shrink: 0;
+        }
+
+        .projects-grid.list-view .project-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* صفحه‌بندی */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .page-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            color: #374151;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .page-btn:hover:not(.disabled) {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .page-btn.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .page-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* اسکلت لودینگ */
+        .skeleton {
+            background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 0.375rem;
+        }
+
+        .skeleton-image {
+            height: 200px;
+            width: 100%;
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-text.medium {
+            width: 80%;
+        }
+
+        @@keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* رسپانسیو */
+        @@media (max-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .projects-grid.list-view .project-card {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .projects-grid.list-view .project-image {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .project-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* انیمیشن‌های سفارشی */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* استایل‌های خاص برای محتوای فارسی */
+        .persian-numbers {
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        /* دکمه‌های اکشن */
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-icon:hover {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn-icon.primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .btn-icon.primary:hover {
+            background: #2563eb;
+        }
+
+        /* بخش جستجو */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            padding-right: 2.5rem;
+            padding-left: 1rem;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        /* اطلاعات آماری */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        @@media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* وضعیت‌های مختلف */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-completed {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-featured {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gray-50">
+    <!-- هدر صفحه -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold text-gray-900 mb-2">پروژه‌های سرمایه‌گذاری</h1>
+                    <p class="text-gray-600 text-lg">فرصت‌های سرمایه‌گذاری مطمئن در تجهیزات پزشکی و صنعتی</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <!-- جستجو -->
+                    <div class="search-container">
+                        <input type="text" 
+                               id="searchInput"
+                               placeholder="جستجو در پروژه‌ها..." 
+                               class="search-input w-64 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        <div class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- تغییر حالت نمایش -->
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- اطلاعات آماری -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value text-blue-600" id="totalProjects">@Model.Result?.EntityCount</div>
+                    <div class="stat-label">پروژه فعال</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-green-600" id="totalInvestment">0</div>
+                    <div class="stat-label">تومان سرمایه‌گذاری</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-purple-600" id="totalInvestors">0</div>
+                    <div class="stat-label">سرمایه‌گذار</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value text-orange-600" id="avgProfit">0%</div>
+                    <div class="stat-label">میانگین سود</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- گرید پروژه‌ها -->
+        <div id="projectsContainer">
+            <div class="projects-grid" id="projectsGrid">
+                @if (Model.Result?.Data != null && Model.Result.Data.Any())
+                {
+                    foreach (var project in Model.Result.Data)
+                    {
+                        <div class="project-card fade-in" data-project-id="@project.Id">
+                            <div class="project-image">
+                                <img src="@Directories.GetProductImagePathPath(@project.ImageName)" alt="@project.Title" loading="lazy" 
+                                     onerror="this.src='https://picsum.photos/400/300?random=1'">
+                                <div class="project-badges">
+                                    <span class="status-badge status-active">
+                                        @project.Status.ToString()
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3 class="project-title">@project.Title</h3>
+                                <p class="project-description">@project.Description</p>
+                                
+                                @if (project.InventoryDto != null)
+                                {
+                                    <div class="project-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>@project.InventoryDto.Profit% سود</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>@project.InventoryDto.ProfitableTime</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-users"></i>
+                                            <span>@project.InventoryDto.Dong.ToPersianNumbers() دانگ</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="project-pricing">
+                                        <div class="price-item">
+                                            <span class="price-label">قیمت هر دانگ</span>
+                                            <span class="price-value persian-numbers">@project.InventoryDto.PricePerDong.ToPersianNumbers() ریال</span>
+                                        </div>
+                                        <div class="price-item">
+                                            <span class="price-label">حداقل سرمایه</span>
+                                            <span class="price-value primary persian-numbers">@project.InventoryDto.PricePerDong.ToPersianNumbers() ریال</span>
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="action-buttons">
+                                    <button class="btn-icon" onclick="addToFavorites(@project.Id)" title="افزودن به علاقه‌مندی‌ها">
+                                        <i class="far fa-heart"></i>
+                                    </button>
+                                    <button class="btn-icon" onclick="shareProject(@project.Id)" title="اشتراک‌گذاری">
+                                        <i class="far fa-share-square"></i>
+                                    </button>
+                                    <a href="/projects/@project.Slug" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
+                                        مشاهده جزئیات
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">پروژه‌ای یافت نشد</h3>
+                        <p class="text-gray-600">در حال حاضر هیچ پروژه فعالی وجود ندارد.</p>
+                    </div>
+                }
+            </div>
+
+            <!-- صفحه‌بندی -->
+            @if (Model.Result?.PageCount > 1)
+            {
+                <div class="pagination">
+                    @if (Model.Result.CurrentPage > 1)
+                    {
+                        <a href="?pageId=@(Model.Result.CurrentPage - 1)&take=@Model.Result.Take" class="page-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    }
+
+                    @for (int i = 1; i <= Model.Result.PageCount; i++)
+                    {
+                        if (i == Model.Result.CurrentPage)
+                        {
+                            <span class="page-btn active">@i.ToPersianNumbers()</span>
+                        }
+                        else
+                        {
+                            <a href="?pageId=@i&take=@Model.Result.Take" class="page-btn">@i.ToPersianNumbers()</a>
+                        }
+                    }
+
+                    @if (Model.Result.CurrentPage < Model.Result.PageCount)
+                    {
+                        <a href="?pageId=@(Model.Result.CurrentPage + 1)&take=@Model.Result.Take" class="page-btn">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="page-btn disabled">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // تابع تبدیل اعداد به فارسی
+        function toPersianNumbers(num) {
+            const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return num.toString().replace(/\d/g, x => persianDigits[x]);
+        }
+
+        // تابع رندر پروژه‌ها
+        function renderProjects(projects, viewMode = 'grid') {
+            const grid = document.getElementById('projectsGrid');
+            if (!grid) return;
+
+            grid.className = `projects-grid ${viewMode === 'list' ? 'list-view' : ''}`;
+        }
+
+        // توابع کمکی
+        function addToFavorites(projectId) {
+            console.log('افزودن پروژه به علاقه‌مندی‌ها:', projectId);
+            // پیاده‌سازی منطق افزودن به علاقه‌مندی‌ها
+            // می‌توانید از Fetch API برای ارسال درخواست به سرور استفاده کنید
+        }
+
+        function shareProject(projectId) {
+            console.log('اشتراک‌گذاری پروژه:', projectId);
+            // پیاده‌سازی منطق اشتراک‌گذاری
+            if (navigator.share) {
+                navigator.share({
+                    title: 'پروژه سرمایه‌گذاری',
+                    text: 'این پروژه سرمایه‌گذاری جالبی است!',
+                    url: `/projects/${projectId}`
+                });
+            }
+        }
+
+        // مدیریت تغییر حالت نمایش
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const viewMode = this.dataset.view;
+                const projects = Array.from(document.querySelectorAll('.project-card'));
+                renderProjects(projects, viewMode);
+            });
+        });
+
+        // جستجوی زنده
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const projectCards = document.querySelectorAll('.project-card');
+                
+                projectCards.forEach(card => {
+                    const title = card.querySelector('.project-title').textContent.toLowerCase();
+                    const description = card.querySelector('.project-description').textContent.toLowerCase();
+                    
+                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // محاسبه آمار کلی
+        function calculateStats() {
+            const projects = @Html.Raw(Json.Serialize(Model.Result?.Data));
+            if (!projects) return;
+
+            let totalInvestment = 0;
+            let totalInvestors = 0;
+            let totalProfit = 0;
+            let projectCount = 0;
+
+            projects.forEach(project => {
+                if (project.inventoryDto) {
+                    const price = parseInt(project.inventoryDto.pricePerDong.replace(/,/g, '')) || 0;
+                    const dong = project.inventoryDto.dong || 0;
+                    const profit = parseFloat(project.inventoryDto.profit) || 0;
+                    
+                    totalInvestment += price * dong;
+                    totalInvestors += dong;
+                    totalProfit += profit;
+                    projectCount++;
+                }
+            });
+
+            // به‌روزرسانی آمار
+            const avgProfit = projectCount > 0 ? (totalProfit / projectCount).toFixed(1) : 0;
+            
+            document.getElementById('totalInvestment').textContent = 
+                toPersianNumbers(Math.round(totalInvestment / 1000000).toLocaleString()) + 'M';
+            document.getElementById('totalInvestors').textContent = 
+                toPersianNumbers(totalInvestors.toLocaleString());
+            document.getElementById('avgProfit').textContent = 
+                toPersianNumbers(avgProfit) + '%';
+        }
+
+        // مقداردهی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateStats();
+            
+            // افزودن قابلیت لودینگ برای لینک‌ها
+            document.querySelectorAll('a[href*="pageId"]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const projectsContainer = document.getElementById('projectsContainer');
+                    if (projectsContainer) {
+                        projectsContainer.innerHTML = `
+                            <div class="flex justify-center items-center py-12">
+                                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                                <span class="mr-3 text-gray-600">در حال بارگذاری...</span>
+                            </div>
+                        `;
+                    }
+                });
+            });
+        });
+
+        // مدیریت خطاهای تصاویر
+        document.addEventListener('error', function(e) {
+            if (e.target.tagName === 'IMG') {
+                e.target.src = 'https://picsum.photos/400/300?random=1';
+            }
+        }, true);
+    </script>
+}

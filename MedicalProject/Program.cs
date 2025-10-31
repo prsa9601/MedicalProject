@@ -59,20 +59,11 @@ builder.Services.AddAuthentication(option =>
 builder.Services.AddDataProtection();
 builder.Services.AddScoped<DecryptionService>();
 
-// Program.cs
-//builder.Services.Configure<IISServerOptions>(options =>
-//{
-//    options.MaxRequestBodySize = 52428800; // 50MB
-//});
 builder.Services.Configure<IISServerOptions>(options =>
 {
     options.MaxRequestBodySize = 100 * 1024 * 1024; // 100 مگابایت
 });
 
-//builder.WebHost.ConfigureKestrel(serverOptions =>
-//{
-//    serverOptions.Limits.MaxRequestBodySize = 52428800; // 50MB
-//});
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
     serverOptions.Limits.MaxRequestBodySize = 100 * 1024 * 1024;
@@ -90,7 +81,7 @@ if (!app.Environment.IsDevelopment())
 
 app.Use(async (context, next) =>
 {
-    var token = context.Request.Cookies["token"]?.ToString();
+    var token = context.Request.Cookies["auth-Token"]?.ToString();
     if (string.IsNullOrWhiteSpace(token) == false)
     {
         context.Request.Headers.Append("Authorization", $"Bearer {token}");
@@ -109,7 +100,7 @@ app.Use(async (context, next) =>
     if (status == 401)
     {
         var path = context.Request.Path;
-        context.Response.Redirect($"../../../Auth/Login?redirectTo={path}");
+        context.Response.Redirect($"/Auth/Login?redirectTo={path}");
     }
     await next();
 });

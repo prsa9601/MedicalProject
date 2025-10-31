@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace MedicalProject.Pages.Auth
 {
-    public class VerificationModel : PageModel
+    public class Verification2Model : PageModel
     {
         public void OnGet()
         {
