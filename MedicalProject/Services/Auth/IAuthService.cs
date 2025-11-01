@@ -9,7 +9,7 @@ namespace MedicalProject.Services.Auth
         Task<ApiResult<string>?> Login(LoginCommand command);
         Task<ApiResult?> Register(RegisterCommand command);
         Task<ApiResult?> GenerateAndSendOtpCode(GenerateAndSendOtpCodeCommand command);
-        Task<ApiResult?> VerificationOtpCode(VerificationOtpCodeCommand command);
+        Task<ApiResult<bool>?> VerificationOtpCode(VerificationOtpCodeCommand command);
 
         Task<ApiResult?> Logout();
     }

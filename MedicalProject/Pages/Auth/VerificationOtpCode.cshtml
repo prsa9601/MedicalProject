@@ -1,5 +1,5 @@
 ﻿@page
-@model MedicalProject.Pages.Auth.VerificationPhoneNumberModel
+@model MedicalProject.Pages.Auth.VerificationOtpCodeModel
 @{
     ViewData["Title"] = "تأیید شماره تلفن";
 }
@@ -17,13 +17,16 @@
             تأیید شماره تلفن
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-            کد تأیید ۶ رقمی ارسال شده به شماره تلفن خود را وارد کنید
+            کد تأیید ۶ رقمی ارسال شده به شماره <span class="font-medium">@Model.PhoneNumber</span> را وارد کنید
         </p>
     </div>
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form method="post" class="space-y-6">
+            <form method="post" class="space-y-6" id="otpForm">
+                <input type="hidden" asp-for="PhoneNumber" id="phoneNumberInput" />
+                <input type="hidden" asp-for="Path" id="pathInput" />
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-3">
                         کد تأیید
@@ -36,6 +39,9 @@
                         <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="code-input" data-index="4" disabled />
                         <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="code-input" data-index="5" disabled />
                     </div>
+                    <!-- فیلد مخفی برای ذخیره کد کامل -->
+                    <input type="hidden" asp-for="Token" id="tokenInput" />
+                    <span asp-validation-for="Token" class="text-red-600 text-sm mt-1"></span>
                 </div>
 
                 <div class="flex items-center justify-between">
@@ -125,12 +131,24 @@
 
 @section Scripts {
     <script>
+        // دیباگ - چک کردن مقادیر
+        console.log('صفحه OTP لود شد');
+        console.log('PhoneNumber:', '@Model.PhoneNumber');
+        console.log('Path:', '@Model.Path');
+
         const inputs = document.querySelectorAll(".code-input");
         const verifyButton = document.getElementById("verifyButton");
         const resendLink = document.getElementById("resendLink");
+        const tokenInput = document.getElementById("tokenInput");
+        const otpForm = document.getElementById("otpForm");
+        const phoneNumberInput = document.getElementById("phoneNumberInput");
+        const pathInput = document.getElementById("pathInput");
+
+        console.log('تعداد فیلدهای OTP:', inputs.length);
+        console.log('فیلد Token:', tokenInput);
 
         // تایمر شمارش معکوس - 3 دقیقه
-        let timeLeft = 180; // 3 دقیقه
+        let timeLeft = 180;
         let countdownInterval;
         const countdownElement = document.getElementById("countdown");
 
@@ -155,6 +173,14 @@
                     timeLeft--;
                 }
             }, 1000);
+        }
+
+        // تابع برای به‌روزرسانی فیلد مخفی Token
+        function updateTokenInput() {
+            const token = Array.from(inputs).map(input => input.value).join('');
+            tokenInput.value = token;
+            console.log('Token updated:', token);
+            return token;
         }
 
         // منطق ورودی کد تأیید
@@ -187,6 +213,9 @@
                     nextInput.focus();
                 }
 
+                // به‌روزرسانی فیلد مخفی Token
+                updateTokenInput();
+
                 // بررسی وضعیت دکمه تأیید
                 checkAllInputsFilled();
             });
@@ -207,6 +236,9 @@
                         e.target.value = '';
                         e.target.classList.remove('filled');
                     }
+
+                    // به‌روزرسانی فیلد مخفی Token
+                    updateTokenInput();
                     checkAllInputsFilled();
                 }
 
@@ -238,6 +270,7 @@
             input.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const pasteData = e.clipboardData.getData('text').replace(/\D/g, '');
+                console.log('Pasted data:', pasteData);
                 if (pasteData.length === 6) {
                     for (let i = 0; i < 6; i++) {
                         if (i < inputs.length) {
@@ -248,6 +281,8 @@
                             }
                         }
                     }
+                    // به‌روزرسانی فیلد مخفی Token
+                    updateTokenInput();
                     checkAllInputsFilled();
                     inputs[5].focus();
                 }
@@ -256,11 +291,13 @@
 
         function checkAllInputsFilled() {
             const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+            console.log('All inputs filled:', allFilled);
             if (allFilled) {
                 verifyButton.removeAttribute("disabled");
             } else {
                 verifyButton.setAttribute("disabled", "true");
             }
+            return allFilled;
         }
 
         // رویداد کلیک برای ارسال مجدد
@@ -277,11 +314,42 @@
                 });
                 inputs[0].focus();
                 verifyButton.setAttribute('disabled', 'true');
+                tokenInput.value = '';
                 startCountdown();
 
+                console.log('درخواست ارسال مجدد کد برای شماره:', phoneNumberInput.value);
                 // در اینجا می‌توانید درخواست ارسال مجدد کد به سرور را اضافه کنید
-                console.log('درخواست ارسال مجدد کد');
             }
+        });
+
+        // مدیریت ارسال فرم
+        otpForm.addEventListener('submit', function(e) {
+            console.log('Form submitted');
+            console.log('Token value:', tokenInput.value);
+            console.log('PhoneNumber value:', phoneNumberInput.value);
+            console.log('Path value:', pathInput.value);
+
+            if (!checkAllInputsFilled()) {
+                e.preventDefault();
+                alert('لطفاً تمامی ۶ رقم کد تأیید را وارد کنید');
+                return false;
+            }
+
+            // نمایش حالت loading
+            verifyButton.disabled = true;
+            verifyButton.classList.add('opacity-50', 'cursor-not-allowed');
+            const originalText = verifyButton.innerHTML;
+            verifyButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                در حال تأیید...
+            `;
+
+            // فرم به صورت طبیعی ارسال می‌شود
+            console.log('Form is being submitted to server...');
+            return true;
         });
 
         // شروع تایمر هنگام لود صفحه
@@ -290,13 +358,19 @@
         // فوکوس روی اولین فیلد هنگام لود صفحه
         window.addEventListener("load", () => {
             inputs[0].focus();
+            console.log('First input focused');
         });
 
-        // جلوگیری از submit فرم با کلید Enter
-        document.querySelector('form').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-            }
+        // جلوگیری از submit فرم با کلید Enter در فیلدهای کد
+        inputs.forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                }
+            });
         });
+
+        // دیباگ اضافی
+        console.log('Script loaded successfully');
     </script>
 }

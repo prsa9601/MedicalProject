@@ -32,12 +32,16 @@ namespace MedicalProject.Pages.Auth
         [Display(Name = "نام خانوادگی")]
         public string LastName { get; set; }
 
-        public void OnGet()
+        public void OnGet(string phoneNumber)
         {
+            PhoneNumber = phoneNumber;
         }
 
         public async Task<IActionResult> OnPost()
         {
+            var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
+
             if (Password == ConfirmPassword)
             {
                 var result = await _service.Register(new Models.Auth.RegisterCommand
@@ -45,12 +49,14 @@ namespace MedicalProject.Pages.Auth
                     firstName = FirstName,
                     lastName = LastName,
                     password = Password,
-                    phoneNumber = PhoneNumber
+                    phoneNumber = PhoneNumber,
+                    ipAddress = ipAddress ?? "0000-0000-0000-0000",
                 });
 
                 if (result!.IsSuccess)
                 {
-                    return RedirectAndShowAlert(result, Redirect("Login"));
+                    TempData["Success"] = result.MetaData.Message;
+                    return RedirectAndShowAlert(result, Redirect("/auth/Login"));
                 }
             }
             else
@@ -58,6 +64,13 @@ namespace MedicalProject.Pages.Auth
                 ModelState.AddModelError(ConfirmPassword, "تکرار رمزعبور و رمز عبور مطابقت ندارند.");
             }
 
+
+            var errors = ModelState.Values
+               .SelectMany(v => v.Errors)
+               .Select(e => e.ErrorMessage)
+               .ToList();
+
+            TempData["Error"] = string.Join(" | ", errors);
             return Page();
         }
     }

@@ -1,5 +1,5 @@
 ﻿@page
-@model MedicalProject.Pages.Auth.VerificationPhoneNumberModelModel
+@model MedicalProject.Pages.Auth.VerificationPhoneNumberModel
 
 @{
     ViewData["Title"] = "بازیابی رمز عبور";
@@ -23,47 +23,29 @@
                 <!-- فرم بازیابی -->
                 <form method="post" class="space-y-6" id="forgotPasswordForm">
                     <div>
-                        <label for="phoneNumber" class="label">شماره تلفن همراه</label>
+                        <label for="PhoneNumber" class="block text-sm font-medium text-gray-700 mb-2">شماره تلفن همراه</label>
                         <div class="mt-1 relative">
                             <div class="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center">
                                 <span class="text-gray-700 text-sm font-medium bg-gray-100 px-2 py-1 rounded border border-gray-300">+98</span>
                             </div>
-                            <input type="tel" id="phoneNumber" name="phoneNumber"
-                                   class="input pr-3 pl-16"
+                            <input type="tel"
+                                   asp-for="PhoneNumber"
+                                   class="w-full pr-3 pl-16 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                                    placeholder="912 345 6789"
                                    maxlength="11"
                                    required
                                    dir="ltr">
                         </div>
+                        <span asp-validation-for="PhoneNumber" class="text-red-600 text-sm mt-1"></span>
                         <p class="text-sm text-gray-500 mt-2">کد تأیید برای این شماره ارسال خواهد شد</p>
-                        <div id="phoneError" class="text-red-600 text-sm mt-1 hidden">
-                            شماره تلفن معتبر نیست (فرمت: 912 345 6789)
-                        </div>
-                        <div id="formatError" class="text-red-600 text-sm mt-1 hidden">
-                            لطفاً شماره تلفن را با فرمت صحیح وارد کنید
-                        </div>
                     </div>
 
                     <div>
-                        <button type="submit" id="submitButton" class="w-full btn btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" id="submitButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                             ارسال کد تأیید
                         </button>
                     </div>
                 </form>
-
-                <!-- پیام موفقیت -->
-                <div id="successMessage" class="hidden text-center py-4">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">پیامک ارسال شد!</h3>
-                    <p class="text-gray-600 mb-4">کد تأیید به شماره شما ارسال شد</p>
-                    <a href="/Auth/VerificationPhoneNumber" class="btn btn-primary w-full">
-                        ورود به صفحه تأیید
-                    </a>
-                </div>
 
                 <!-- روش‌های جایگزین -->
                 <div class="mt-6">
@@ -77,7 +59,7 @@
                     </div>
 
                     <div class="mt-4 grid grid-cols-1 gap-3">
-                        <a href="/Auth/RegisterAndLogin" class="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
+                        <a href="/Auth/RegisterAndLogin" class="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors duration-200">
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
@@ -107,48 +89,11 @@
     </div>
 </div>
 
-<style>
-    .phone-input {
-        direction: ltr;
-        text-align: left;
-    }
-
-    .input:focus {
-        outline: none;
-        ring: 2px;
-        ring-color: #3b82f6;
-        border-color: #3b82f6;
-    }
-
-    .input.valid {
-        border-color: #10b981;
-        background-color: #f0fdf4;
-    }
-
-    .input.invalid {
-        border-color: #ef4444;
-        background-color: #fef2f2;
-    }
-
-    .country-code {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-        border: 1px solid #cbd5e0;
-        font-weight: 600;
-        color: #2d3748;
-    }
-</style>
-
 @section Scripts {
     <script>
-        const phoneInput = document.getElementById('phoneNumber');
-        const phoneError = document.getElementById('phoneError');
-        const formatError = document.getElementById('formatError');
+        const phoneInput = document.getElementById('PhoneNumber');
         const submitButton = document.getElementById('submitButton');
         const form = document.getElementById('forgotPasswordForm');
-        const successMessage = document.getElementById('successMessage');
-
-        // حذف ویژگی pattern برای جلوگیری از ارور مرورگر
-        phoneInput.removeAttribute('pattern');
 
         // فرمت خودکار شماره تلفن
         phoneInput.addEventListener('input', function(e) {
@@ -173,22 +118,14 @@
             const value = phoneInput.value.replace(/\s/g, '');
             const isValid = /^9[0-9]{9}$/.test(value);
 
-            // پاک کردن تمام خطاها
-            phoneError.classList.add('hidden');
-            formatError.classList.add('hidden');
-            phoneInput.classList.remove('valid', 'invalid');
-
             if (value.length === 0) {
                 submitButton.disabled = true;
                 return false;
             }
 
             if (!isValid) {
-                phoneError.classList.remove('hidden');
-                phoneInput.classList.add('invalid');
                 submitButton.disabled = true;
             } else {
-                phoneInput.classList.add('valid');
                 submitButton.disabled = false;
             }
 
@@ -197,86 +134,42 @@
 
         // مدیریت ارسال فرم
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            if (validatePhoneNumber()) {
-                // شبیه‌سازی ارسال درخواست
-                submitButton.disabled = true;
-                submitButton.classList.add('opacity-50', 'cursor-not-allowed');
-                const originalText = submitButton.innerHTML;
-                submitButton.innerHTML = `
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    در حال ارسال...
-                `;
-
-                // شبیه‌سازی تاخیر در ارسال
-                setTimeout(() => {
-                    form.classList.add('hidden');
-                    successMessage.classList.remove('hidden');
-
-                    // ذخیره شماره تلفن برای استفاده در صفحه بعد
-                    localStorage.setItem('recoveryPhone', '+98' + phoneInput.value.replace(/\s/g, ''));
-                }, 2000);
-            } else {
-                formatError.classList.remove('hidden');
+            if (!validatePhoneNumber()) {
+                e.preventDefault();
+                return false;
             }
+
+            // نمایش حالت loading
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                در حال ارسال...
+            `;
+
+            // فرم به صورت طبیعی ارسال می‌شود
+            return true;
         });
 
         // ولیدیشن هنگام تغییر مقدار
         phoneInput.addEventListener('blur', validatePhoneNumber);
         phoneInput.addEventListener('input', validatePhoneNumber);
 
-        // بازگرداندن شماره از localStorage در صورت وجود
-        window.addEventListener('load', function() {
-            const savedPhone = localStorage.getItem('recoveryPhone');
-            if (savedPhone && savedPhone.startsWith('+98')) {
-                const phoneWithoutPrefix = savedPhone.substring(3);
-                if (phoneWithoutPrefix.startsWith('9')) {
-                    let formatted = phoneWithoutPrefix;
-                    if (formatted.length >= 10) {
-                        formatted = formatted.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-                    }
-                    phoneInput.value = formatted;
-                    validatePhoneNumber();
-                }
-            }
-        });
-
         // جلوگیری از ورود کاراکترهای غیر عددی
         phoneInput.addEventListener('keydown', function(e) {
             if (!/[\d\s]/.test(e.key) &&
                 !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
                 e.preventDefault();
-                formatError.classList.remove('hidden');
-                setTimeout(() => formatError.classList.add('hidden'), 3000);
             }
-        });
-
-        // مدیریت وضعیت invalid مرورگر
-        phoneInput.addEventListener('invalid', function(e) {
-            e.preventDefault();
-            validatePhoneNumber();
         });
 
         // فوکوس خودکار روی input
         window.addEventListener('load', function() {
             phoneInput.focus();
-        });
-
-        // نمایش راهنما هنگام hover روی input
-        phoneInput.addEventListener('mouseenter', function() {
-            if (!phoneInput.value) {
-                phoneInput.placeholder = "مثال: 912 345 6789";
-            }
-        });
-
-        phoneInput.addEventListener('mouseleave', function() {
-            if (!phoneInput.value) {
-                phoneInput.placeholder = "912 345 6789";
-            }
         });
     </script>
 }

@@ -4,292 +4,390 @@
     ViewData["Title"] = "ثبت‌نام در پلتفرم دنگ";
 }
 
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl w-full space-y-8">
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* استایل‌های صفحه ثبت‌نام */
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #dbeafe 0%, white 50%, #dbeafe 100%);
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 500px;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+
+        .register-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: #1e40af;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+            .input-group input {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                background: #f9fafb;
+                border: 1px solid #d1d5db;
+                outline: none;
+                font-size: 1rem;
+                color: #374151;
+                font-weight: 500;
+                border-radius: 0.5rem;
+                transition: all 0.3s;
+            }
+
+                .input-group input:focus {
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                }
+
+                .input-group input::placeholder {
+                    color: #9ca3af;
+                    font-weight: 400;
+                }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.125rem;
+            color: #9ca3af;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+            .password-toggle:hover {
+                color: #6b7280;
+            }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #3b82f6;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+            .submit-btn:hover {
+                background: #2563eb;
+                box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
+            }
+
+        .back-to-login {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+            .back-to-login a {
+                color: #3b82f6;
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.2s;
+            }
+
+                .back-to-login a:hover {
+                    color: #1e40af;
+                    text-decoration: underline;
+                }
+
+        .text-error {
+            color: #dc2626;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .alert-error {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-success {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* حالت موبایل */
+        @@media screen and (max-width: 600px) {
+            .register-card {
+                padding: 1.5rem;
+                border-radius: 0.75rem;
+            }
+
+            .register-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="register-container">
+    <div class="register-card">
         <!-- Header -->
-        <div class="text-center">
-            <div class="flex justify-center">
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
                 <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
                     <span class="text-white font-bold text-2xl">د</span>
                 </div>
             </div>
-            <h1 class="mt-6 text-4xl font-bold text-gray-900">
-                ثبت‌نام در پلتفرم دنگ
-            </h1>
-            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
-                برای ثبت‌نام و شروع سرمایه‌گذاری در پروژه‌های صنعتی و پزشکی، 
-                لطفاً با تیم ما تماس بگیرید
+            <h1 class="register-title">ثبت‌نام در پلتفرم دنگ</h1>
+            <p class="text-gray-600 mt-2">
+                حساب کاربری جدید ایجاد کنید
             </p>
         </div>
 
-        <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Contact Information -->
-            <div class="card">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="p-3 bg-blue-100 rounded-full">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mr-4">تماس با ما</h2>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="p-2 bg-green-100 rounded-lg">
-                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">شماره تماس</h3>
-                                <p class="text-gray-600">021-12345678</p>
-                                <p class="text-sm text-gray-500">شنبه تا پنج‌شنبه، 9 صبح تا 6 عصر</p>
-                            </div>
-                        </div>
+        <!-- Registration Form -->
+        <form method="post" class="space-y-4">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-error">
+                    <p>لطفا اطلاعات را به درستی وارد کنید</p>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <p class="text-sm mt-1">@error.ErrorMessage</p>
+                    }
+                </div>
+            }
 
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="p-2 bg-blue-100 rounded-lg">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">ایمیل</h3>
-                                <p class="text-gray-600">info@dang-platform.ir</p>
-                                <p class="text-sm text-gray-500">پاسخ در کمتر از 24 ساعت</p>
-                            </div>
-                        </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="input-group">
+                    <input type="text"
+                           id="FirstName"
+                           name="FirstName"
+                           placeholder="نام"
+                           value="@Model.FirstName"
+                           required />
+                    <i class="input-icon fa-solid fa-user"></i>
+                    @if (ViewData.ModelState["FirstName"]?.Errors?.Count > 0)
+                    {
+                        <span class="text-error">@ViewData.ModelState["FirstName"].Errors[0].ErrorMessage</span>
+                    }
+                </div>
 
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="p-2 bg-purple-100 rounded-lg">
-                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">واتساپ</h3>
-                                <p class="text-gray-600">09123456789</p>
-                                <p class="text-sm text-gray-500">پاسخ فوری</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="p-2 bg-orange-100 rounded-lg">
-                                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">وب‌سایت</h3>
-                                <p class="text-gray-600">www.dang-platform.ir</p>
-                                <p class="text-sm text-gray-500">اطلاعات بیشتر</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-blue-50 rounded-lg">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-blue-600 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="text-sm text-blue-800">
-                                <strong>ساعات کاری:</strong> شنبه تا پنج‌شنبه، 9:00 تا 18:00
-                            </p>
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <input type="text"
+                           id="LastName"
+                           name="LastName"
+                           placeholder="نام خانوادگی"
+                           value="@Model.LastName"
+                           required />
+                    <i class="input-icon fa-solid fa-user"></i>
+                    @if (ViewData.ModelState["LastName"]?.Errors?.Count > 0)
+                    {
+                        <span class="text-error">@ViewData.ModelState["LastName"].Errors[0].ErrorMessage</span>
+                    }
                 </div>
             </div>
 
-            <!-- Registration Process -->
-            <div class="card">
-                <div class="p-8">
-                    <div class="flex items-center mb-6">
-                        <div class="p-3 bg-green-100 rounded-full">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-900 mr-4">فرآیند ثبت‌نام</h2>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                1
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">تماس اولیه</h3>
-                                <p class="text-gray-600 text-sm">
-                                    با ما تماس بگیرید و درخواست ثبت‌نام خود را اعلام کنید
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                2
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">ارسال مدارک</h3>
-                                <p class="text-gray-600 text-sm">
-                                    مدارک هویتی و اطلاعات مورد نیاز را ارسال کنید
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                3
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">احراز هویت</h3>
-                                <p class="text-gray-600 text-sm">
-                                    تیم ما مدارک شما را بررسی و تأیید می‌کند
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start space-x-4 space-x-reverse">
-                            <div class="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
-                                4
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-gray-900">فعال‌سازی حساب</h3>
-                                <p class="text-gray-600 text-sm">
-                                    حساب کاربری شما فعال شده و می‌توانید شروع کنید
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 p-4 bg-green-50 rounded-lg">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-green-600 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="text-sm text-green-800">
-                                <strong>زمان فرآیند:</strong> 1-2 روز کاری
-                            </p>
-                        </div>
-                    </div>
-                </div>
+            <div class="input-group">
+                <input type="tel"
+                       id="PhoneNumber"
+                       name="PhoneNumber"
+                       placeholder="شماره تماس"
+                       value="@Model.PhoneNumber"
+                       required />
+                <i class="input-icon fa-solid fa-phone"></i>
+                @if (ViewData.ModelState["PhoneNumber"]?.Errors?.Count > 0)
+                {
+                    <span class="text-error">@ViewData.ModelState["PhoneNumber"].Errors[0].ErrorMessage</span>
+                }
             </div>
-        </div>
 
-        <!-- Features -->
-        <div class="card">
-            <div class="p-8">
-                <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">
-                    چرا با ما سرمایه‌گذاری کنید؟
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold text-gray-900 mb-2">امنیت بالا</h3>
-                        <p class="text-gray-600 text-sm">
-                            تمام سرمایه‌گذاری‌ها تحت نظارت و تضمین بانکی
-                        </p>
-                    </div>
-
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold text-gray-900 mb-2">پروژه‌های معتبر</h3>
-                        <p class="text-gray-600 text-sm">
-                            فقط پروژه‌های تأیید شده و سودآور
-                        </p>
-                    </div>
-
-                    <div class="text-center">
-                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold text-gray-900 mb-2">شفافیت کامل</h3>
-                        <p class="text-gray-600 text-sm">
-                            گزارش‌گیری دقیق و شفاف از عملکرد پروژه‌ها
-                        </p>
-                    </div>
-                </div>
+            <div class="input-group">
+                <input type="password"
+                       id="Password"
+                       name="Password"
+                       placeholder="رمز عبور"
+                       required />
+                <i class="input-icon fa-solid fa-lock"></i>
+                <span class="password-toggle" onclick="togglePassword('Password')">
+                    <i id="eyeIconPassword" class="fa-solid fa-eye hidden"></i>
+                    <i id="eyeOffIconPassword" class="fa-solid fa-eye-slash"></i>
+                </span>
+                @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
+                {
+                    <span class="text-error">@ViewData.ModelState["Password"].Errors[0].ErrorMessage</span>
+                }
             </div>
-        </div>
 
-        <!-- CTA Buttons -->
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-                onclick="window.open('tel:02112345678')"
-                class="btn btn-primary text-lg px-8 py-4 flex items-center justify-center"
-            >
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
-                تماس تلفنی
-            </button>
-            
-            <button
-                onclick="window.open('mailto:info@dang-platform.ir')"
-                class="btn btn-outline text-lg px-8 py-4 flex items-center justify-center"
-            >
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
-                ارسال ایمیل
-            </button>
-            
-            <button
-                onclick="window.open('https://wa.me/989123456789')"
-                class="btn btn-outline text-lg px-8 py-4 flex items-center justify-center"
-            >
-                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                واتساپ
-            </button>
-        </div>
+            <div class="input-group">
+                <input type="password"
+                       id="ConfirmPassword"
+                       name="ConfirmPassword"
+                       placeholder="تکرار رمز عبور"
+                       required />
+                <i class="input-icon fa-solid fa-lock"></i>
+                <span class="password-toggle" onclick="togglePassword('ConfirmPassword')">
+                    <i id="eyeIconConfirmPassword" class="fa-solid fa-eye hidden"></i>
+                    <i id="eyeOffIconConfirmPassword" class="fa-solid fa-eye-slash"></i>
+                </span>
+                @if (ViewData.ModelState["ConfirmPassword"]?.Errors?.Count > 0)
+                {
+                    <span class="text-error">@ViewData.ModelState["ConfirmPassword"].Errors[0].ErrorMessage</span>
+                }
+            </div>
 
-        <!-- Back to Login -->
-        <div class="text-center">
-            <a
-                href="/Login"
-                class="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500 transition-colors"
-            >
-                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
-                بازگشت به ورود
-            </a>
+            <button type="submit" class="submit-btn">
+                ایجاد حساب کاربری
+            </button>
+        </form>
+
+        <!-- Additional Links -->
+        <div class="text-center space-y-4">
+            <div class="back-to-login">
+                <p>
+                    قبلاً حساب کاربری دارید؟
+                    <a href="/Auth/Login" class="text-blue-600 hover:text-blue-500">وارد شوید</a>
+                </p>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-600">
+                    با ثبت‌نام در سایت،
+                    <a href="/Terms" class="text-blue-600 hover:text-blue-500 mr-1">شرایط استفاده</a>
+                    و
+                    <a href="/Privacy" class="text-blue-600 hover:text-blue-500 mr-1">حریم خصوصی</a>
+                    را می‌پذیرید.
+                </p>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
+        // نمایش/مخفی کردن رمز عبور
+        function togglePassword(fieldId) {
+            const passwordInput = document.getElementById(fieldId);
+            const eyeIcon = document.getElementById(`eyeIcon${fieldId}`);
+            const eyeOffIcon = document.getElementById(`eyeOffIcon${fieldId}`);
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('hidden');
+                eyeOffIcon.classList.add('hidden');
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.add('hidden');
+                eyeOffIcon.classList.remove('hidden');
+            }
+        }
+
+        // اعتبارسنجی فرم
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('صفحه ثبت‌نام بارگذاری شد');
-            
-            // اضافه کردن انیمیشن‌های جزئی برای کارت‌ها
-            const cards = document.querySelectorAll('.card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                
-                setTimeout(() => {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.opacity = '1';
-                    card.style.transform = 'translateY(0)';
-                }, index * 200);
+            const form = document.querySelector('form');
+
+            form.addEventListener('submit', function(event) {
+                const firstName = document.getElementById('FirstName').value.trim();
+                const lastName = document.getElementById('LastName').value.trim();
+                const phoneNumber = document.getElementById('PhoneNumber').value.trim();
+                const password = document.getElementById('Password').value.trim();
+                const confirmPassword = document.getElementById('ConfirmPassword').value.trim();
+                let isValid = true;
+
+                // پاک کردن خطاهای قبلی
+                document.querySelectorAll('.text-error').forEach(el => el.remove());
+
+                if (!firstName) {
+                    showFieldError('FirstName', 'لطفا نام خود را وارد کنید');
+                    isValid = false;
+                }
+
+                if (!lastName) {
+                    showFieldError('LastName', 'لطفا نام خانوادگی خود را وارد کنید');
+                    isValid = false;
+                }
+
+                if (!phoneNumber) {
+                    showFieldError('PhoneNumber', 'لطفا شماره تماس خود را وارد کنید');
+                    isValid = false;
+                }
+
+                if (!password) {
+                    showFieldError('Password', 'لطفا رمز عبور خود را وارد کنید');
+                    isValid = false;
+                }
+
+                if (!confirmPassword) {
+                    showFieldError('ConfirmPassword', 'لطفا تکرار رمز عبور را وارد کنید');
+                    isValid = false;
+                }
+
+                if (password && confirmPassword && password !== confirmPassword) {
+                    showFieldError('ConfirmPassword', 'تکرار رمزعبور و رمز عبور مطابقت ندارند');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault();
+                }
+            });
+
+            function showFieldError(fieldId, message) {
+                const field = document.getElementById(fieldId);
+                const errorElement = document.createElement('span');
+                errorElement.className = 'text-error';
+                errorElement.textContent = message;
+                field.parentElement.appendChild(errorElement);
+            }
+
+            // اعتبارسنجی همزمان تکرار رمز عبور
+            const passwordInput = document.getElementById('Password');
+            const confirmPasswordInput = document.getElementById('ConfirmPassword');
+
+            confirmPasswordInput.addEventListener('input', function() {
+                const password = passwordInput.value;
+                const confirmPassword = this.value;
+
+                // پاک کردن خطاهای قبلی
+                const existingError = this.parentElement.querySelector('.text-error');
+                if (existingError && existingError.textContent.includes('مطابقت')) {
+                    existingError.remove();
+                }
+
+                if (password && confirmPassword && password !== confirmPassword) {
+                    showFieldError('ConfirmPassword', 'تکرار رمزعبور و رمز عبور مطابقت ندارند');
+                }
             });
         });
     </script>

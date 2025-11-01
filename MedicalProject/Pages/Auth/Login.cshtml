@@ -2,138 +2,18 @@
 @model MedicalProject.Pages.Auth.LoginModel
 @{
     ViewData["Title"] = "ورود به حساب کاربری";
-    Layout = null;
 }
 
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - پلتفرم دنگ</title>
-
-    <!-- فونت‌ها -->
-    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
-
-    <!-- آیکون‌ها -->
+@section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
     <style>
-        /* استایل‌های سفارشی */
-        html {
-            direction: rtl;
-            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
-        }
-
-        body {
-            background-color: #f9fafb;
-            color: #111827;
-            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
-        }
-
-        * {
-            border-color: #e5e7eb;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: #3b82f6;
-            border-color: #3b82f6;
-        }
-
-        /* کامپوننت‌های سفارشی */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            border: 1px solid transparent;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-            .btn:focus {
-                outline: 2px solid transparent;
-                outline-offset: 2px;
-                ring: 2px;
-                ring-offset: 2px;
-            }
-
-            .btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-        }
-
-            .btn-primary:hover {
-                background-color: #1d4ed8;
-            }
-
-        .btn-secondary {
-            background-color: white;
-            color: #374151;
-            border: 1px solid #d1d5db;
-        }
-
-            .btn-secondary:hover {
-                background-color: #f9fafb;
-            }
-
-        .card {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #f3f4f6;
-            overflow: hidden;
-        }
-
-        .input {
-            display: block;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-            .input::placeholder {
-                color: #9ca3af;
-            }
-
-            .input:focus {
-                outline: none;
-                ring: 2px;
-                ring-color: #3b82f6;
-                border-color: #3b82f6;
-            }
-
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-
         /* استایل‌های صفحه لاگین */
         .login-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: 80vh;
             padding: 2rem 1rem;
             background: linear-gradient(135deg, #dbeafe 0%, white 50%, #dbeafe 100%);
         }
@@ -271,102 +151,104 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="flex justify-center mb-4">
-                    <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
-                        <span class="text-white font-bold text-2xl">د</span>
-                    </div>
+}
+
+<div class="login-container">
+    <div class="login-card">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <span class="text-white font-bold text-2xl">د</span>
                 </div>
-                <h1 class="login-title">ورود به حساب کاربری</h1>
-                <p class="text-gray-600 mt-2">
-                    یا
-                    <a href="/Auth/Register" class="text-blue-600 hover:text-blue-500 font-medium mr-1">
-                        حساب جدید ایجاد کنید
-                    </a>
-                </p>
+            </div>
+            <h1 class="login-title">ورود به حساب کاربری</h1>
+            <p class="text-gray-600 mt-2">
+                یا
+                <a href="/Auth/Register" class="text-blue-600 hover:text-blue-500 font-medium mr-1">
+                    حساب جدید ایجاد کنید
+                </a>
+            </p>
+        </div>
+
+        <!-- Login Form -->
+        <form method="post" class="space-y-4">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert-error">
+                    <p>لطفا اطلاعات را به درستی وارد کنید</p>
+                </div>
+            }
+
+            <div class="input-group">
+                <input type="text"
+                       id="PhoneNumber"
+                       name="PhoneNumber"
+                       placeholder="شماره تماس خود را وارد کنید"
+                       value="@Model.PhoneNumber"
+                       required />
+                <i class="input-icon fa-solid fa-phone"></i>
+                @if (ViewData.ModelState["PhoneNumber"]?.Errors?.Count > 0)
+                {
+                    <span class="text-error">@ViewData.ModelState["PhoneNumber"].Errors[0].ErrorMessage</span>
+                }
             </div>
 
-            <!-- Login Form -->
-            <form method="post" class="space-y-4">
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div class="alert-error">
-                        <p>لطفا اطلاعات را به درستی وارد کنید</p>
-                    </div>
-                }
-
-                <div class="input-group">
-                    <input type="text"
-                           id="PhoneNumber"
-                           name="PhoneNumber"
-                           placeholder="شماره تماس خود را وارد کنید"
-                           value="@Model.PhoneNumber"
-                           required />
-                    <i class="input-icon fa-solid fa-phone"></i>
-                    @if (ViewData.ModelState["PhoneNumber"]?.Errors?.Count > 0)
-                    {
-                        <span class="text-error">@ViewData.ModelState["PhoneNumber"].Errors[0].ErrorMessage</span>
-                    }
-                </div>
-
-                <div class="input-group">
-                    <input type="password"
-                           id="Password"
-                           name="Password"
-                           placeholder="رمز عبور خود را وارد کنید"
-                           required />
-                    <i class="input-icon fa-solid fa-lock"></i>
-                    <button type="button"
-                            class="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                            onclick="togglePassword()">
-                        <i id="eyeIcon" class="fa-solid fa-eye hidden"></i>
-                        <i id="eyeOffIcon" class="fa-solid fa-eye-slash"></i>
-                    </button>
-                    @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
-                    {
-                        <span class="text-error">@ViewData.ModelState["Password"].Errors[0].ErrorMessage</span>
-                    }
-                </div>
-
-                <div class="remember-me">
-                    <input type="checkbox"
-                           id="RememberMe"
-                           name="RememberMe"
-                           @(Model.RememberMe ? "checked" : "") />
-                    <label for="RememberMe">مرا به خاطر بسپار</label>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    ورود به حساب کاربری
+            <div class="input-group">
+                <input type="password"
+                       id="Password"
+                       name="Password"
+                       placeholder="رمز عبور خود را وارد کنید"
+                       required />
+                <i class="input-icon fa-solid fa-lock"></i>
+                <button type="button"
+                        class="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                        onclick="togglePassword()">
+                    <i id="eyeIcon" class="fa-solid fa-eye hidden"></i>
+                    <i id="eyeOffIcon" class="fa-solid fa-eye-slash"></i>
                 </button>
-            </form>
+                @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
+                {
+                    <span class="text-error">@ViewData.ModelState["Password"].Errors[0].ErrorMessage</span>
+                }
+            </div>
 
-            <!-- Additional Links -->
-            <div class="text-center space-y-4">
-                <div>
-                    <a href="/Auth/ForgotPassword" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
-                        فراموشی رمز عبور؟
-                    </a>
-                </div>
+            <div class="remember-me">
+                <input type="checkbox"
+                       id="RememberMe"
+                       name="RememberMe"
+                       value="true"
+                       @(Model.RememberMe ? "checked" : "") />
+                <label for="RememberMe">مرا به خاطر بسپار</label>
+            </div>
 
-                <div class="pt-4 border-t border-gray-200">
-                    <p class="text-sm text-gray-600">
-                        با ورود به سایت،
-                        <a href="/Terms" class="text-blue-600 hover:text-blue-500 mr-1">شرایط استفاده</a>
-                        و
-                        <a href="/Privacy" class="text-blue-600 hover:text-blue-500 mr-1">حریم خصوصی</a>
-                        را می‌پذیرید.
-                    </p>
-                </div>
+            <button type="submit" class="submit-btn">
+                ورود به حساب کاربری
+            </button>
+        </form>
+
+        <!-- Additional Links -->
+        <div class="text-center space-y-4">
+            <div>
+                <a href="/Auth/ForgotPassword" class="text-blue-600 hover:text-blue-500 text-sm font-medium">
+                    فراموشی رمز عبور؟
+                </a>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-600">
+                    با ورود به سایت،
+                    <a href="/Terms" class="text-blue-600 hover:text-blue-500 mr-1">شرایط استفاده</a>
+                    و
+                    <a href="/Privacy" class="text-blue-600 hover:text-blue-500 mr-1">حریم خصوصی</a>
+                    را می‌پذیرید.
+                </p>
             </div>
         </div>
     </div>
+</div>
 
+@section Scripts {
     <script>
         // نمایش/مخفی کردن رمز عبور
         function togglePassword() {
@@ -421,5 +303,4 @@
             }
         });
     </script>
-</body>
-</html>
+}

@@ -14,6 +14,7 @@ namespace MedicalProject.Pages.Auth
             _service = service;
         }
 
+        [BindProperty]
         public string RedirectTo { get; set; }
 
         [BindProperty]
@@ -29,9 +30,10 @@ namespace MedicalProject.Pages.Auth
         public bool RememberMe { get; set; }
 
 
-        public void OnGet(string redirectTo)
+        public void OnGet(string phoneNumber, string redirectTo)
         {
-            RedirectTo = redirectTo;
+            RedirectTo = redirectTo ?? "/Index";
+            PhoneNumber = phoneNumber;
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -78,10 +80,13 @@ namespace MedicalProject.Pages.Auth
                     //    HttpOnly = true,
                     //    IsEssential = true
                     //});
+
+                    TempData["Success"] = result.MetaData.Message;
                     return RedirectToPage($"{RedirectTo}");
 
                 }
 
+                TempData["Error"] = result.MetaData.Message;
                 return Page();
             }
             catch (Exception ex)

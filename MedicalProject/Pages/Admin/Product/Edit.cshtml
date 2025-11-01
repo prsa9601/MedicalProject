@@ -15,6 +15,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -480,42 +483,32 @@
                 <!-- Sidebar Menu -->
                 <div class="flex-1 overflow-y-auto py-4">
                     <nav class="space-y-1">
-                        <a href="/Admin/Dashboard" class="sidebar-link">
+                        <a asp-page="Dashboard" class="sidebar-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>داشبورد</span>
                         </a>
 
-                        <a href="/Admin/Product" class="sidebar-link">
-                            <i class="fas fa-box"></i>
-                            <span>محصولات</span>
-                        </a>
-
-                        <a href="/Admin/Product/Add" class="sidebar-link">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>افزودن محصول</span>
-                        </a>
-
-                        <a href="/Admin/Product/Edit/@Model.ProductId" class="sidebar-link active">
-                            <i class="fas fa-edit"></i>
-                            <span>ویرایش محصول</span>
-                        </a>
-
-                        <a href="/Admin/Projects" class="sidebar-link">
-                            <i class="fas fa-project-diagram"></i>
-                            <span>پروژه‌ها</span>
-                        </a>
-
-                        <a href="/Admin/Categories" class="sidebar-link">
-                            <i class="fas fa-folder"></i>
-                            <span>دسته‌بندی‌ها</span>
-                        </a>
-
-                        <a href="/Admin/Users" class="sidebar-link">
+                        <a asp-page="Users" class="sidebar-link active">
                             <i class="fas fa-users"></i>
                             <span>کاربران</span>
                         </a>
 
-                        <a href="/Admin/Settings" class="sidebar-link">
+                        <a asp-page="Product" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        @* <a href="/Admin/Categories" class="sidebar-link">
+                            <i class="fas fa-folder"></i>
+                            <span>دسته‌بندی‌ها</span>
+                        </a> *@
+
+                        <a asp-page="Orders" class="sidebar-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سرمایه گزاری ها</span>
+                        </a>
+
+                        <a asp-page="Settings" class="sidebar-link">
                             <i class="fas fa-cog"></i>
                             <span>تنظیمات</span>
                         </a>
@@ -1209,5 +1202,8 @@
     }
 
     </script> *@
+
+    <script src="~/global.js"></script>
+
 </body>
 </html>

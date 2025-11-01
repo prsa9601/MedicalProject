@@ -400,34 +400,34 @@
                 <!-- Sidebar Menu -->
                 <div class="flex-1 overflow-y-auto py-4">
                     <nav class="space-y-1">
-                        <a href="/Admin/Dashboard" class="sidebar-link">
+                        <a asp-page="Dashboard" class="sidebar-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>داشبورد</span>
                         </a>
 
-                        <a href="/Admin/Product" class="sidebar-link">
-                            <i class="fas fa-box"></i>
-                            <span>محصولات</span>
+                        <a asp-page="Users" class="sidebar-link active">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
                         </a>
 
-                        <a href="/Admin/Product/Details?productId=@Model.Product.Id" class="sidebar-link active">
-                            <i class="fas fa-info-circle"></i>
-                            <span>جزئیات محصول</span>
-                        </a>
-
-                        <a href="/Admin/Projects" class="sidebar-link">
+                        <a asp-page="Product" class="sidebar-link">
                             <i class="fas fa-project-diagram"></i>
                             <span>پروژه‌ها</span>
                         </a>
 
-                        <a href="/Admin/Categories" class="sidebar-link">
+                        @* <a href="/Admin/Categories" class="sidebar-link">
                             <i class="fas fa-folder"></i>
                             <span>دسته‌بندی‌ها</span>
+                        </a> *@
+
+                        <a asp-page="Orders" class="sidebar-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سرمایه گزاری ها</span>
                         </a>
 
-                        <a href="/Admin/Users" class="sidebar-link">
-                            <i class="fas fa-users"></i>
-                            <span>کاربران</span>
+                        <a asp-page="Settings" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
                         </a>
                     </nav>
                 </div>
@@ -632,7 +632,7 @@
                                             مدیریت موجودی
                                         </button>
                                         
-                                        <a href="/Admin/Projects/Create?productId=@Model.Product.Id" class="btn btn-outline w-full justify-start">
+                                        <a asp-page="Add" class="btn btn-outline w-full justify-start">
                                             <i class="fas fa-project-diagram ml-2"></i>
                                             ایجاد پروژه جدید
                                         </a>
@@ -824,5 +824,7 @@
             document.getElementById(tabName + 'Content').classList.add('active');
         }
     </script>
+    <script src="~/global.js"></script>
+
 </body>
 </html>

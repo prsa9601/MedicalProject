@@ -488,37 +488,32 @@
                 <!-- Sidebar Menu -->
                 <div class="flex-1 overflow-y-auto py-4">
                     <nav class="space-y-1">
-                        <a href="/Admin/Dashboard" class="sidebar-link">
+                        <a asp-page="Dashboard" class="sidebar-link">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>داشبورد</span>
                         </a>
 
-                        <a href="/Admin/Products" class="sidebar-link">
-                            <i class="fas fa-box"></i>
-                            <span>محصولات</span>
-                        </a>
-
-                        <a href="/Admin/Users" class="sidebar-link active">
+                        <a asp-page="Users" class="sidebar-link active">
                             <i class="fas fa-users"></i>
                             <span>کاربران</span>
                         </a>
 
-                        <a href="/Admin/Projects" class="sidebar-link">
+                        <a asp-page="Product" class="sidebar-link">
                             <i class="fas fa-project-diagram"></i>
                             <span>پروژه‌ها</span>
                         </a>
 
-                        <a href="/Admin/Categories" class="sidebar-link">
+                        @* <a href="/Admin/Categories" class="sidebar-link">
                             <i class="fas fa-folder"></i>
                             <span>دسته‌بندی‌ها</span>
-                        </a>
+                        </a> *@
 
-                        <a href="/Admin/Orders" class="sidebar-link">
+                        <a asp-page="Orders" class="sidebar-link">
                             <i class="fas fa-shopping-cart"></i>
-                            <span>سفارشات</span>
+                            <span>سرمایه گزاری ها</span>
                         </a>
 
-                        <a href="/Admin/Settings" class="sidebar-link">
+                        <a asp-page="Settings" class="sidebar-link">
                             <i class="fas fa-cog"></i>
                             <span>تنظیمات</span>
                         </a>
@@ -1389,5 +1384,7 @@
         //     }
         // }
     </script>
+    <script src="~/global.js"></script>
+
 </body>
 </html>
