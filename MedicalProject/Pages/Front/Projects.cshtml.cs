@@ -1,11 +1,13 @@
 using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Services.Product;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 
 namespace MedicalProject.Pages.Front
 {
+    [Authorize]
     public class ProjectsModel : PageModel
     {
         private readonly IProductService _service;
@@ -17,6 +19,7 @@ namespace MedicalProject.Pages.Front
 
         [BindProperty(SupportsGet = true)]
         public ProductFilterResult Result { get; set; }
+
 
         public async Task<IActionResult> OnGet(int pageId = 1, int take = 8)
         {

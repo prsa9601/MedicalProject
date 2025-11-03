@@ -13,10 +13,10 @@ namespace MedicalProject.Services.Auth
             _accessor = accessor;
         }
 
-        public async Task<ApiResult<string>?> Login(LoginCommand command)
+        public async Task<ApiResult<LoginCommandResult>?> Login(LoginCommand command)
         {
             var result = await _client.PostAsJsonAsync("Auth/LoginUser", command);
-            return await result.Content.ReadFromJsonAsync<ApiResult<string>>();
+            return await result.Content.ReadFromJsonAsync<ApiResult<LoginCommandResult>>();
         }
 
         public async Task<ApiResult?> Register(RegisterCommand command)

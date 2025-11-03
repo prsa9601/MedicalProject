@@ -1,6 +1,9 @@
 ﻿using MedicalProject.Infrastructure;
 using MedicalProject.Infrastructure.Utils.Decryption;
+using MedicalProject.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -8,17 +11,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.RegisterApiServices();
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+//builder.Services.AddRazorPages(options =>
+//{
+//    options.Conventions.ConfigureFilter(new AuthRedirectFilter());
+//}).AddRazorRuntimeCompilation();
 //builder.Services.Configure<RazorViewEngineOptions>(options =>
 //{
 //    options.ViewLocationFormats.Add("/Pages/Shared/{0}.cshtml");
 //});
 
-builder.Services.RegisterApiServices();
-builder.Services.AddHttpContextAccessor();
-
-//builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();
 
 //builder.Services.AddRazorPages()
 //    .AddRazorRuntimeCompilation()
@@ -34,6 +40,9 @@ builder.Services.AddHttpContextAccessor();
 //    option.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
 //    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 //});
+
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
+
 builder.Services.AddAuthentication(option =>
 {
     option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,7 +61,29 @@ builder.Services.AddAuthentication(option =>
         ValidateIssuer = true,
         ValidateIssuerSigningKey = true
     };
+    //کار نمیکنه
+    //option.Events = new JwtBearerEvents
+    //{
+    //    OnChallenge = async context =>
+    //    {
+    //        // جلوگیری از پاسخ پیش‌فرض
+    //        context.HandleResponse();
+
+    //        //if (context.Request.Path.StartsWithSegments("/api"))
+    //        //{
+    //        //    context.Response.StatusCode = 401;
+    //        //    await context.Response.WriteAsync("Unauthorized");
+    //        //}
+    //        if ((int)context.Response.StatusCode == 401)
+    //        {
+    //            context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
+    //        }
+    //    }
+    //};
 });
+
+
+
 
 
 
@@ -71,44 +102,68 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+//if (!app.Environment.IsDevelopment())
+//{
+//    app.UseExceptionHandler("/Error");
+//    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+//    app.UseHsts();
+//}
+
+
+
 
 
 app.Use(async (context, next) =>
 {
     var token = context.Request.Cookies["auth-Token"]?.ToString();
+    var refreshToken = context.Request.Cookies["RefreshToken"]?.ToString();
     if (string.IsNullOrWhiteSpace(token) == false)
     {
         context.Request.Headers.Append("Authorization", $"Bearer {token}");
+        context.Request.Headers.Append("AuthToken", $"Bearer {token}");
+    }
+    if (string.IsNullOrWhiteSpace(refreshToken) == false)
+    {
+        context.Request.Headers.Append("RefreshToken", $"{refreshToken}");
     }
     await next();
+
 });
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+//app.UseStatusCodePages(async context =>
+//{
+//    if (context.HttpContext.Response.StatusCode == 401)
+//    {
+//        app.Use(async (context, next) =>
+//        {
+//            context.Request.Path = $"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}";
+//            context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
+//            await next();
+//        });
+//    }
+//});
+//کار نمیکنه
 app.Use(async (context, next) =>
 {
+    await next();
 
     var status = context.Response.StatusCode;
     if (status == 401)
     {
         var path = context.Request.Path;
-        context.Response.Redirect($"/Auth/Login?redirectTo={path}");
+        context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
     }
-    await next();
 });
+
 app.UseAuthentication();
 
 
 app.UseAuthorization();
-
 app.MapStaticAssets();
 
 

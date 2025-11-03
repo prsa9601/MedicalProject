@@ -25,5 +25,9 @@
     {
         public string phoneNumber { get; set; }
     }
-
+    public class LoginCommandResult
+    {
+        public string RefreshToken { get; set; }
+        public string AuthToken { get; set; }
+    }
 }

@@ -68,18 +68,38 @@ namespace MedicalProject.Pages.Auth
 
                 if (result!.IsSuccess)
                 {
-                    Response.Cookies.Append("auth-Token", result!.Data, new CookieOptions
-                    {
-                        Expires = DateTimeOffset.Now.AddMinutes(30),
-                        HttpOnly = true,
-                        IsEssential = true
-                    });
+                    //Response.Cookies.Append("auth-Token", result!.Data, new CookieOptions
+                    //{
+                    //    Expires = DateTimeOffset.Now.AddMinutes(30),
+                    //    HttpOnly = true,
+                    //    IsEssential = true
+                    //});
                     //Response.Cookies.Append("auth-Token", result!.Data, new CookieOptions
                     //{
                     //    Expires = RememberMe ? DateTimeOffset.Now.AddDays(30) : DateTimeOffset.Now.AddHours(24),
                     //    HttpOnly = true,
                     //    IsEssential = true
                     //});
+
+                    if (result.Data.AuthToken is not null)
+                    {
+                        Response.Cookies.Append("auth-Token", result!.Data.AuthToken, new CookieOptions
+                        {
+                            Expires = DateTimeOffset.Now.AddMinutes(30),
+                            HttpOnly = true,
+                            IsEssential = true
+                        });
+                    }
+                    if (result.Data.RefreshToken is not null)
+                    {
+                        Response.Cookies.Append("RefreshToken", result!.Data.RefreshToken, new CookieOptions
+                        {
+                            Expires = DateTimeOffset.Now.AddDays(14),
+                            HttpOnly = true,
+                            IsEssential = true
+                        });
+                    }
+
 
                     TempData["Success"] = result.MetaData.Message;
                     return RedirectToPage($"{RedirectTo}");
