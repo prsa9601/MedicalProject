@@ -27,6 +27,7 @@ namespace MedicalProject.Models.User
     public class ChangePasswordCommand
     {
         public Guid userId { get; set; }
+        public string ipAddress { get; set; }
         public required string password { get; set; }
     }
 

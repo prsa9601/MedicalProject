@@ -18,6 +18,7 @@ namespace MedicalProject.Services.User
 
 
         Task<UserDto?> GetUserById(Guid userId);
+        Task<UserDto?> CheckOtpCodeForPhoneNumber(string phoneNumber, string ipAddress);
         Task<UserFilterResult> GetUserByFilter(UserFilterParam param);
     }
     public class UserService : IUserService
@@ -49,7 +50,7 @@ namespace MedicalProject.Services.User
             var result = await _client.PostAsync("User/CompletionOfInformation", form);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
-    
+
 
         public async Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command)
         {
@@ -92,7 +93,6 @@ namespace MedicalProject.Services.User
 
         public async Task<UserDto?> GetUserById(Guid userId)
         {
-
             var result = await _client.GetFromJsonAsync<ApiResult<UserDto?>>($"User/GetUserById?userId={userId}");
             return result?.Data;
         }
@@ -125,6 +125,12 @@ namespace MedicalProject.Services.User
         {
             var result = await _client.PostAsJsonAsync("User/ChangePassword", command);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<UserDto?> CheckOtpCodeForPhoneNumber(string phoneNumber, string ipAddress)
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<UserDto>>($"User/CheckOtpCodeForPhoneNumber?phoneNumber={phoneNumber}&ipAddress={ipAddress}");
+            return result?.Data;
         }
     }
 }

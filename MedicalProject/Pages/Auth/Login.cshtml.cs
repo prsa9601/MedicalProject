@@ -1,4 +1,6 @@
-﻿using MedicalProject.Services.Auth;
+﻿using MedicalProject.Models.User.DTOs;
+using MedicalProject.Services.Auth;
+using MedicalProject.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -8,10 +10,12 @@ namespace MedicalProject.Pages.Auth
     public class LoginModel : PageModel
     {
         private readonly IAuthService _service;
+        private readonly IUserService _userService;
 
-        public LoginModel(IAuthService service)
+        public LoginModel(IAuthService service, IUserService userService)
         {
             _service = service;
+            _userService = userService;
         }
 
         [BindProperty]
@@ -30,10 +34,28 @@ namespace MedicalProject.Pages.Auth
         public bool RememberMe { get; set; }
 
 
-        public void OnGet(string phoneNumber, string redirectTo)
+        [BindProperty]
+        public UserDto user { get; set; }
+
+        public async Task<IActionResult> OnGet(string phoneNumber, string redirectTo)
         {
+            if (phoneNumber == null)
+            {
+                TempData["Error"] = "ابتدا باید درخواست کد تایید بدهید.";
+                return Redirect("/Auth/VerificationPhoneNumber");
+            }
+            var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
+
+            user = await _userService.CheckOtpCodeForPhoneNumber(phoneNumber, ipAddress);
+            if (user == null)
+            {
+                TempData["Error"] = "ابتدا باید درخواست کد تایید بدهید.";
+                return Redirect("/Auth/VerificationPhoneNumber");
+            }
             RedirectTo = redirectTo ?? "/Index";
             PhoneNumber = phoneNumber;
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

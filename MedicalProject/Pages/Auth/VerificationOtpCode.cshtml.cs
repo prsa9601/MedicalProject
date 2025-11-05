@@ -60,7 +60,7 @@ namespace MedicalProject.Pages.Auth
                         AppStatusCode = result.MetaData.AppStatusCode,
                         Message = result.MetaData.Message,
                     }
-                }, Redirect($"{Action}?phoneNumber={PhoneNumber}&path={Path}"));
+                }, Redirect($"{Action}?phoneNumber={PhoneNumber}&redirectTo={Path}"));
             
             TempData["Error"] = result.MetaData.Message;
 
