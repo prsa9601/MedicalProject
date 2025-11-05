@@ -72,6 +72,41 @@
             color: #9ca3af;
         }
 
+        .phone-input-container {
+            position: relative;
+        }
+
+        .country-code {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            z-index: 10;
+        }
+
+        .phone-icon {
+            position: absolute;
+            left: 65px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.125rem;
+            color: #9ca3af;
+            z-index: 10;
+        }
+
+        .phone-input {
+            padding-left: 90px !important;
+            direction: ltr;
+            text-align: left;
+        }
+
         .password-toggle {
             position: absolute;
             left: 2.5rem;
@@ -80,6 +115,10 @@
             color: #9ca3af;
             cursor: pointer;
             transition: color 0.2s;
+            background: none;
+            border: none;
+            padding: 4px;
+            border-radius: 4px;
         }
 
             .password-toggle:hover {
@@ -106,6 +145,12 @@
                 box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
             }
 
+            .submit-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: #9ca3af;
+            }
+
         .back-to-login {
             text-align: center;
             margin-top: 1.5rem;
@@ -127,6 +172,7 @@
             color: #dc2626;
             font-size: 0.875rem;
             margin-top: 0.25rem;
+            display: block;
         }
 
         .alert-error {
@@ -147,6 +193,12 @@
             margin-bottom: 1rem;
         }
 
+        .phone-hint {
+            color: #6b7280;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
         /* حالت موبایل */
         @@media screen and (max-width: 600px) {
             .register-card {
@@ -156,6 +208,18 @@
 
             .register-title {
                 font-size: 1.5rem;
+            }
+
+            .phone-input {
+                padding-left: 85px !important;
+            }
+
+            .phone-icon {
+                left: 60px;
+            }
+
+            .grid-cols-1.md\:grid-cols-2 {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -177,7 +241,7 @@
         </div>
 
         <!-- Registration Form -->
-        <form method="post" class="space-y-4">
+        <form method="post" class="space-y-4" id="registerForm">
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert-error">
@@ -191,13 +255,17 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="input-group">
-                    <input type="text"
-                           id="FirstName"
-                           name="FirstName"
-                           placeholder="نام"
-                           value="@Model.FirstName"
-                           required />
-                    <i class="input-icon fa-solid fa-user"></i>
+                    <label for="FirstName" class="block text-sm font-medium text-gray-700 mb-2">نام</label>
+                    <div class="relative">
+                        <input type="text"
+                               id="FirstName"
+                               name="FirstName"
+                               class="w-full pr-10 pl-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                               placeholder="نام"
+                               value="@Model.FirstName"
+                               required />
+                        <i class="input-icon fa-solid fa-user"></i>
+                    </div>
                     @if (ViewData.ModelState["FirstName"]?.Errors?.Count > 0)
                     {
                         <span class="text-error">@ViewData.ModelState["FirstName"].Errors[0].ErrorMessage</span>
@@ -205,13 +273,17 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="text"
-                           id="LastName"
-                           name="LastName"
-                           placeholder="نام خانوادگی"
-                           value="@Model.LastName"
-                           required />
-                    <i class="input-icon fa-solid fa-user"></i>
+                    <label for="LastName" class="block text-sm font-medium text-gray-700 mb-2">نام خانوادگی</label>
+                    <div class="relative">
+                        <input type="text"
+                               id="LastName"
+                               name="LastName"
+                               class="w-full pr-10 pl-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                               placeholder="نام خانوادگی"
+                               value="@Model.LastName"
+                               required />
+                        <i class="input-icon fa-solid fa-user"></i>
+                    </div>
                     @if (ViewData.ModelState["LastName"]?.Errors?.Count > 0)
                     {
                         <span class="text-error">@ViewData.ModelState["LastName"].Errors[0].ErrorMessage</span>
@@ -220,30 +292,44 @@
             </div>
 
             <div class="input-group">
-                <input type="tel"
-                       id="PhoneNumber"
-                       name="PhoneNumber"
-                       placeholder="شماره تماس"
-                       value="@Model.PhoneNumber"
-                       required />
-                <i class="input-icon fa-solid fa-phone"></i>
+                <label for="PhoneNumber" class="block text-sm font-medium text-gray-700 mb-2">شماره تلفن همراه</label>
+                <div class="phone-input-container">
+                    <span class="country-code">98+</span>
+                    <i class="phone-icon fa-solid fa-phone"></i>
+                    <input type="tel"
+                           id="PhoneNumber"
+                           name="PhoneNumber"
+                           class="phone-input w-full pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="912 345 6789"
+                           maxlength="11"
+                           value="@Model.PhoneNumber"
+                           required
+                           dir="ltr">
+                </div>
                 @if (ViewData.ModelState["PhoneNumber"]?.Errors?.Count > 0)
                 {
                     <span class="text-error">@ViewData.ModelState["PhoneNumber"].Errors[0].ErrorMessage</span>
                 }
+                <p class="phone-hint">شماره تلفن همراه خود را بدون صفر وارد کنید</p>
             </div>
 
             <div class="input-group">
-                <input type="password"
-                       id="Password"
-                       name="Password"
-                       placeholder="رمز عبور"
-                       required />
-                <i class="input-icon fa-solid fa-lock"></i>
-                <span class="password-toggle" onclick="togglePassword('Password')">
-                    <i id="eyeIconPassword" class="fa-solid fa-eye hidden"></i>
-                    <i id="eyeOffIconPassword" class="fa-solid fa-eye-slash"></i>
-                </span>
+                <label for="Password" class="block text-sm font-medium text-gray-700 mb-2">رمز عبور</label>
+                <div class="relative">
+                    <input type="password"
+                           id="Password"
+                           name="Password"
+                           class="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="رمز عبور خود را وارد کنید"
+                           required />
+                    <i class="input-icon fa-solid fa-lock" style="left: 12px;"></i>
+                    <button type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('Password')">
+                        <i id="eyeIconPassword" class="fa-solid fa-eye hidden"></i>
+                        <i id="eyeOffIconPassword" class="fa-solid fa-eye-slash"></i>
+                    </button>
+                </div>
                 @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
                 {
                     <span class="text-error">@ViewData.ModelState["Password"].Errors[0].ErrorMessage</span>
@@ -251,23 +337,29 @@
             </div>
 
             <div class="input-group">
-                <input type="password"
-                       id="ConfirmPassword"
-                       name="ConfirmPassword"
-                       placeholder="تکرار رمز عبور"
-                       required />
-                <i class="input-icon fa-solid fa-lock"></i>
-                <span class="password-toggle" onclick="togglePassword('ConfirmPassword')">
-                    <i id="eyeIconConfirmPassword" class="fa-solid fa-eye hidden"></i>
-                    <i id="eyeOffIconConfirmPassword" class="fa-solid fa-eye-slash"></i>
-                </span>
+                <label for="ConfirmPassword" class="block text-sm font-medium text-gray-700 mb-2">تکرار رمز عبور</label>
+                <div class="relative">
+                    <input type="password"
+                           id="ConfirmPassword"
+                           name="ConfirmPassword"
+                           class="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="رمز عبور خود را مجدداً وارد کنید"
+                           required />
+                    <i class="input-icon fa-solid fa-lock" style="left: 12px;"></i>
+                    <button type="button"
+                            class="password-toggle"
+                            onclick="togglePassword('ConfirmPassword')">
+                        <i id="eyeIconConfirmPassword" class="fa-solid fa-eye hidden"></i>
+                        <i id="eyeOffIconConfirmPassword" class="fa-solid fa-eye-slash"></i>
+                    </button>
+                </div>
                 @if (ViewData.ModelState["ConfirmPassword"]?.Errors?.Count > 0)
                 {
                     <span class="text-error">@ViewData.ModelState["ConfirmPassword"].Errors[0].ErrorMessage</span>
                 }
             </div>
 
-            <button type="submit" class="submit-btn">
+            <button type="submit" id="submitButton" class="submit-btn">
                 ایجاد حساب کاربری
             </button>
         </form>
@@ -296,6 +388,70 @@
 
 @section Scripts {
     <script>
+        const phoneInput = document.getElementById('PhoneNumber');
+        const submitButton = document.getElementById('submitButton');
+        const form = document.getElementById('registerForm');
+
+        // فرمت خودکار شماره تلفن
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            // اگر با 9 شروع شد (فرمت ایرانی)
+            if (value.startsWith('9')) {
+                value = value.substring(0, 10);
+                if (value.length >= 4) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{3})(\d{1})/, '$1 $2');
+                }
+            }
+
+            e.target.value = value;
+            validateForm();
+        });
+
+        // ولیدیشن شماره تلفن
+        function validatePhoneNumber() {
+            const value = phoneInput.value.replace(/\s/g, '');
+            return /^9[0-9]{9}$/.test(value);
+        }
+
+        // ولیدیشن کل فرم
+        function validateForm() {
+            const firstName = document.getElementById('FirstName').value.trim();
+            const lastName = document.getElementById('LastName').value.trim();
+            const password = document.getElementById('Password').value.trim();
+            const confirmPassword = document.getElementById('ConfirmPassword').value.trim();
+            const isPhoneValid = validatePhoneNumber();
+
+            const isValid = firstName && lastName && isPhoneValid && password && confirmPassword && password === confirmPassword;
+
+            submitButton.disabled = !isValid;
+            return isValid;
+        }
+
+        // مدیریت ارسال فرم
+        form.addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+
+            // نمایش حالت loading
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                در حال ایجاد حساب...
+            `;
+
+            return true;
+        });
+
         // نمایش/مخفی کردن رمز عبور
         function togglePassword(fieldId) {
             const passwordInput = document.getElementById(fieldId);
@@ -313,82 +469,57 @@
             }
         }
 
-        // اعتبارسنجی فرم
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
+        // ولیدیشن هنگام تغییر مقدار
+        phoneInput.addEventListener('blur', validateForm);
+        phoneInput.addEventListener('input', validateForm);
 
-            form.addEventListener('submit', function(event) {
-                const firstName = document.getElementById('FirstName').value.trim();
-                const lastName = document.getElementById('LastName').value.trim();
-                const phoneNumber = document.getElementById('PhoneNumber').value.trim();
-                const password = document.getElementById('Password').value.trim();
-                const confirmPassword = document.getElementById('ConfirmPassword').value.trim();
-                let isValid = true;
+        // ولیدیشن سایر فیلدها
+        document.getElementById('FirstName').addEventListener('input', validateForm);
+        document.getElementById('LastName').addEventListener('input', validateForm);
+        document.getElementById('Password').addEventListener('input', validateForm);
+        document.getElementById('ConfirmPassword').addEventListener('input', validateForm);
 
-                // پاک کردن خطاهای قبلی
-                document.querySelectorAll('.text-error').forEach(el => el.remove());
+        // جلوگیری از ورود کاراکترهای غیر عددی در فیلد تلفن
+        phoneInput.addEventListener('keydown', function(e) {
+            if (!/[\d\s]/.test(e.key) &&
+                !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
 
-                if (!firstName) {
-                    showFieldError('FirstName', 'لطفا نام خود را وارد کنید');
-                    isValid = false;
-                }
+        // اعتبارسنجی همزمان تکرار رمز عبور
+        const passwordInput = document.getElementById('Password');
+        const confirmPasswordInput = document.getElementById('ConfirmPassword');
 
-                if (!lastName) {
-                    showFieldError('LastName', 'لطفا نام خانوادگی خود را وارد کنید');
-                    isValid = false;
-                }
+        confirmPasswordInput.addEventListener('input', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
 
-                if (!phoneNumber) {
-                    showFieldError('PhoneNumber', 'لطفا شماره تماس خود را وارد کنید');
-                    isValid = false;
-                }
-
-                if (!password) {
-                    showFieldError('Password', 'لطفا رمز عبور خود را وارد کنید');
-                    isValid = false;
-                }
-
-                if (!confirmPassword) {
-                    showFieldError('ConfirmPassword', 'لطفا تکرار رمز عبور را وارد کنید');
-                    isValid = false;
-                }
-
-                if (password && confirmPassword && password !== confirmPassword) {
-                    showFieldError('ConfirmPassword', 'تکرار رمزعبور و رمز عبور مطابقت ندارند');
-                    isValid = false;
-                }
-
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            });
-
-            function showFieldError(fieldId, message) {
-                const field = document.getElementById(fieldId);
-                const errorElement = document.createElement('span');
-                errorElement.className = 'text-error';
-                errorElement.textContent = message;
-                field.parentElement.appendChild(errorElement);
+            // پاک کردن خطاهای قبلی مربوط به مطابقت رمز عبور
+            const existingError = this.parentElement.parentElement.querySelector('.text-error');
+            if (existingError && existingError.textContent.includes('مطابقت')) {
+                existingError.remove();
             }
 
-            // اعتبارسنجی همزمان تکرار رمز عبور
-            const passwordInput = document.getElementById('Password');
-            const confirmPasswordInput = document.getElementById('ConfirmPassword');
+            if (password && confirmPassword && password !== confirmPassword) {
+                const errorElement = document.createElement('span');
+                errorElement.className = 'text-error';
+                errorElement.textContent = 'تکرار رمزعبور و رمز عبور مطابقت ندارند';
+                this.parentElement.parentElement.appendChild(errorElement);
+            }
 
-            confirmPasswordInput.addEventListener('input', function() {
-                const password = passwordInput.value;
-                const confirmPassword = this.value;
+            validateForm();
+        });
 
-                // پاک کردن خطاهای قبلی
-                const existingError = this.parentElement.querySelector('.text-error');
-                if (existingError && existingError.textContent.includes('مطابقت')) {
-                    existingError.remove();
-                }
+        // ولیدیشن اولیه هنگام لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            validateForm();
 
-                if (password && confirmPassword && password !== confirmPassword) {
-                    showFieldError('ConfirmPassword', 'تکرار رمزعبور و رمز عبور مطابقت ندارند');
-                }
-            });
+            // فوکوس روی فیلد نام اگر خالی است
+            const firstNameInput = document.getElementById('FirstName');
+            if (!firstNameInput.value.trim()) {
+                firstNameInput.focus();
+            }
         });
     </script>
 }

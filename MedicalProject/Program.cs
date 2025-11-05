@@ -162,8 +162,8 @@ app.Use(async (context, next) =>
 
 app.UseAuthentication();
 
-
 app.UseAuthorization();
+
 app.MapStaticAssets();
 
 

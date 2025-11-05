@@ -20,11 +20,12 @@ namespace MedicalProject.Pages.Auth
         [BindProperty]
         [Display(Name = "شماره تماس")]
         public string PhoneNumber { get; set; }
+
         public int VerificationCode { get; set; }
 
         [BindProperty]
         [Display(Name = "رمزعبور")]
-        public string Password { get; set; }
+        public string NewPassword { get; set; }
 
         [BindProperty]
         [Display(Name = "تکرار رمزعبور")]
@@ -40,8 +41,10 @@ namespace MedicalProject.Pages.Auth
         {
             var result = await _service.ChangePassword(new Models.User.ChangePasswordCommand
             {
-                password = Password,
+                password = NewPassword,
             });
+
+            //برای otpcode بیاد و ارور بده سمت سرور
 
             if (result.IsSuccess)
                 return RedirectAndShowAlert(result, Redirect("/Index"));

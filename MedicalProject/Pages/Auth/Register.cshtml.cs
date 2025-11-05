@@ -58,6 +58,11 @@ namespace MedicalProject.Pages.Auth
                     TempData["Success"] = result.MetaData.Message;
                     return RedirectAndShowAlert(result, Redirect("/auth/Login"));
                 }
+                else
+                {
+                    TempData["Error"] = result.MetaData.Message;
+                    return Page();
+                }
             }
             else
             {

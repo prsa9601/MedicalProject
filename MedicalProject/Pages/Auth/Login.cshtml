@@ -72,6 +72,41 @@
             color: #9ca3af;
         }
 
+        .phone-input-container {
+            position: relative;
+        }
+
+        .country-code {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #374151;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #d1d5db;
+            z-index: 10;
+        }
+
+        .phone-icon {
+            position: absolute;
+            left: 65px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.125rem;
+            color: #9ca3af;
+            z-index: 10;
+        }
+
+        .phone-input {
+            padding-left: 90px !important;
+            direction: ltr;
+            text-align: left;
+        }
+
         .remember-me {
             display: flex;
             align-items: center;
@@ -107,6 +142,12 @@
                 box-shadow: 0 6px 8px rgba(59, 130, 246, 0.3);
             }
 
+            .submit-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                background: #9ca3af;
+            }
+
         .back-to-login {
             text-align: center;
             margin-top: 1.5rem;
@@ -128,6 +169,7 @@
             color: #dc2626;
             font-size: 0.875rem;
             margin-top: 0.25rem;
+            display: block;
         }
 
         .alert-error {
@@ -139,6 +181,30 @@
             margin-bottom: 1rem;
         }
 
+        .phone-hint {
+            color: #6b7280;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: color 0.2s;
+        }
+
+            .password-toggle:hover {
+                color: #6b7280;
+            }
+
         /* حالت موبایل */
         @@media screen and (max-width: 600px) {
             .login-card {
@@ -148,6 +214,14 @@
 
             .login-title {
                 font-size: 1.5rem;
+            }
+
+            .phone-input {
+                padding-left: 85px !important;
+            }
+
+            .phone-icon {
+                left: 60px;
             }
         }
     </style>
@@ -172,7 +246,7 @@
         </div>
 
         <!-- Login Form -->
-        <form method="post" class="space-y-4">
+        <form method="post" class="space-y-4" id="loginForm">
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert-error">
@@ -181,32 +255,44 @@
             }
 
             <div class="input-group">
-                <input type="text"
-                       id="PhoneNumber"
-                       name="PhoneNumber"
-                       placeholder="شماره تماس خود را وارد کنید"
-                       value="@Model.PhoneNumber"
-                       required />
-                <i class="input-icon fa-solid fa-phone"></i>
+                <label for="PhoneNumber" class="block text-sm font-medium text-gray-700 mb-2">شماره تلفن همراه</label>
+                <div class="phone-input-container">
+                    <span class="country-code">98+</span>
+                    <i class="phone-icon fa-solid fa-phone"></i>
+                    <input type="tel"
+                           id="PhoneNumber"
+                           name="PhoneNumber"
+                           class="phone-input w-full pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="912 345 6789"
+                           maxlength="11"
+                           value="@Model.PhoneNumber"
+                           required
+                           dir="ltr">
+                </div>
                 @if (ViewData.ModelState["PhoneNumber"]?.Errors?.Count > 0)
                 {
                     <span class="text-error">@ViewData.ModelState["PhoneNumber"].Errors[0].ErrorMessage</span>
                 }
+                <p class="phone-hint">شماره تلفن همراه خود را بدون صفر وارد کنید</p>
             </div>
 
             <div class="input-group">
-                <input type="password"
-                       id="Password"
-                       name="Password"
-                       placeholder="رمز عبور خود را وارد کنید"
-                       required />
-                <i class="input-icon fa-solid fa-lock"></i>
-                <button type="button"
-                        class="absolute left-10 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-                        onclick="togglePassword()">
-                    <i id="eyeIcon" class="fa-solid fa-eye hidden"></i>
-                    <i id="eyeOffIcon" class="fa-solid fa-eye-slash"></i>
-                </button>
+                <label for="Password" class="block text-sm font-medium text-gray-700 mb-2">رمز عبور</label>
+                <div class="relative">
+                    <input type="password"
+                           id="Password"
+                           name="Password"
+                           class="w-full pr-10 pl-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                           placeholder="رمز عبور خود را وارد کنید"
+                           required />
+                    <i class="input-icon fa-solid fa-lock" style="left: 12px;"></i>
+                    <button type="button"
+                            class="password-toggle"
+                            onclick="togglePassword()">
+                        <i id="eyeIcon" class="fa-solid fa-eye hidden"></i>
+                        <i id="eyeOffIcon" class="fa-solid fa-eye-slash"></i>
+                    </button>
+                </div>
                 @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
                 {
                     <span class="text-error">@ViewData.ModelState["Password"].Errors[0].ErrorMessage</span>
@@ -222,7 +308,7 @@
                 <label for="RememberMe">مرا به خاطر بسپار</label>
             </div>
 
-            <button type="submit" class="submit-btn">
+            <button type="submit" id="submitButton" class="submit-btn">
                 ورود به حساب کاربری
             </button>
         </form>
@@ -250,6 +336,72 @@
 
 @section Scripts {
     <script>
+        const phoneInput = document.getElementById('PhoneNumber');
+        const submitButton = document.getElementById('submitButton');
+        const form = document.getElementById('loginForm');
+
+        // فرمت خودکار شماره تلفن
+        phoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            // اگر با 9 شروع شد (فرمت ایرانی)
+            if (value.startsWith('9')) {
+                value = value.substring(0, 10);
+                if (value.length >= 4) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{3})(\d{1})/, '$1 $2');
+                }
+            }
+
+            e.target.value = value;
+            validatePhoneNumber();
+        });
+
+        // ولیدیشن شماره تلفن
+        function validatePhoneNumber() {
+            const value = phoneInput.value.replace(/\s/g, '');
+            const isValid = /^9[0-9]{9}$/.test(value);
+
+            if (value.length === 0) {
+                submitButton.disabled = true;
+                return false;
+            }
+
+            if (!isValid) {
+                submitButton.disabled = true;
+            } else {
+                submitButton.disabled = false;
+            }
+
+            return isValid;
+        }
+
+        // مدیریت ارسال فرم
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('Password').value.trim();
+
+            if (!validatePhoneNumber() || !password) {
+                e.preventDefault();
+                return false;
+            }
+
+            // نمایش حالت loading
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                در حال ورود...
+            `;
+
+            // فرم به صورت طبیعی ارسال می‌شود
+            return true;
+        });
+
         // نمایش/مخفی کردن رمز عبور
         function togglePassword() {
             const passwordInput = document.getElementById('Password');
@@ -267,44 +419,26 @@
             }
         }
 
-        // اعتبارسنجی فرم
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
+        // ولیدیشن هنگام تغییر مقدار
+        phoneInput.addEventListener('blur', validatePhoneNumber);
+        phoneInput.addEventListener('input', validatePhoneNumber);
 
-            form.addEventListener('submit', function(event) {
-                const phoneNumber = document.getElementById('PhoneNumber').value.trim();
-                const password = document.getElementById('Password').value.trim();
-                let isValid = true;
-
-                // پاک کردن خطاهای قبلی
-                document.querySelectorAll('.text-error').forEach(el => el.remove());
-
-                if (!phoneNumber) {
-                    showFieldError('PhoneNumber', 'لطفا شماره تماس خود را وارد کنید');
-                    isValid = false;
-                }
-
-                if (!password) {
-                    showFieldError('Password', 'لطفا رمز عبور خود را وارد کنید');
-                    isValid = false;
-                }
-
-                if (!isValid) {
-                    event.preventDefault();
-                }
-            });
-
-            function showFieldError(fieldId, message) {
-                const field = document.getElementById(fieldId);
-                const errorElement = document.createElement('span');
-                errorElement.className = 'text-error';
-                errorElement.textContent = message;
-                field.parentElement.appendChild(errorElement);
+        // جلوگیری از ورود کاراکترهای غیر عددی
+        phoneInput.addEventListener('keydown', function(e) {
+            if (!/[\d\s]/.test(e.key) &&
+                !['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.key)) {
+                e.preventDefault();
             }
         });
 
+        // ولیدیشن اولیه هنگام لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            validatePhoneNumber();
 
-
-
+            // فوکوس روی فیلد شماره تلفن اگر خالی است
+            if (!phoneInput.value.trim()) {
+                phoneInput.focus();
+            }
+        });
     </script>
 }

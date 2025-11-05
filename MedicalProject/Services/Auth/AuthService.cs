@@ -38,10 +38,10 @@ namespace MedicalProject.Services.Auth
             }
         }
 
-        public async Task<ApiResult?> GenerateAndSendOtpCode(GenerateAndSendOtpCodeCommand command)
+        public async Task<ApiResult<string>> GenerateAndSendOtpCode(GenerateAndSendOtpCodeCommand command)
         {
             var result = await _client.PostAsJsonAsync("Auth/GenerateOtpCode", command);
-            return await result.Content.ReadFromJsonAsync<ApiResult>();
+            return await result.Content.ReadFromJsonAsync<ApiResult<string>>();
         }
         public async Task<ApiResult<bool>?> VerificationOtpCode(VerificationOtpCodeCommand command)
         {

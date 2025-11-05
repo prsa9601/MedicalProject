@@ -48,14 +48,14 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
             });
         }
 
-        if (!request.Headers.TryGetValues("Authorization", out var i))
-        {
-            if (i == null)
-            {
-                return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+        //if (!request.Headers.TryGetValues("Authorization", out var i))
+        //{
+        //    if (i == null)
+        //    {
+        //        return new HttpResponseMessage(HttpStatusCode.Unauthorized);
 
-            }
-        }
+        //    }
+        //}
         return response;
     }
 
