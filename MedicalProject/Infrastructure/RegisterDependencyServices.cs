@@ -3,7 +3,9 @@ using MedicalProject.Infrastructure.FileUtil.Interfaces;
 using MedicalProject.Infrastructure.FileUtil.Services;
 using MedicalProject.Infrastructure.RazorUtils;
 using MedicalProject.Services.Auth;
+using MedicalProject.Services.Order;
 using MedicalProject.Services.Product;
+using MedicalProject.Services.PurchaseReport;
 using MedicalProject.Services.User;
 
 namespace MedicalProject.Infrastructure;
@@ -38,7 +40,25 @@ public static class RegisterDependencyServices
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         
       
+        services.AddHttpClient<IProductInventoryService, ProductInventoryService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+      
         services.AddHttpClient<IUserService, UserService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+      
+        services.AddHttpClient<IPurchaseReportService, PurchaseReportService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+      
+        services.AddHttpClient<IOrderService, OrderService>(httpClient =>
         {
             httpClient.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();

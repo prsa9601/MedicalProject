@@ -18,9 +18,17 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
    
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery اول (اگر استفاده می‌کنی) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- سپس SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -498,7 +506,7 @@
                             <span>کاربران</span>
                         </a>
 
-                        <a asp-page="Product" class="sidebar-link">
+                        <a asp-page="/Admin/Product/Index" class="sidebar-link">
                             <i class="fas fa-project-diagram"></i>
                             <span>پروژه‌ها</span>
                         </a>

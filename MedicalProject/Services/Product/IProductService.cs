@@ -32,7 +32,7 @@ namespace MedicalProject.Services.Product
             form.Add(new StringContent(command.title), "title");
             form.Add(new StringContent(command.description), "description");
             form.Add(new StringContent(command.slug), "slug");
-            if(command.Canonical is not null)
+            if (command.Canonical is not null)
                 form.Add(new StringContent(command.Canonical), "Canonical");
 
             if (command.MetaTitle is not null)
@@ -88,12 +88,14 @@ namespace MedicalProject.Services.Product
             if (command.IndexPage is not null)
                 form.Add(new StringContent(command.IndexPage.ToString()), "IndexPage");
 
-            form.Add(
-                    new StreamContent(command.Image.OpenReadStream()),
-                    "Image",
-                    command.Image.FileName
-                );
-
+            if (command.Image is not null)
+            {
+                form.Add(
+                        new StreamContent(command.Image.OpenReadStream()),
+                        "Image",
+                        command.Image.FileName
+                    );
+            }
 
             var result = await _client.PatchAsync($"{ModuleName}/EditProduct", form);
             return await result.Content.ReadFromJsonAsync<ApiResult>();

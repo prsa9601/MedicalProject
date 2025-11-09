@@ -8,12 +8,15 @@ namespace MedicalProject.Pages.Admin.Product
     public class DetailsModel : PageModel
     {
         private readonly IProductService _productService;
+        private readonly IProductInventoryService _inventoryService;
 
-        public DetailsModel(IProductService productService)
+        public DetailsModel(IProductService productService, IProductInventoryService inventoryService)
         {
             _productService = productService;
+            _inventoryService = inventoryService;
         }
 
+        [BindProperty]
         public ProductDto Product { get; set; }
 
         public async Task<IActionResult> OnGet(Guid productId)
@@ -28,34 +31,35 @@ namespace MedicalProject.Pages.Admin.Product
             return Page();
         }
 
-        //public async Task<IActionResult> OnPostUpdateInventory(int productId, string totalPrice, int dong, string profit, PaymentTime profitableTime)
-        //{
-        //    try
-        //    {
-        //        var result = await _productService.UpdateInventory(productId, new InventoryDto
-        //        {
-        //            TotalPrice = totalPrice,
-        //            Dong = dong,
-        //            Profit = profit,
-        //            ProfitableTime = profitableTime
-        //        });
+        public async Task<IActionResult> OnPostUpdateInventory(Guid productId, string totalPrice/*, int dong*/, string profit, PaymentTime profitableTime)
+        {
+            try
+            {
+                var result = await _inventoryService.Edit(new Models.Inventory.EditInventoryCommand
+                {
+                    dong = 6,
+                    paymentTime = profitableTime,
+                    productId = productId,
+                    totalPrice = totalPrice,
+                    profit = profit,
+                });
 
-        //        if (result)
-        //        {
-        //            TempData["Success"] = "اطلاعات مالی با موفقیت بروزرسانی شد";
-        //        }
-        //        else
-        //        {
-        //            TempData["Error"] = "خطا در بروزرسانی اطلاعات مالی";
-        //        }
-        //    }
-        //    catch (System.Exception ex)
-        //    {
-        //        TempData["Error"] = "خطا در بروزرسانی اطلاعات مالی: " + ex.Message;
-        //    }
+                if (result.IsSuccess)
+                {
+                    TempData["Success"] = "اطلاعات مالی با موفقیت بروزرسانی شد";
+                }
+                else
+                {
+                    TempData["Error"] = "خطا در بروزرسانی اطلاعات مالی";
+                }
+            }
+            catch (System.Exception ex)
+            {
+                TempData["Error"] = "خطا در بروزرسانی اطلاعات مالی: " + ex.Message;
+            }
 
-        //    return RedirectToPage(new { productId });
-        //}
+            return RedirectToPage(new { productId });
+        }
 
         //public async Task<IActionResult> OnPostToggleStatus(int productId)
         //{

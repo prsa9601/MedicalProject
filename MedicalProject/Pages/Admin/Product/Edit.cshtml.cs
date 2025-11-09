@@ -49,7 +49,7 @@ namespace MedicalProject.Pages.Admin.Product
                 }, Redirect("Index"));
             }
 
-            title = product.Title;  
+            title = product.Title;
             description = product.Description;
             Schema = product.SeoData.Schema;
             productImageName = product.ImageName;

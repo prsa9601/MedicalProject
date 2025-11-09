@@ -74,7 +74,6 @@ namespace MedicalProject.Pages.Auth
             }
 
 
-
             try
             {
                 var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();

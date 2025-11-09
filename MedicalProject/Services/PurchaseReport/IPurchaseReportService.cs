@@ -1,0 +1,39 @@
+﻿using MedicalProject.Models;
+using MedicalProject.Models.Order;
+using MedicalProject.Models.PurchaseReport;
+
+namespace MedicalProject.Services.PurchaseReport
+{
+    public interface IPurchaseReportService
+    {
+        Task<PurchaseReportFilterResult> GetFilterForAdmin(PurchaseReportFilterParam param, CancellationToken cancellationToken);
+    }
+    internal class PurchaseReportService : IPurchaseReportService
+    {
+        private readonly HttpClient _client;
+        private const string ModuleName = "PurchaseReport";
+
+        public PurchaseReportService(HttpClient client)
+        {
+            _client = client;
+        }
+
+        public async Task<PurchaseReportFilterResult> GetFilterForAdmin(PurchaseReportFilterParam param, CancellationToken cancellationToken)
+        {
+            string url = $"{ModuleName}/GetPurchaseReportFilterForAdmin?take={param.Take}&pageId={param.PageId}";
+            if (param.EndDate != DateTime.MaxValue && param.EndDate != DateTime.MinValue)
+                url += $"&EndDate={param.EndDate}";
+            if (param.StartDate != DateTime.MaxValue && param.StartDate != DateTime.MinValue)
+                url += $"&StartDate={param.StartDate}";
+            if (param.PurchaseReportFilter is not null && param.PurchaseReportFilter != PurchaseReportFilter.None)
+                url += $"&PurchaseReportFilter={param.PurchaseReportFilter}";
+            if (param.ProductId is not null)
+                url += $"&ProductId={param.ProductId}";
+            if (param.PhoneNumber is not null)
+                url += $"&PhoneNumber={param.PhoneNumber}";
+
+            var result = await _client.GetFromJsonAsync<ApiResult<PurchaseReportFilterResult>>(url, cancellationToken);
+            return result?.Data;
+        }
+    }
+}
