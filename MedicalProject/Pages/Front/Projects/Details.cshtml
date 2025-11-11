@@ -1,0 +1,400 @@
+﻿@page
+@using MedicalProject.Models.Product
+@model MedicalProject.Pages.Front.Projects.DetailsModel
+@{
+    ViewData["Title"] = Model.Product?.Title ?? "محصول";
+}
+
+<div class="min-h-screen bg-gray-50">
+    <!-- Product Header -->
+    <section class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <nav class="flex items-center space-x-4 space-x-reverse text-sm text-gray-500 mb-4">
+                <a href="/" class="hover:text-blue-600 transition-colors">خانه</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <a href="/Front/Projects" class="hover:text-blue-600 transition-colors">پروژه‌ها</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+                <span class="text-gray-900 font-medium">@Model.Product?.Title</span>
+            </nav>
+
+            <h1 class="text-3xl font-bold text-gray-900">@Model.Product?.Title</h1>
+            @if (Model.Product?.Status != null)
+            {
+                <div class="flex items-center space-x-4 space-x-reverse mt-2">
+                    <span class="badge @GetStatusBadgeClass(Model.Product.Status)">
+                        @GetStatusText(@Model.Product.Status)
+                    </span>
+                    <span class="text-sm text-gray-500">
+                        آخرین بروزرسانی: @DateTime.Now.ToString("yyyy/MM/dd")
+                    </span>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- Main Product Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Product Image & Actions -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Product Image -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <div class="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
+                        @if (!string.IsNullOrEmpty(Model.Product?.ImageName))
+                        {
+                            <img src="~/images/products/@Model.Product.ImageName"
+                                 alt="@Model.Product.Title"
+                                 class="w-full h-80 object-cover rounded-lg" />
+                        }
+                        else
+                        {
+                            <div class="w-full h-80 bg-gradient-to-br from-blue-50 to-gray-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Product Description -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">توضیحات محصول</h2>
+                    <div class="prose prose-lg max-w-none text-gray-600 leading-relaxed">
+                        @Html.Raw(Model.Product?.Description ?? "توضیحاتی برای این محصول موجود نیست.")
+                    </div>
+                </div>
+
+                <!-- Product Specifications -->
+                @if (Model.Product?.InventoryDto != null)
+                {
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">مشخصات فنی</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">وضعیت موجودی</span>
+                                    <span class="font-medium @(Model.Product.InventoryDto.Dong > 0 ? "text-green-600" : "text-red-600")">
+                                        @(Model.Product.InventoryDto.Dong > 0 ? "موجود" : "ناموجود")
+                                    </span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">تعداد موجود</span>
+                                    <span class="font-medium text-gray-900">@Model.Product.InventoryDto.Dong عدد</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">حداقل سرمایه‌گذاری</span>
+                                    <span class="font-medium text-gray-900">۱۰۰,۰۰۰ ریال</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">بازدهی پیش‌بینی شده</span>
+                                    <span class="font-medium text-green-600">۱۸-۲۴٪</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Right Column - Investment Panel -->
+            <div class="space-y-6">
+                <!-- Investment Card -->
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 sticky top-24">
+                    <div class="space-y-6">
+                        <!-- Price & Stats -->
+                        <div class="space-y-4">
+                            <div class="text-center">
+                                <span class="text-2xl font-bold text-gray-900">سرمایه‌گذاری در @Model.Product?.Title</span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">پیشرفت تأمین سرمایه</span>
+                                    <span class="font-medium text-gray-900">۷۵٪</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-300" style="width: 75%"></div>
+                                </div>
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>۲.۵ میلیارد ریال</span>
+                                    <span>از ۳.۳ میلیارد ریال</span>
+                                </div>
+                            </div>
+
+                            <!-- Investment Stats -->
+                            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-gray-900">۱۴۲</div>
+                                    <div class="text-sm text-gray-600">سرمایه‌گذار</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-gray-900">۲۳</div>
+                                    <div class="text-sm text-gray-600">روز باقی‌مانده</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Investment Form -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="label">مبلغ سرمایه‌گذاری (ریال)</label>
+                                <div class="relative">
+                                    <input type="text"
+                                           class="input text-left placeholder-right"
+                                           placeholder="۱,۰۰۰,۰۰۰"
+                                           value="1,000,000">
+                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                                        ریال
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quick Amounts -->
+                            <div class="grid grid-cols-3 gap-2">
+                                <button type="button" class="btn btn-outline py-2 text-sm">۵۰۰,۰۰۰</button>
+                                <button type="button" class="btn btn-outline py-2 text-sm">۱,۰۰۰,۰۰۰</button>
+                                <button type="button" class="btn btn-outline py-2 text-sm">۲,۰۰۰,۰۰۰</button>
+                            </div>
+
+                            <!-- Investment Summary -->
+                            <div class="bg-blue-50 rounded-lg p-4 space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">سهم شما</span>
+                                    <span class="font-medium text-gray-900">۰.۳٪</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">سود تخمینی سالانه</span>
+                                    <span class="font-medium text-green-600">۱۸۰,۰۰۰ ریال</span>
+                                </div>
+                                <div class="flex justify-between text-sm font-bold">
+                                    <span class="text-gray-700">کل بازدهی ۵ ساله</span>
+                                    <span class="text-green-600">۹۰۰,۰۰۰ ریال</span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="space-y-3">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <button class="btn btn-primary w-full py-3 text-lg font-semibold">
+                                        سرمایه‌گذاری می‌کنم
+                                    </button>
+                                    <button class="btn btn-outline w-full py-3 flex items-center justify-center">
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                        افزودن به علاقه‌مندی‌ها
+                                    </button>
+                                }
+                                else
+                                {
+                                    <a href="/Auth/VerificationPhoneNumber?action=Login&path=@($"{Request.Path}{Request.QueryString}")"
+                                       class="btn btn-primary w-full py-3 text-lg font-semibold">
+                                        ورود و سرمایه‌گذاری
+                                    </a>
+                                    <p class="text-center text-sm text-gray-500">
+                                        برای سرمایه‌گذاری باید وارد حساب کاربری خود شوید
+                                    </p>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Trust Indicators -->
+                        <div class="border-t border-gray-200 pt-4 space-y-3">
+                            <div class="flex items-center justify-center space-x-4 space-x-reverse text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    تضمین بازگشت سرمایه
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    مجوز رسمی
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+                    <div class="text-center space-y-3">
+                        <svg class="w-12 h-12 text-blue-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">سوالی دارید؟</h3>
+                        <p class="text-gray-600 text-sm">کارشناسان ما آماده پاسخگویی به شما هستند</p>
+                        <button class="btn btn-outline w-full mt-2">
+                            تماس با پشتیبانی
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Projects -->
+        <section class="mt-16">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900">پروژه‌های مشابه</h2>
+                <a href="/Front/Projects" class="text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                    مشاهده همه
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @for (int i = 0; i < 3; i++)
+                {
+                    <div class="card card-hover">
+                        <div class="aspect-w-16 aspect-h-9 bg-gray-200 rounded-t-lg overflow-hidden">
+                            <div class="w-full h-48 bg-gradient-to-br from-blue-100 to-gray-100 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">دستگاه سی تی اسکن پیشرفته</h3>
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-2">سیستم تصویربرداری پزشکی با تکنولوژی روز دنیا</p>
+
+                            <div class="space-y-3">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-500">پیشرفت سرمایه‌گذاری</span>
+                                    <span class="font-medium">۶۸٪</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 68%"></div>
+                                </div>
+
+                                <div class="flex justify-between items-center pt-2">
+                                    <span class="text-lg font-bold text-gray-900">۱.۸ میلیارد ریال</span>
+                                    <span class="badge badge-success">فعال</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadgeClass(ProductStatus status)
+    {
+        return status switch
+        {
+            ProductStatus.IsActive => "badge-success",
+            ProductStatus.NotActive => "badge-warning",
+            ProductStatus.IsDone => "badge-danger",
+            // ProductStatus.ComingSoon => "badge-primary",
+            _ => "badge-secondary"
+        };
+    }
+
+    private string GetStatusText(ProductStatus status)
+    {
+        return status switch
+        {
+            ProductStatus.IsActive => "فعال",
+            ProductStatus.NotActive => "غیرفعال",
+            ProductStatus.IsDone => "ناموجود",
+            // ProductStatus.ComingSoon => "به زودی",
+            _ => "نامشخص"
+        };
+    }
+}
+
+@section Styles {
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .prose {
+            line-height: 1.8;
+        }
+
+            .prose p {
+                margin-bottom: 1rem;
+            }
+
+            .prose ul {
+                list-style-type: disc;
+                margin-right: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .prose ol {
+                list-style-type: decimal;
+                margin-right: 1.5rem;
+                margin-bottom: 1rem;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Product details page loaded');
+
+            // Format currency input
+            const investmentInput = document.querySelector('input[placeholder="۱,۰۰۰,۰۰۰"]');
+            if (investmentInput) {
+                investmentInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/,/g, '');
+                    if (!isNaN(value)) {
+                        e.target.value = Number(value).toLocaleString('fa-IR');
+                    }
+                });
+            }
+
+            // Quick amount buttons
+            document.querySelectorAll('.btn-outline.py-2').forEach(button => {
+                button.addEventListener('click', function() {
+                    const amount = this.textContent.trim();
+                    if (investmentInput) {
+                        investmentInput.value = amount;
+                    }
+                });
+            });
+
+            // Add to favorites
+            const favoriteBtn = document.querySelector('button:has(svg[stroke="currentColor"])');
+            if (favoriteBtn) {
+                favoriteBtn.addEventListener('click', function() {
+                    const isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
+                    if (!isAuthenticated) {
+                        Alert.warning('برای افزودن به علاقه‌مندی‌ها باید وارد حساب کاربری خود شوید');
+                        return;
+                    }
+
+                    // Toggle favorite state
+                    const isFavorite = this.classList.contains('text-red-500');
+                    if (isFavorite) {
+                        this.classList.remove('text-red-500');
+                        Alert.success('از علاقه‌مندی‌ها حذف شد');
+                    } else {
+                        this.classList.add('text-red-500');
+                        Alert.success('به علاقه‌مندی‌ها افزوده شد');
+                    }
+                });
+            }
+        });
+    </script>
+}

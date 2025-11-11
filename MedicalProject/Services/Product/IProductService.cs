@@ -15,6 +15,7 @@ namespace MedicalProject.Services.Product
 
 
         Task<ProductDto?> GetById(Guid productId);
+        Task<ProductDto?> GetBySlug(string slug);
         Task<ProductFilterResult> GetFilter(ProductFilterParam param);
     }
     public class ProductService : IProductService
@@ -123,6 +124,12 @@ namespace MedicalProject.Services.Product
         {
             var result = await _client.DeleteAsync($"{ModuleName}/RemoveProduct?productId={productId}");
             return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<ProductDto?> GetBySlug(string slug)
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<ProductDto?>>($"{ModuleName}/GetProductBySlug?slug={slug}");
+            return result?.Data;
         }
     }
 }
