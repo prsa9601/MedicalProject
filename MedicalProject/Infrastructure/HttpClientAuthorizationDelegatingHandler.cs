@@ -22,7 +22,7 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
             if (string.IsNullOrWhiteSpace(token) == false)
             {
-                request.Headers.Add("Authorization", token.ToString());
+                request.Headers.Add("Authorization", token);
 
                 request.Headers.Add("AuthToken", token);
             }

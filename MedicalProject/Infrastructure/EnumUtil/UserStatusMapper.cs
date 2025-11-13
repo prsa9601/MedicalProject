@@ -4,14 +4,14 @@ namespace MedicalProject.Infrastructure.EnumUtil
 {
     public static class UserStatusMapper
     {
-        public static string Map(this UserStatus status)
+        public static string Map(this UserDocumentStatus status)
         {
             return status switch
             {
-                UserStatus.NotConfirmed => "اطلاعات تایید نشده",
-                UserStatus.WrongInformation => "مشکوک اطلاعات اشتباه",
-                UserStatus.AwaitingConfirmation => "در انتظار تایید",
-                UserStatus.IsConfirmed => "اطلاعات تایید شده",
+                UserDocumentStatus.NotConfirmed => "اطلاعات تایید نشده",
+                UserDocumentStatus.WrongInformation => "مشکوک اطلاعات اشتباه",
+                UserDocumentStatus.AwaitingConfirmation => "در انتظار تایید",
+                UserDocumentStatus.IsConfirmed => "اطلاعات تایید شده",
                 _ => "اطلاعات تایید نشده",
             };
         }

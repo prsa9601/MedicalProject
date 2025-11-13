@@ -1,4 +1,6 @@
 ﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Utils
 @using MedicalProject.Models.Product
 @model MedicalProject.Pages.Front.Projects.DetailsModel
 @{
@@ -29,7 +31,7 @@
                         @GetStatusText(@Model.Product.Status)
                     </span>
                     <span class="text-sm text-gray-500">
-                        آخرین بروزرسانی: @DateTime.Now.ToString("yyyy/MM/dd")
+                        آخرین بروزرسانی: @DateTime.Now.ToPersianDate()
                     </span>
                 </div>
             }
@@ -46,7 +48,7 @@
                     <div class="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden">
                         @if (!string.IsNullOrEmpty(Model.Product?.ImageName))
                         {
-                            <img src="~/images/products/@Model.Product.ImageName"
+                            <img src="@Directories.GetProductImagePathPath(@Model.Product.ImageName)"
                                  alt="@Model.Product.Title"
                                  class="w-full h-80 object-cover rounded-lg" />
                         }
@@ -83,7 +85,7 @@
                                     </span>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="text-gray-600">تعداد موجود</span>
+                                    <span class="text-gray-600">تعداد دانگ موجود</span>
                                     <span class="font-medium text-gray-900">@Model.Product.InventoryDto.Dong عدد</span>
                                 </div>
                             </div>

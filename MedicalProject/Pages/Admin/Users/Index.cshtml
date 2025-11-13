@@ -505,6 +505,11 @@
                             <i class="fas fa-users"></i>
                             <span>کاربران</span>
                         </a>
+                        
+                        <a asp-page="/Admin/Documents/Index" class="sidebar-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>مدارک کاربران</span>
+                        </a>
 
                         <a asp-page="/Admin/Product/Index" class="sidebar-link">
                             <i class="fas fa-project-diagram"></i>
@@ -636,7 +641,7 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">در انتظار تایید</p>
                                                 <p class="text-2xl font-bold text-gray-900">
-                                                    @(Model.Users.Data.Count(user => user.Status==UserStatus.AwaitingConfirmation))
+                                                    @(Model.Users.Data.Count(user => user.UserDocument.Status == UserDocumentStatus.AwaitingConfirmation))
                                                 </p>
                                             </div>
                                             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -710,7 +715,7 @@
                                                     </td>
                                                     <td>
                                                         <span class="badge badge-success">
-                                                            @(item.Status.Map())
+                                                            @(item.UserDocument.Status.Map())
 
                                                         </span>
                                                     </td>

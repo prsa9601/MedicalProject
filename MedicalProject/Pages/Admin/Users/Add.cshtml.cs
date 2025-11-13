@@ -29,7 +29,7 @@ namespace MedicalProject.Pages.Admin.Users
         public IFormFile birthCertificatePhoto { get; set; }
 
         public bool isActive { get; set; } = true;
-        public UserStatus userStatus { get; set; } = UserStatus.NotConfirmed;
+        public UserDocumentStatus userStatus { get; set; } = UserDocumentStatus.NotConfirmed;
 
         public IFormFile userAccountImage { get; set; }
 

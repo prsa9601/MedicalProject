@@ -18,8 +18,10 @@ namespace MedicalProject.Services.User
 
 
         Task<UserDto?> GetUserById(Guid userId);
+        Task<UserDto?> GetCurrentUser();
         Task<UserDto?> CheckOtpCodeForPhoneNumber(string phoneNumber, string ipAddress);
         Task<UserFilterResult> GetUserByFilter(UserFilterParam param);
+        Task<UserFilterForDocumentsResult> GetUserByFilterForDocuments(UserFilterForDocumentsParam param);
     }
     public class UserService : IUserService
     {
@@ -130,6 +132,28 @@ namespace MedicalProject.Services.User
         public async Task<UserDto?> CheckOtpCodeForPhoneNumber(string phoneNumber, string ipAddress)
         {
             var result = await _client.GetFromJsonAsync<ApiResult<UserDto>>($"User/CheckOtpCodeForPhoneNumber?phoneNumber={phoneNumber}&ipAddress={ipAddress}");
+            return result?.Data;
+        }
+
+        public async Task<UserFilterForDocumentsResult> GetUserByFilterForDocuments(UserFilterForDocumentsParam param)
+        {
+            string url = $"User/GetUserByFilterForDocuments?take={param.Take}&pageId={param.PageId}";
+            if (param.PhoneNumber is not null)
+                url += $"&phoneNumber={param.PhoneNumber}";
+            if (param.IsActive is not null)
+                url += $"&isActive={param.IsActive}";
+            if (param.UserStatus != null)
+                url += $"&userStatus={param.UserStatus}";
+            if (!string.IsNullOrEmpty(param.UserName))
+                url += $"&userName={param.UserName}";
+
+            var result = await _client.GetFromJsonAsync<ApiResult<UserFilterForDocumentsResult>>(url);
+            return result?.Data;
+        }
+
+        public async Task<UserDto?> GetCurrentUser()
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<UserDto?>>($"User/GetCurrentUser");
             return result?.Data;
         }
     }

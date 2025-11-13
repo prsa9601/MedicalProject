@@ -41,7 +41,7 @@ namespace MedicalProject.Models.User
     public class ConfirmedAccountUserCommand
     {
         public Guid userId { get; set; }
-        public UserStatus userStatus { get; set; }
+        public UserDocumentStatus userStatus { get; set; }
     }
     public class ChangeActivityUserAccountCommand
     {

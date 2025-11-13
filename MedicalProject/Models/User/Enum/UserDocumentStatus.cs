@@ -1,6 +1,6 @@
 ﻿namespace MedicalProject.Models.User.Enum
 {
-    public enum UserStatus
+    public enum UserDocumentStatus
     {
         IsConfirmed,
         AwaitingConfirmation,

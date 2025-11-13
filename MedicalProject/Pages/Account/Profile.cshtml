@@ -12,16 +12,12 @@
     <title>پروفایل من - پلتفرم دنگ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- jQuery اول (اگر استفاده می‌کنی) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- سپس SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
     <style>
         /* Reset and Base Styles */
@@ -664,6 +660,7 @@
                                                 id="first-name"
                                                 class="input pr-10"
                                                 placeholder="نام"
+                                                value="@Model.user.FirstName"
                                                 disabled />
                                             <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
                                         </div>
@@ -676,24 +673,11 @@
                                             <input
                                                 type="text"
                                                 id="last-name"
+                                                value="@Model.user.LastName"
                                                 class="input pr-10"
                                                 placeholder="نام خانوادگی"
                                                 disabled />
                                             <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Email -->
-                                    <div>
-                                        <label class="label">ایمیل</label>
-                                        <div class="relative">
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                class="input pr-10"
-                                                placeholder="ایمیل"
-                                                disabled />
-                                            <i class="fas fa-envelope absolute right-3 top-3 text-gray-400"></i>
                                         </div>
                                     </div>
 
@@ -705,121 +689,12 @@
                                                 type="tel"
                                                 id="phone"
                                                 class="input pr-10"
+                                                value="@Model.user.PhoneNumber"
                                                 placeholder="شماره تلفن"
                                                 disabled />
                                             <i class="fas fa-phone absolute right-3 top-3 text-gray-400"></i>
                                         </div>
                                     </div>
-
-                                    <!-- Birth Date -->
-                                    <div>
-                                        <label class="label">تاریخ تولد</label>
-                                        <div class="relative">
-                                            <input
-                                                type="date"
-                                                id="birth-date"
-                                                class="input pr-10"
-                                                disabled />
-                                            <i class="fas fa-calendar absolute right-3 top-3 text-gray-400"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Address -->
-                                    <div>
-                                        <label class="label">آدرس</label>
-                                        <div class="relative">
-                                            <input
-                                                type="text"
-                                                id="address"
-                                                class="input pr-10"
-                                                placeholder="آدرس"
-                                                disabled />
-                                            <i class="fas fa-map-marker-alt absolute right-3 top-3 text-gray-400"></i>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Bio -->
-                                <div class="mt-6">
-                                    <label class="label">درباره من</label>
-                                    <textarea
-                                        id="bio"
-                                        class="input w-full"
-                                        rows="3"
-                                        placeholder="درباره خودتان بنویسید..."
-                                        disabled></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Change Password -->
-                        <div class="card">
-                            <div class="p-6">
-                                <h2 class="text-xl font-semibold text-gray-900 mb-6">تغییر رمز عبور</h2>
-                                <div class="space-y-4">
-                                    <!-- Current Password -->
-                                    <div>
-                                        <label class="label">رمز عبور فعلی</label>
-                                        <div class="relative">
-                                            <input
-                                                type="password"
-                                                id="current-password"
-                                                class="input pr-10"
-                                                placeholder="رمز عبور فعلی" />
-                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
-                                            <button
-                                                type="button"
-                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
-                                                onclick="togglePasswordVisibility('current-password')">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- New Password -->
-                                    <div>
-                                        <label class="label">رمز عبور جدید</label>
-                                        <div class="relative">
-                                            <input
-                                                type="password"
-                                                id="new-password"
-                                                class="input pr-10"
-                                                placeholder="رمز عبور جدید" />
-                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
-                                            <button
-                                                type="button"
-                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
-                                                onclick="togglePasswordVisibility('new-password')">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <!-- Confirm Password -->
-                                    <div>
-                                        <label class="label">تکرار رمز عبور جدید</label>
-                                        <div class="relative">
-                                            <input
-                                                type="password"
-                                                id="confirm-password"
-                                                class="input pr-10"
-                                                placeholder="تکرار رمز عبور جدید" />
-                                            <i class="fas fa-shield-alt absolute right-3 top-3 text-gray-400"></i>
-                                            <button
-                                                type="button"
-                                                class="absolute left-3 top-3 text-gray-400 hover-text-gray-600 transition-colors"
-                                                onclick="togglePasswordVisibility('confirm-password')">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <button
-                                        id="change-password-btn"
-                                        class="btn btn-primary">
-                                        <i class="fas fa-shield-alt ml-2"></i>
-                                        تغییر رمز عبور
-                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -870,9 +745,9 @@
                                         <i class="fas fa-user w-12 h-12 text-primary-600"></i>
                                     </div>
                                     <h3 id="profile-name" class="text-xl font-semibold text-gray-900 mb-2">
-                                        محمد رضایی
+                                        @Model.user.FirstName @Model.user.LastName
                                     </h3>
-                                    <p id="profile-email" class="text-gray-600 mb-4">mohammad@example.com</p>
+                                    <p id="profile-phone" class="text-gray-600 mb-4">@Model.user.PhoneNumber</p>
                                     <span id="profile-kyc-badge" class="badge badge-success">
                                         <i class="fas fa-check-circle ml-1"></i>
                                         تأیید شده
@@ -939,19 +814,19 @@
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">دسترسی سریع</h3>
                                 <div class="space-y-3">
                                     <button
-                                        onclick="window.location.href = '/investments'"
+                                        onclick="window.location.href = '/Account/Investment'"
                                         class="btn btn-outline w-full text-right">
                                         <i class="fas fa-chart-line ml-2"></i>
                                         سرمایه‌گذاری‌های من
                                     </button>
                                     <button
-                                        onclick="window.location.href = '/projects'"
+                                        onclick="window.location.href = '/Front/Projects'"
                                         class="btn btn-outline w-full text-right">
                                         <i class="fas fa-bullseye ml-2"></i>
                                         پروژه‌ها
                                     </button>
                                     <button
-                                        onclick="window.location.href = '/notifications'"
+                                        onclick="window.location.href = '/Front/Notifications'"
                                         class="btn btn-outline w-full text-right">
                                         <i class="fas fa-clock ml-2"></i>
                                         اعلان‌ها
@@ -966,25 +841,6 @@
     </div>
 
     <script>
-        // داده‌های فیک برای پروفایل
-        const sampleUser = {
-            first_name: "محمد",
-            last_name: "رضایی",
-            email: "mohammad@example.com",
-            phone_number: "09123456789",
-            birth_date: "1365-05-15",
-            address: "تهران، خیابان ولیعصر، پلاک ۱۲۳",
-            bio: "سرمایه‌گذار فعال در حوزه تجهیزات پزشکی با ۳ سال سابقه",
-            kyc_status: "approved",
-            wallet_balance: 50000000,
-            total_invested: 472500000,
-            total_profit: 45500000,
-            role: "سرمایه‌گذار",
-            is_verified: true,
-            created_at: "2023-12-15",
-            last_login: "2024-02-10"
-        };
-
         // وضعیت برنامه
         let state = {
             loading: true,
@@ -1021,7 +877,6 @@
             
             // شبیه‌سازی بارگذاری از API
             setTimeout(() => {
-                state.user = sampleUser;
                 state.loading = false;
                 updateUI();
                 populateUserData();
@@ -1030,28 +885,22 @@
 
         // تابع پر کردن داده‌های کاربر
         function populateUserData() {
-            if (!state.user) return;
-
             // اطلاعات شخصی
-            document.getElementById('first-name').value = state.user.first_name;
-            document.getElementById('last-name').value = state.user.last_name;
-            document.getElementById('email').value = state.user.email;
-            document.getElementById('phone').value = state.user.phone_number;
-            document.getElementById('birth-date').value = state.user.birth_date;
-            document.getElementById('address').value = state.user.address;
-            document.getElementById('bio').value = state.user.bio;
+            document.getElementById('first-name').value = '@Model.user.FirstName';
+            document.getElementById('last-name').value = '@Model.user.LastName';
+            document.getElementById('phone').value = '@Model.user.PhoneNumber';
 
             // اطلاعات خلاصه
-            document.getElementById('profile-name').textContent = `${state.user.first_name} ${state.user.last_name}`;
-            document.getElementById('profile-email').textContent = state.user.email;
-            document.getElementById('wallet-balance').textContent = formatCurrency(state.user.wallet_balance);
-            document.getElementById('total-invested').textContent = formatCurrency(state.user.total_invested);
-            document.getElementById('total-profit').textContent = formatCurrency(state.user.total_profit);
-            document.getElementById('join-date').textContent = formatDate(state.user.created_at);
-            document.getElementById('last-login').textContent = formatDate(state.user.last_login);
+            document.getElementById('profile-name').textContent = '@Model.user.FirstName @Model.user.LastName';
+            document.getElementById('profile-phone').textContent = '@Model.user.PhoneNumber';
+            document.getElementById('wallet-balance').textContent = formatCurrency(50000000);
+            document.getElementById('total-invested').textContent = formatCurrency(472500000);
+            document.getElementById('total-profit').textContent = formatCurrency(45500000);
+            document.getElementById('join-date').textContent = '۱۴۰۲/۱۰/۱۵';
+            document.getElementById('last-login').textContent = '۱۴۰۲/۱۱/۲۰';
 
             // وضعیت KYC
-            const kycStatus = getKYCStatusBadge(state.user.kyc_status);
+            const kycStatus = getKYCStatusBadge('approved');
             const kycBadge = document.getElementById('kyc-badge');
             const profileKycBadge = document.getElementById('profile-kyc-badge');
             
@@ -1067,13 +916,9 @@
             state.isEditing = !state.isEditing;
             updateUI();
             
-            const inputs = document.querySelectorAll('#content-section input, #content-section textarea');
+            const inputs = document.querySelectorAll('#content-section input');
             inputs.forEach(input => {
-                if (input.id !== 'current-password' && 
-                    input.id !== 'new-password' && 
-                    input.id !== 'confirm-password') {
-                    input.disabled = !state.isEditing;
-                }
+                input.disabled = !state.isEditing;
             });
         }
 
@@ -1084,31 +929,6 @@
                 state.isEditing = false;
                 updateUI();
                 alert('پروفایل با موفقیت به‌روزرسانی شد');
-            }, 1000);
-        }
-
-        // تابع تغییر رمز عبور
-        function changePassword() {
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            if (!currentPassword || !newPassword || !confirmPassword) {
-                alert('لطفاً تمام فیلدهای رمز عبور را پر کنید');
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                alert('رمز عبور و تکرار آن یکسان نیستند');
-                return;
-            }
-            
-            // شبیه‌سازی تغییر رمز عبور
-            setTimeout(() => {
-                document.getElementById('current-password').value = '';
-                document.getElementById('new-password').value = '';
-                document.getElementById('confirm-password').value = '';
-                alert('رمز عبور با موفقیت تغییر کرد');
             }, 1000);
         }
 
@@ -1128,20 +948,6 @@
                 document.getElementById('bank-statement').value = '';
                 alert('اسناد با موفقیت آپلود شدند');
             }, 1000);
-        }
-
-        // تابع نمایش/مخفی کردن رمز عبور
-        function togglePasswordVisibility(inputId) {
-            const input = document.getElementById(inputId);
-            const icon = input.parentNode.querySelector('button i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-            }
         }
 
         // تابع به‌روزرسانی UI
@@ -1179,7 +985,6 @@
             document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
             document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);
             document.getElementById('save-btn').addEventListener('click', saveProfile);
-            document.getElementById('change-password-btn').addEventListener('click', changePassword);
             document.getElementById('upload-kyc-btn').addEventListener('click', uploadKYCDocuments);
         });
     </script>

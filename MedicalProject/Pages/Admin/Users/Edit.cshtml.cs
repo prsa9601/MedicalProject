@@ -36,7 +36,7 @@ namespace MedicalProject.Pages.Admin.Users
         //[BindProperty(false)]
         public bool? isActive { get; set; } = true;
         [BindProperty]
-        public UserStatus userStatus { get; set; } = UserStatus.NotConfirmed;
+        public UserDocumentStatus userStatus { get; set; } = UserDocumentStatus.NotConfirmed;
         [BindProperty]
         public IFormFile? userAccountImage { get; set; }
 
@@ -53,9 +53,8 @@ namespace MedicalProject.Pages.Admin.Users
             firstName = user.FirstName;
             lastName = user.LastName;
             phoneNumber = user.PhoneNumber;
-            nationalityCode = user.NationalityCode;
             isActive = user.IsActive;
-            userStatus = user.Status;
+            //userStatus = user.Status;
             // سایر فیلدها...
 
             return Page();
