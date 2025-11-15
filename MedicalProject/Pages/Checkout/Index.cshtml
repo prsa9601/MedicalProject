@@ -1,0 +1,365 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Utils
+@model MedicalProject.Pages.Checkout.IndexModel
+@{
+}
+
+@section Styles {
+    <style>
+        .payment-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            z-index: 2;
+        }
+
+        .step.active .step-number {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .step-line {
+            position: absolute;
+            top: 20px;
+            right: 50%;
+            left: -50%;
+            height: 2px;
+            background-color: #e5e7eb;
+            z-index: 1;
+        }
+
+        .step:first-child .step-line {
+            display: none;
+        }
+
+        .step-text {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .step.active .step-text {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .payment-summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+        }
+
+        .security-badge {
+            background-color: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Payment Steps -->
+        <div class="payment-steps">
+            <div class="step completed">
+                <div class="step-number">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <span class="step-text">انتخاب محصول</span>
+            </div>
+
+            <div class="step-line"></div>
+
+            <div class="step active">
+                <div class="step-number">2</div>
+                <span class="step-text">پرداخت</span>
+            </div>
+
+            <div class="step-line"></div>
+
+            <div class="step">
+                <div class="step-number">3</div>
+                <span class="step-text">تأیید نهایی</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column - Payment Methods -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Payment Methods -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6">روش پرداخت</h2>
+
+                    <div class="space-y-4">
+                        <!-- Online Payment -->
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors cursor-pointer payment-method selected">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 space-x-reverse">
+                                    <div class="w-12 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900">پرداخت آنلاین</div>
+                                        <div class="text-sm text-gray-500">پرداخت امن از طریق درگاه بانکی</div>
+                                    </div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center">
+                                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 transition-colors cursor-pointer payment-method">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4 space-x-reverse">
+                                    <div class="w-12 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900">کارت به کارت</div>
+                                        <div class="text-sm text-gray-500">واریز به حساب بانکی</div>
+                                    </div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Details -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">مشخصات پرداخت</h3>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">شماره سفارش</span>
+                                <span class="font-mono text-gray-900">@($"ORD-{DateTime.Now:yyyyMMdd-HHmmss}")</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">تاریخ سفارش</span>
+                                <span class="text-gray-900">@DateTime.Now.ToPersianDate()</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">وضعیت پرداخت</span>
+                                <span class="text-yellow-600 font-medium">در انتظار پرداخت</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Info -->
+                <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+                    <div class="flex items-center space-x-4 space-x-reverse">
+                        <div class="flex-shrink-0">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-blue-900 mb-2">پرداخت امن</h3>
+                            <p class="text-blue-800 text-sm">
+                                تمامی پرداخت‌ها از طریق درگاه‌های بانکی معتبر انجام می‌شود. اطلاعات مالی شما نزد بانک محفوظ بوده و در سامانه ما ذخیره نمی‌شود.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Order Summary -->
+            <div class="space-y-6">
+                <!-- Order Summary -->
+                <div class="payment-summary-card p-6">
+                    <h2 class="text-xl font-bold text-white mb-6">خلاصه سفارش</h2>
+
+                    <div class="space-y-4">
+                        <!-- Product Info -->
+                        <div class="flex items-center space-x-4 space-x-reverse pb-4 border-b border-blue-400">
+                            @if (!string.IsNullOrEmpty(Model.Product?.ImageName))
+                            {
+                                <img src="@Directories.GetProductImagePathPath(Model.Product.ImageName)"
+                                     alt="@Model.Product.Title"
+                                     class="w-16 h-16 rounded-lg object-cover" />
+                            }
+                            else
+                            {
+                                <div class="w-16 h-16 bg-blue-400 rounded-lg flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                            }
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-white text-sm leading-tight">@Model.Product?.Title</h3>
+                                @* <p class="text-blue-100 text-xs mt-1">@Model.Product.InventoryDto.ToString("0.0") دانگ</p> *@
+                                <p class="text-blue-100 text-xs mt-1">@((Model.Product.InventoryDto?.Dong ?? 0).ToString("0.0")) دانگ</p>
+                            </div>
+                        </div>
+
+                        <!-- Price Breakdown -->
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-100">قیمت هر دانگ</span>
+                                @{
+                                    decimal price = 0;
+                                    decimal.TryParse(Model.Product?.InventoryDto?.PricePerDong?.ToString(), out price);
+                                }
+                                <span class="text-white">@FormatPrice(price) ریال</span>
+                                @* <span class="text-white">@FormatPrice(decimal.TryParse(Model.Product?.InventoryDto?.PricePerDong ?? 0)) ریال</span> *@
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-100">تعداد دانگ</span>
+                                <span class="text-white">@Model.Product.InventoryDto.Dong.ToString("0.0")</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-blue-100">مالیات و عوارض</span>
+                                <span class="text-white">@FormatPrice(0) ریال</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-3 border-t border-blue-400">
+                                <span class="text-lg font-bold text-white">مبلغ قابل پرداخت</span>
+                                <span class="text-2xl font-bold text-white">
+                                    @{
+                                        decimal pricePerDong = 0;
+                                        decimal.TryParse(Model.Product?.InventoryDto?.PricePerDong, out pricePerDong);
+                                        decimal dong = Model.Product?.InventoryDto?.Dong ?? 0;
+                                        decimal totalPrice = pricePerDong * dong;
+                                    }@FormatPrice(totalPrice) ریال
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <button id="confirmPayment" class="btn btn-primary w-full py-4 text-lg font-semibold">
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                        پرداخت امن
+                    </button>
+
+                    <a href="/Front/Projects/Details?id=@Model.Product?.Id" class="btn btn-outline w-full py-3">
+                        بازگشت به محصول
+                    </a>
+                </div>
+
+                <!-- Security Badges -->
+                <div class="text-center space-y-3">
+                    <div class="security-badge">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        پرداخت مطمئن
+                    </div>
+
+                    <div class="flex justify-center space-x-6 space-x-reverse text-gray-500">
+                        <img src="/images/saman-card.png" alt="سامان" class="h-8 opacity-70">
+                        <img src="/images/mellat-card.png" alt="ملت" class="h-8 opacity-70">
+                        <img src="/images/parsian-card.png" alt="پارسیان" class="h-8 opacity-70">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 max-w-sm w-full mx-4">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">در حال اتصال به درگاه پرداخت</h3>
+            <p class="text-gray-600 text-sm">لطفاً چند لحظه صبر کنید...</p>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string FormatPrice(decimal price)
+    {
+        return price.ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+    }
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentMethods = document.querySelectorAll('.payment-method');
+            const confirmPaymentBtn = document.getElementById('confirmPayment');
+            const loadingModal = document.getElementById('loadingModal');
+
+            // Payment method selection
+            paymentMethods.forEach(method => {
+                method.addEventListener('click', function() {
+                    paymentMethods.forEach(m => {
+                        m.classList.remove('selected');
+                        m.querySelector('.w-5').classList.remove('border-blue-500', 'bg-blue-500');
+                        m.querySelector('.w-5').classList.add('border-gray-300');
+                        m.querySelector('.w-5 > div')?.remove();
+                    });
+
+                    this.classList.add('selected');
+                    const radio = this.querySelector('.w-5');
+                    radio.classList.remove('border-gray-300');
+                    radio.classList.add('border-blue-500');
+
+                    const innerDot = document.createElement('div');
+                    innerDot.className = 'w-3 h-3 rounded-full bg-blue-500';
+                    radio.appendChild(innerDot);
+                });
+            });
+
+            // Confirm payment
+            confirmPaymentBtn.addEventListener('click', function() {
+                loadingModal.classList.remove('hidden');
+
+                // Simulate payment process
+                setTimeout(() => {
+                    // In real scenario, redirect to bank gateway
+                    window.location.href = '/Front/Payment/Success?orderId=@($"ORD-{DateTime.Now:yyyyMMdd-HHmmss}")';
+                }, 2000);
+            });
+
+            // Initialize first payment method as selected
+            if (paymentMethods.length > 0) {
+                paymentMethods[0].click();
+            }
+        });
+    </script>
+}

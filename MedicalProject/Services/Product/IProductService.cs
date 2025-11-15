@@ -17,6 +17,7 @@ namespace MedicalProject.Services.Product
         Task<ProductDto?> GetById(Guid productId);
         Task<ProductDto?> GetBySlug(string slug);
         Task<ProductFilterResult> GetFilter(ProductFilterParam param);
+        Task<ProductFilterForIndexPageResult> GetFilterForIndexPage(ProductFilterParam param);
     }
     public class ProductService : IProductService
     {
@@ -129,6 +130,18 @@ namespace MedicalProject.Services.Product
         public async Task<ProductDto?> GetBySlug(string slug)
         {
             var result = await _client.GetFromJsonAsync<ApiResult<ProductDto?>>($"{ModuleName}/GetProductBySlug?slug={slug}");
+            return result?.Data;
+        }
+
+        public async Task<ProductFilterForIndexPageResult> GetFilterForIndexPage(ProductFilterParam param)
+        {
+            string url = $"{ModuleName}/GetProductByFilterForIndex?take={param.Take}&pageId={param.PageId}";
+            if (param.Title is not null)
+                url += $"&title={param.Title}";
+            if (param.Status is not null)
+                url += $"&status={param.Status}";
+
+            var result = await _client.GetFromJsonAsync<ApiResult<ProductFilterForIndexPageResult>>(url);
             return result?.Data;
         }
     }

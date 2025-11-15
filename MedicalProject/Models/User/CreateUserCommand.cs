@@ -31,9 +31,8 @@ namespace MedicalProject.Models.User
         public required string password { get; set; }
     }
 
-    public class CompletionOfInformationCommand
+    public class CompletionOfInformationCommandViewModel
     {
-        public Guid userId { get; set; }
         public string nationalityCode { get; set; }
         public IFormFile nationalCardPhoto { get; set; }
         public IFormFile birthCertificatePhoto { get; set; }

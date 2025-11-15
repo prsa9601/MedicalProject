@@ -2,10 +2,88 @@
 @using MedicalProject.Infrastructure
 @using MedicalProject.Infrastructure.Utils
 @using MedicalProject.Models.Product
+@using MedicalProject.Models.Product.DTOs
 @model MedicalProject.Pages.Front.Projects.DetailsModel
 @{
     ViewData["Title"] = Model.Product?.Title ?? "محصول";
 }
+@section Styles {
+    <style>
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .prose {
+            line-height: 1.8;
+        }
+
+            .prose p {
+                margin-bottom: 1rem;
+            }
+
+            .prose ul {
+                list-style-type: disc;
+                margin-right: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .prose ol {
+                list-style-type: decimal;
+                margin-right: 1.5rem;
+                margin-bottom: 1rem;
+            }
+
+        .ltr-placeholder {
+            direction: ltr;
+            text-align: right;
+        }
+
+        .ltr-text {
+            direction: ltr;
+        }
+
+        .dong-option {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+            .dong-option.selected {
+                background-color: #3b82f6;
+                color: white;
+                border-color: #3b82f6;
+            }
+
+            .dong-option:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        select.dong-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 1rem;
+            padding-left: 2.5rem;
+        }
+
+        .select-container {
+            position: relative;
+        }
+
+        .select-arrow {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6b7280;
+        }
+    </style>
+}
+
 
 <div class="min-h-screen bg-gray-50">
     <!-- Product Header -->
@@ -81,24 +159,35 @@
                                 <div class="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span class="text-gray-600">وضعیت موجودی</span>
                                     <span class="font-medium @(Model.Product.InventoryDto.Dong > 0 ? "text-green-600" : "text-red-600")">
-                                        @(Model.Product.InventoryDto.Dong > 0 ? "موجود" : "ناموجود")
+                                        @((Model.Product.InventoryDto.Dong - Model.Product.PurchaseReportDto?.Sum(i => i.PurchaseDang)) > 0 ? "موجود" : "ناموجود")
                                     </span>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span class="text-gray-600">تعداد دانگ موجود</span>
-                                    <span class="font-medium text-gray-900">@Model.Product.InventoryDto.Dong عدد</span>
+                                    <span class="font-medium text-gray-900">
+                                        @(FormatNumber(Model.Product.InventoryDto.Dong - Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang))) عدد
+                                    </span>
                                 </div>
                             </div>
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span class="text-gray-600">حداقل سرمایه‌گذاری</span>
-                                    <span class="font-medium text-gray-900">۱۰۰,۰۰۰ ریال</span>
+                                    <span class="font-medium text-gray-900">نیم دانگ</span>
                                 </div>
                                 <div class="flex justify-between items-center py-2 border-b border-gray-100">
-                                    <span class="text-gray-600">بازدهی پیش‌بینی شده</span>
-                                    <span class="font-medium text-green-600">۱۸-۲۴٪</span>
+                                    <span class="text-gray-600">قیمت هر دانگ</span>
+                                    <span class="font-medium text-green-600">@Model.Product.InventoryDto.PricePerDong ریال</span>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-4">مشخصات فنی</h2>
+                        <div class="text-center text-gray-500 py-4">
+                            اطلاعات موجودی در دسترس نیست
                         </div>
                     </div>
                 }
@@ -119,26 +208,23 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600">پیشرفت تأمین سرمایه</span>
-                                    <span class="font-medium text-gray-900">۷۵٪</span>
+                                    <span class="font-medium text-gray-900">@CalculateProgress(Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang))٪</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-3">
-                                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-300" style="width: 75%"></div>
+                                    <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-300"
+                                         style="width: @CalculateProgress(Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang))%"></div>
                                 </div>
                                 <div class="flex justify-between text-sm text-gray-500">
-                                    <span>۲.۵ میلیارد ریال</span>
-                                    <span>از ۳.۳ میلیارد ریال</span>
+                                    <span>@Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang) دانگ</span>
+                                    <span>از ۶ دانگ</span>
                                 </div>
                             </div>
 
                             <!-- Investment Stats -->
-                            <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-100">
+                            <div class="grid grid-cols-1 gap-4 pt-4 border-t border-gray-100">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-gray-900">۱۴۲</div>
+                                    <div class="text-2xl font-bold text-gray-900">@FormatNumber(Model.Product.PurchaseReportDto.Count())</div>
                                     <div class="text-sm text-gray-600">سرمایه‌گذار</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-gray-900">۲۳</div>
-                                    <div class="text-sm text-gray-600">روز باقی‌مانده</div>
                                 </div>
                             </div>
                         </div>
@@ -146,38 +232,55 @@
                         <!-- Investment Form -->
                         <div class="space-y-4">
                             <div>
-                                <label class="label">مبلغ سرمایه‌گذاری (ریال)</label>
-                                <div class="relative">
-                                    <input type="text"
-                                           class="input text-left placeholder-right"
-                                           placeholder="۱,۰۰۰,۰۰۰"
-                                           value="1,000,000">
-                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                                        ریال
+                                <label class="label">تعداد دانگ مورد نظر</label>
+                                <div class="select-container">
+                                    <select id="dongAmount" class="dong-select input w-full text-right">
+                                        <option value="0.5">نیم دانگ</option>
+                                        <option value="1">یک دانگ</option>
+                                        <option value="1.5">یک و نیم دانگ</option>
+                                        <option value="2">دو دانگ</option>
+                                        <option value="2.5">دو و نیم دانگ</option>
+                                        <option value="3">سه دانگ</option>
+                                        <option value="3.5">سه و نیم دانگ</option>
+                                        <option value="4">چهار دانگ</option>
+                                        <option value="4.5">چهار و نیم دانگ</option>
+                                        <option value="5">پنج دانگ</option>
+                                        <option value="5.5">پنج و نیم دانگ</option>
+                                        <option value="6">شش دانگ</option>
+                                    </select>
+                                    <div class="select-arrow">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Quick Amounts -->
+                            <!-- Quick Dong Options -->
                             <div class="grid grid-cols-3 gap-2">
-                                <button type="button" class="btn btn-outline py-2 text-sm">۵۰۰,۰۰۰</button>
-                                <button type="button" class="btn btn-outline py-2 text-sm">۱,۰۰۰,۰۰۰</button>
-                                <button type="button" class="btn btn-outline py-2 text-sm">۲,۰۰۰,۰۰۰</button>
+                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="0.5">نیم</button>
+                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1">یک</button>
+                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1.5">یک و نیم</button>
                             </div>
 
                             <!-- Investment Summary -->
                             <div class="bg-blue-50 rounded-lg p-4 space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">سهم شما</span>
-                                    <span class="font-medium text-gray-900">۰.۳٪</span>
-                                </div>
+                             
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600">سود تخمینی سالانه</span>
-                                    <span class="font-medium text-green-600">۱۸۰,۰۰۰ ریال</span>
+                                    <span class="font-medium text-green-600">
+                                        <span id="annualProfit">
+                                            @FormatPrice(CalculationOfAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime))
+                                        </span> ریال
+                                    </span>
                                 </div>
                                 <div class="flex justify-between text-sm font-bold">
                                     <span class="text-gray-700">کل بازدهی ۵ ساله</span>
-                                    <span class="text-green-600">۹۰۰,۰۰۰ ریال</span>
+                                    <span class="text-green-600">
+                                        <span id="totalProfit">
+                                            @FormatPrice(CalculationOfFiveAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime))
+                                        </span> ریال
+                                    </span>
                                 </div>
                             </div>
 
@@ -185,14 +288,8 @@
                             <div class="space-y-3">
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <button class="btn btn-primary w-full py-3 text-lg font-semibold">
+                                    <button onclick="window.location.href='/Front/Payment/Payment?slug=@Model.Product.Slug'" class="btn btn-primary w-full py-3 text-lg font-semibold">
                                         سرمایه‌گذاری می‌کنم
-                                    </button>
-                                    <button class="btn btn-outline w-full py-3 flex items-center justify-center">
-                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                        افزودن به علاقه‌مندی‌ها
                                     </button>
                                 }
                                 else
@@ -281,7 +378,7 @@
                                 </div>
 
                                 <div class="flex justify-between items-center pt-2">
-                                    <span class="text-lg font-bold text-gray-900">۱.۸ میلیارد ریال</span>
+                                    <span class="text-lg font-bold text-gray-900">۳.۵ دانگ</span>
                                     <span class="badge badge-success">فعال</span>
                                 </div>
                             </div>
@@ -293,6 +390,88 @@
     </div>
 </div>
 
+<!--Calculate Profit-->
+@functions {
+    public decimal ProfitCalculation(object? value, PaymentTime? paymentTime)
+    {
+        if (value == null || paymentTime == null) return 0;
+        decimal profit = 0;
+
+        if (decimal.TryParse(value.ToString(), out decimal result))
+        {
+            profit = paymentTime switch
+            {
+                PaymentTime.ماهانه => result,
+                PaymentTime.سه_ماهه => result * 3,
+                PaymentTime.شش_ماهه => result * 6,
+                PaymentTime.سالانه => result * 12,
+                _ => 0
+            };
+        }
+
+        return profit;
+    }
+    public decimal CalculationOfAnnualProfit(object? value, PaymentTime? paymentTime)
+    {
+        if (value == null || paymentTime == null) return 0;
+        decimal profit = 0;
+
+        if (decimal.TryParse(value.ToString(), out decimal result))
+        {
+            profit = paymentTime switch
+            {
+                PaymentTime.ماهانه => result * 12,
+                PaymentTime.سه_ماهه => result * 4,
+                PaymentTime.شش_ماهه => result * 2,
+                PaymentTime.سالانه => result,
+                _ => 0
+            };
+        }
+
+        return profit;
+    }
+    public decimal CalculationOfFiveAnnualProfit(object? value, PaymentTime? paymentTime)
+    {
+        if (value == null || paymentTime == null) return 0;
+        decimal profit = 0;
+
+        if (decimal.TryParse(value.ToString(), out decimal result))
+        {
+            profit = paymentTime switch
+            {
+                PaymentTime.ماهانه => result * 12 * 5,
+                PaymentTime.سه_ماهه => result * 4 * 5,
+                PaymentTime.شش_ماهه => result * 2 * 5,
+                PaymentTime.سالانه => result * 5,
+                _ => 0
+            };
+        }
+
+        return profit;
+    }
+    public decimal CalculationOfProfitPercentage(decimal value)
+    {
+        if (value == null) return 0;
+
+        return (value * 100) / 12;
+    }
+
+}
+
+@functions {
+    public decimal? ConvertToDecimal(object value)
+    {
+        if (value == null) return null;
+        return decimal.TryParse(value.ToString(), out decimal result) ? result : null;
+    }
+
+    private double CalculateProgress(double sum)
+    {
+        if (sum == 0) return 0;
+        return (sum * 100) / 6;
+    }
+}
+
 @functions {
     private string GetStatusBadgeClass(ProductStatus status)
     {
@@ -301,7 +480,6 @@
             ProductStatus.IsActive => "badge-success",
             ProductStatus.NotActive => "badge-warning",
             ProductStatus.IsDone => "badge-danger",
-            // ProductStatus.ComingSoon => "badge-primary",
             _ => "badge-secondary"
         };
     }
@@ -313,41 +491,19 @@
             ProductStatus.IsActive => "فعال",
             ProductStatus.NotActive => "غیرفعال",
             ProductStatus.IsDone => "ناموجود",
-            // ProductStatus.ComingSoon => "به زودی",
             _ => "نامشخص"
         };
     }
-}
 
-@section Styles {
-    <style>
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+    private string FormatPrice(decimal price)
+    {
+        return price.ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+    }
 
-        .prose {
-            line-height: 1.8;
-        }
-
-            .prose p {
-                margin-bottom: 1rem;
-            }
-
-            .prose ul {
-                list-style-type: disc;
-                margin-right: 1.5rem;
-                margin-bottom: 1rem;
-            }
-
-            .prose ol {
-                list-style-type: decimal;
-                margin-right: 1.5rem;
-                margin-bottom: 1rem;
-            }
-    </style>
+    private string FormatNumber(int number)
+    {
+        return number.ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+    }
 }
 
 @section Scripts {
@@ -355,46 +511,70 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Product details page loaded');
 
-            // Format currency input
-            const investmentInput = document.querySelector('input[placeholder="۱,۰۰۰,۰۰۰"]');
-            if (investmentInput) {
-                investmentInput.addEventListener('input', function(e) {
-                    let value = e.target.value.replace(/,/g, '');
-                    if (!isNaN(value)) {
-                        e.target.value = Number(value).toLocaleString('fa-IR');
-                    }
+            const dongSelect = document.getElementById('dongAmount');
+            const quickDongButtons = document.querySelectorAll('.quick-dong-btn');
+            const annualProfit = document.getElementById('annualProfit');
+            const totalProfit = document.getElementById('totalProfit');
+
+            // Function to update investment summary
+            function updateInvestmentSummary(dongValue) {
+                const annual = (1000000 * dongValue * 0.18).toLocaleString('fa-IR');
+                const total = (1000000 * dongValue * 0.18 * 5).toLocaleString('fa-IR');
+
+                annualProfit.textContent = @CalculationOfAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime).ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+                totalProfit.textContent =  @CalculationOfFiveAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime).ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+            }
+
+            // Initialize with default value
+            updateInvestmentSummary(0.5);
+
+            // Handle select change
+            if (dongSelect) {
+                dongSelect.addEventListener('change', function() {
+                    const selectedValue = parseFloat(this.value);
+                    updateInvestmentSummary(selectedValue);
+
+                    // Update quick buttons selection
+                    quickDongButtons.forEach(btn => {
+                        btn.classList.remove('selected');
+                        if (parseFloat(btn.getAttribute('data-dong')) === selectedValue) {
+                            btn.classList.add('selected');
+                        }
+                    });
                 });
             }
 
-            // Quick amount buttons
-            document.querySelectorAll('.btn-outline.py-2').forEach(button => {
+            // Quick dong buttons
+            quickDongButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const amount = this.textContent.trim();
-                    if (investmentInput) {
-                        investmentInput.value = amount;
+                    const dongValue = parseFloat(this.getAttribute('data-dong'));
+
+                    // Set select value
+                    if (dongSelect) {
+                        dongSelect.value = dongValue;
                     }
+
+                    // Update selection state
+                    quickDongButtons.forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    this.classList.add('selected');
+
+                    // Update summary
+                    updateInvestmentSummary(dongValue);
                 });
             });
 
-            // Add to favorites
-            const favoriteBtn = document.querySelector('button:has(svg[stroke="currentColor"])');
-            if (favoriteBtn) {
-                favoriteBtn.addEventListener('click', function() {
-                    const isAuthenticated = @User.Identity.IsAuthenticated.ToString().ToLower();
-                    if (!isAuthenticated) {
-                        Alert.warning('برای افزودن به علاقه‌مندی‌ها باید وارد حساب کاربری خود شوید');
-                        return;
+            // فقط از تغییر دستی از طریق کیبورد جلوگیری می‌کنیم
+            if (dongSelect) {
+                dongSelect.addEventListener('keydown', function(e) {
+                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                        e.preventDefault();
                     }
+                });
 
-                    // Toggle favorite state
-                    const isFavorite = this.classList.contains('text-red-500');
-                    if (isFavorite) {
-                        this.classList.remove('text-red-500');
-                        Alert.success('از علاقه‌مندی‌ها حذف شد');
-                    } else {
-                        this.classList.add('text-red-500');
-                        Alert.success('به علاقه‌مندی‌ها افزوده شد');
-                    }
+                dongSelect.addEventListener('keypress', function(e) {
+                    e.preventDefault();
                 });
             }
         });

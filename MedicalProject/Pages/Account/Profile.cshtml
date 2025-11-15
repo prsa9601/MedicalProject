@@ -1,4 +1,6 @@
 ﻿@page
+@using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Models.User.Enum
 @model MedicalProject.Pages.Account.ProfileModel
 @{
     ViewData["Title"] = "پروفایل من - پلتفرم دنگ";
@@ -20,6 +22,100 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
+
+        .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+            line-height: 1rem;
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .px-2 {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        /* Responsive */
+        @@media (min-width: 768px) {
+            .md-flex-row {
+                flex-direction: row;
+            }
+
+            .md-items-center {
+                align-items: center;
+            }
+
+            .md-space-y-0 > * + * {
+                margin-top: 0;
+            }
+        }
+
+        @@media (min-width: 1024px) {
+            .lg-col-span-2 {
+                grid-column: span 2 / span 2;
+            }
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .left-3 {
+            left: 0.75rem;
+        }
+
+        .top-3 {
+            top: 0.75rem;
+        }
+
+        .pl-10 {
+            padding-left: 2.5rem;
+        }
+
+        /* اضافه کردن به بخش استایل‌ها */
+        .input-error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
         /* Reset and Base Styles */
         * {
             margin: 0;
@@ -44,6 +140,7 @@
             from {
                 transform: rotate(0deg);
             }
+
             to {
                 transform: rotate(360deg);
             }
@@ -444,14 +541,14 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background-color: #1d4ed8;
-        }
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
 
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+            .btn-primary:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
 
         .btn-outline {
             border: 1px solid #d1d5db;
@@ -459,9 +556,9 @@
             background-color: white;
         }
 
-        .btn-outline:hover {
-            background-color: #f9fafb;
-        }
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
 
         .card {
             background-color: white;
@@ -514,21 +611,21 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-        .input::placeholder {
-            color: #9ca3af;
-        }
+            .input::placeholder {
+                color: #9ca3af;
+            }
 
-        .input:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #3b82f6;
-            border-color: #3b82f6;
-        }
+            .input:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
 
-        .input:disabled {
-            background-color: #f9fafb;
-            color: #6b7280;
-            cursor: not-allowed;
-        }
+            .input:disabled {
+                background-color: #f9fafb;
+                color: #6b7280;
+                cursor: not-allowed;
+            }
 
         textarea.input {
             resize: none;
@@ -550,32 +647,32 @@
             color: #6b7280;
         }
 
-        .file-input::-webkit-file-upload-button {
-            margin-left: 1rem;
-            padding: 0.5rem 1rem;
-            border: 0;
-            border-radius: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            cursor: pointer;
-        }
+            .file-input::-webkit-file-upload-button {
+                margin-left: 1rem;
+                padding: 0.5rem 1rem;
+                border: 0;
+                border-radius: 0.5rem;
+                font-size: 0.75rem;
+                font-weight: 500;
+                background-color: #eff6ff;
+                color: #1d4ed8;
+                cursor: pointer;
+            }
 
-        .file-input::-webkit-file-upload-button:hover {
-            background-color: #dbeafe;
-        }
+                .file-input::-webkit-file-upload-button:hover {
+                    background-color: #dbeafe;
+                }
 
         /* Responsive */
         @@media (min-width: 768px) {
             .md-flex-row {
                 flex-direction: row;
             }
-            
+
             .md-items-center {
                 align-items: center;
             }
-            
+
             .md-space-y-0 > * + * {
                 margin-top: 0;
             }
@@ -610,23 +707,20 @@
                             </p>
                         </div>
                         <div class="flex space-x-3 space-x-reverse">
-                            <button
-                                id="cancel-edit-btn"
-                                class="btn btn-outline"
-                                style="display: none;">
+                            <button id="cancel-edit-btn"
+                                    class="btn btn-outline"
+                                    style="display: none;">
                                 <i class="fas fa-times ml-2"></i>
                                 انصراف
                             </button>
-                            <button
-                                id="save-btn"
-                                class="btn btn-primary"
-                                style="display: none;">
+                            <button id="save-btn"
+                                    class="btn btn-primary"
+                                    style="display: none;">
                                 <i class="fas fa-save ml-2"></i>
                                 ذخیره
                             </button>
-                            <button
-                                id="edit-btn"
-                                class="btn btn-primary">
+                            <button id="edit-btn"
+                                    class="btn btn-primary">
                                 <i class="fas fa-edit ml-2"></i>
                                 ویرایش
                             </button>
@@ -646,7 +740,7 @@
                                     <h2 class="text-xl font-semibold text-gray-900">اطلاعات شخصی</h2>
                                     <span id="kyc-badge" class="badge badge-success">
                                         <i class="fas fa-check-circle ml-1"></i>
-                                        تأیید شده
+                                        @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
                                     </span>
                                 </div>
 
@@ -655,14 +749,13 @@
                                     <div>
                                         <label class="label">نام</label>
                                         <div class="relative">
-                                            <input
-                                                type="text"
-                                                id="first-name"
-                                                class="input pr-10"
-                                                placeholder="نام"
-                                                value="@Model.user.FirstName"
-                                                disabled />
-                                            <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
+                                            <input type="text"
+                                                   id="first-name"
+                                                   class="input pl-10"
+                                                   placeholder="نام"
+                                                   value="@Model.user.FirstName"
+                                                   disabled />
+                                            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
                                         </div>
                                     </div>
 
@@ -670,14 +763,13 @@
                                     <div>
                                         <label class="label">نام خانوادگی</label>
                                         <div class="relative">
-                                            <input
-                                                type="text"
-                                                id="last-name"
-                                                value="@Model.user.LastName"
-                                                class="input pr-10"
-                                                placeholder="نام خانوادگی"
-                                                disabled />
-                                            <i class="fas fa-user absolute right-3 top-3 text-gray-400"></i>
+                                            <input type="text"
+                                                   id="last-name"
+                                                   value="@Model.user.LastName"
+                                                   class="input pl-10"
+                                                   placeholder="نام خانوادگی"
+                                                   disabled />
+                                            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
                                         </div>
                                     </div>
 
@@ -685,14 +777,15 @@
                                     <div>
                                         <label class="label">شماره تلفن</label>
                                         <div class="relative">
-                                            <input
-                                                type="tel"
-                                                id="phone"
-                                                class="input pr-10"
-                                                value="@Model.user.PhoneNumber"
-                                                placeholder="شماره تلفن"
-                                                disabled />
-                                            <i class="fas fa-phone absolute right-3 top-3 text-gray-400"></i>
+                                            <input type="tel"
+                                                   id="phone"
+                                                   class="w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                                                   value="@Model.user.PhoneNumber"
+                                                   placeholder="شماره تلفن"
+                                                   disabled />
+                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                                <i class="fas fa-phone text-gray-400"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -700,39 +793,66 @@
                         </div>
 
                         <!-- KYC Documents -->
-                        <div class="card">
-                            <div class="p-6">
-                                <h2 class="text-xl font-semibold text-gray-900 mb-6">اسناد هویت (KYC)</h2>
-                                <div class="space-y-4">
-                                    <!-- National Card -->
-                                    <div>
-                                        <label class="label">تصویر کارت ملی</label>
-                                        <input
-                                            type="file"
-                                            id="national-card"
-                                            class="file-input"
-                                            accept="image/*" />
-                                    </div>
+                        @{
+                            if (Model.user.UserDocument == null || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.NotConfirmed)
+                            {
+                                <div class="card">
+                                    <div class="p-6">
+                                        <h2 class="text-xl font-semibold text-gray-900 mb-6">اسناد هویت (KYC)</h2>
+                                        <form method="post" asp-page-handler="SendUserDocument" enctype="multipart/form-data" id="kyc-form">
+                                            <div class="space-y-4">
+                                                <!-- National Code -->
+                                                <div>
+                                                    <label class="label">کد ملی</label>
+                                                    <div class="relative">
+                                                        <input type="text"
+                                                               id="nationality-code"
+                                                               name="nationalityCode"
+                                                               class="input pl-10"
+                                                               placeholder="کد ملی (10 رقم)"
+                                                               maxlength="10"
+                                                               pattern="\d{10}"
+                                                               title="کد ملی باید 10 رقم باشد"
+                                                               required />
+                                                        <i class="fas fa-id-card absolute left-3 top-3 text-gray-400"></i>
+                                                    </div>
+                                                    <small class="text-gray-500 text-xs">کد ملی باید دقیقاً 10 رقم باشد</small>
+                                                </div>
 
-                                    <!-- Bank Statement -->
-                                    <div>
-                                        <label class="label">تصویر گردش حساب بانکی</label>
-                                        <input
-                                            type="file"
-                                            id="bank-statement"
-                                            class="file-input"
-                                            accept="image/*" />
-                                    </div>
+                                                <!-- National Card -->
+                                                <div>
+                                                    <label class="label">تصویر کارت ملی</label>
+                                                    <input type="file"
+                                                           id="national-card-image"
+                                                           name="nationalCardImage"
+                                                           class="file-input"
+                                                           accept="image/*"
+                                                           required />
+                                                </div>
 
-                                    <button
-                                        id="upload-kyc-btn"
-                                        class="btn btn-primary">
-                                        <i class="fas fa-upload ml-2"></i>
-                                        آپلود اسناد
-                                    </button>
+                                                <!-- Birth Certificate -->
+                                                <div>
+                                                    <label class="label">تصویر شناسنامه</label>
+                                                    <input type="file"
+                                                           id="birth-certification-image"
+                                                           name="birthCertificationImage"
+                                                           class="file-input"
+                                                           accept="image/*"
+                                                           required />
+                                                </div>
+
+                                                <button type="submit"
+                                                        id="upload-kyc-btn"
+                                                        class="btn btn-primary">
+                                                    <i class="fas fa-upload ml-2"></i>
+                                                    آپلود اسناد
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            }
+                        }
                     </div>
 
                     <!-- Sidebar -->
@@ -744,14 +864,21 @@
                                     <div class="w-24 h-24 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <i class="fas fa-user w-12 h-12 text-primary-600"></i>
                                     </div>
-                                    <h3 id="profile-name" class="text-xl font-semibold text-gray-900 mb-2">
+                                    <h3 id="profile-name" class="text-xl font-semibold text-gray-900 mb-2 truncate">
                                         @Model.user.FirstName @Model.user.LastName
                                     </h3>
-                                    <p id="profile-phone" class="text-gray-600 mb-4">@Model.user.PhoneNumber</p>
-                                    <span id="profile-kyc-badge" class="badge badge-success">
-                                        <i class="fas fa-check-circle ml-1"></i>
-                                        تأیید شده
-                                    </span>
+                                    <div class="mb-4">
+                                        <p id="profile-phone" class="text-gray-600 text-sm dir-ltr bg-gray-50 rounded-lg py-2 px-3 inline-block">
+                                            <i class="fas fa-phone text-gray-400 ml-2 text-xs"></i>
+                                            @Model.user.PhoneNumber
+                                        </p>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span id="profile-kyc-badge" class="badge badge-success text-xs py-1 px-2">
+                                            <i class="fas fa-check-circle ml-1"></i>
+                                            @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -794,7 +921,7 @@
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">وضعیت</span>
-                                        <span class="badge badge-success">تأیید شده</span>
+                                        <span class="badge badge-success">  @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">تاریخ عضویت</span>
@@ -813,21 +940,18 @@
                             <div class="p-6">
                                 <h3 class="text-lg font-semibold text-gray-900 mb-4">دسترسی سریع</h3>
                                 <div class="space-y-3">
-                                    <button
-                                        onclick="window.location.href = '/Account/Investment'"
-                                        class="btn btn-outline w-full text-right">
+                                    <button onclick="window.location.href = '/Account/Investment'"
+                                            class="btn btn-outline w-full text-right">
                                         <i class="fas fa-chart-line ml-2"></i>
                                         سرمایه‌گذاری‌های من
                                     </button>
-                                    <button
-                                        onclick="window.location.href = '/Front/Projects'"
-                                        class="btn btn-outline w-full text-right">
+                                    <button onclick="window.location.href = '/Front/Projects'"
+                                            class="btn btn-outline w-full text-right">
                                         <i class="fas fa-bullseye ml-2"></i>
                                         پروژه‌ها
                                     </button>
-                                    <button
-                                        onclick="window.location.href = '/Front/Notifications'"
-                                        class="btn btn-outline w-full text-right">
+                                    <button onclick="window.location.href = '/Front/Notifications'"
+                                            class="btn btn-outline w-full text-right">
                                         <i class="fas fa-clock ml-2"></i>
                                         اعلان‌ها
                                     </button>
@@ -874,7 +998,7 @@
         function loadProfileData() {
             state.loading = true;
             updateUI();
-            
+
             // شبیه‌سازی بارگذاری از API
             setTimeout(() => {
                 state.loading = false;
@@ -884,38 +1008,38 @@
         }
 
         // تابع پر کردن داده‌های کاربر
-        function populateUserData() {
-            // اطلاعات شخصی
-            document.getElementById('first-name').value = '@Model.user.FirstName';
-            document.getElementById('last-name').value = '@Model.user.LastName';
-            document.getElementById('phone').value = '@Model.user.PhoneNumber';
+        // function populateUserData() {
+        //     // اطلاعات شخصی
+        //     document.getElementById('first-name').value = '@Model.user.FirstName';
+        //     document.getElementById('last-name').value = '@Model.user.LastName';
+        //     document.getElementById('phone').value = '@Model.user.PhoneNumber';
 
-            // اطلاعات خلاصه
-            document.getElementById('profile-name').textContent = '@Model.user.FirstName @Model.user.LastName';
-            document.getElementById('profile-phone').textContent = '@Model.user.PhoneNumber';
-            document.getElementById('wallet-balance').textContent = formatCurrency(50000000);
-            document.getElementById('total-invested').textContent = formatCurrency(472500000);
-            document.getElementById('total-profit').textContent = formatCurrency(45500000);
-            document.getElementById('join-date').textContent = '۱۴۰۲/۱۰/۱۵';
-            document.getElementById('last-login').textContent = '۱۴۰۲/۱۱/۲۰';
+        //     // اطلاعات خلاصه
+        //     document.getElementById('profile-name').textContent = '@Model.user.FirstName @Model.user.LastName';
+        //     document.getElementById('profile-phone').textContent = '@Model.user.PhoneNumber';
+        //     document.getElementById('wallet-balance').textContent = formatCurrency(50000000);
+        //     document.getElementById('total-invested').textContent = formatCurrency(472500000);
+        //     document.getElementById('total-profit').textContent = formatCurrency(45500000);
+        //     document.getElementById('join-date').textContent = '۱۴۰۲/۱۰/۱۵';
+        //     document.getElementById('last-login').textContent = '۱۴۰۲/۱۱/۲۰';
 
-            // وضعیت KYC
-            const kycStatus = getKYCStatusBadge('approved');
-            const kycBadge = document.getElementById('kyc-badge');
-            const profileKycBadge = document.getElementById('profile-kyc-badge');
-            
-            kycBadge.className = `badge badge-${kycStatus.variant}`;
-            kycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
-            
-            profileKycBadge.className = `badge badge-${kycStatus.variant}`;
-            profileKycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
-        }
+        //     // وضعیت KYC
+        //     const kycStatus = getKYCStatusBadge('approved');
+        //     const kycBadge = document.getElementById('kyc-badge');
+        //     const profileKycBadge = document.getElementById('profile-kyc-badge');
+
+        //     kycBadge.className = `badge badge-${kycStatus.variant}`;
+        //     kycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
+
+        //     profileKycBadge.className = `badge badge-${kycStatus.variant}`;
+        //     profileKycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
+        // }
 
         // تابع تغییر حالت ویرایش
         function toggleEditMode() {
             state.isEditing = !state.isEditing;
             updateUI();
-            
+
             const inputs = document.querySelectorAll('#content-section input');
             inputs.forEach(input => {
                 input.disabled = !state.isEditing;
@@ -936,12 +1060,12 @@
         function uploadKYCDocuments() {
             const nationalCard = document.getElementById('national-card').files[0];
             const bankStatement = document.getElementById('bank-statement').files[0];
-            
+
             if (!nationalCard && !bankStatement) {
                 alert('لطفاً حداقل یک سند انتخاب کنید');
                 return;
             }
-            
+
             // شبیه‌سازی آپلود
             setTimeout(() => {
                 document.getElementById('national-card').value = '';
@@ -957,14 +1081,14 @@
             const editBtn = document.getElementById('edit-btn');
             const cancelBtn = document.getElementById('cancel-edit-btn');
             const saveBtn = document.getElementById('save-btn');
-            
+
             if (state.loading) {
                 loadingSection.style.display = 'flex';
                 contentSection.style.display = 'none';
             } else {
                 loadingSection.style.display = 'none';
                 contentSection.style.display = 'block';
-                
+
                 if (state.isEditing) {
                     editBtn.style.display = 'none';
                     cancelBtn.style.display = 'flex';
@@ -980,7 +1104,91 @@
         // مقداردهی اولیه
         document.addEventListener('DOMContentLoaded', function() {
             loadProfileData();
-            
+
+            // رویدادهای دکمه‌ها
+            document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
+            document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);
+            document.getElementById('save-btn').addEventListener('click', saveProfile);
+            document.getElementById('upload-kyc-btn').addEventListener('click', uploadKYCDocuments);
+        });
+
+
+
+                // تابع اعتبارسنجی کد ملی
+        function validateNationalCode(code) {
+            if (!/^\d{10}$/.test(code)) {
+                return false;
+            }
+
+            // الگوریتم اعتبارسنجی کد ملی
+            var check = parseInt(code[9]);
+            var sum = 0;
+            for (var i = 0; i < 9; i++) {
+                sum += parseInt(code[i]) * (10 - i);
+            }
+            var remainder = sum % 11;
+
+            return (remainder < 2 && check === remainder) || (remainder >= 2 && check === 11 - remainder);
+        }
+
+        // تابع آپلود اسناد KYC
+        function uploadKYCDocuments(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('kyc-form');
+            const nationalCode = document.getElementById('nationality-code').value;
+            const nationalCard = document.getElementById('national-card-image').files[0];
+            const birthCertificate = document.getElementById('birth-certification-image').files[0];
+
+            // اعتبارسنجی کد ملی
+            if (!validateNationalCode(nationalCode)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطا',
+                    text: 'کد ملی وارد شده معتبر نیست',
+                    confirmButtonText: 'متوجه شدم'
+                });
+                return;
+            }
+
+            if (!nationalCard || !birthCertificate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطا',
+                    text: 'لطفاً تمامی اسناد را انتخاب کنید',
+                    confirmButtonText: 'متوجه شدم'
+                });
+                return;
+            }
+
+            // نمایش وضعیت آپلود
+            Swal.fire({
+                title: 'در حال آپلود...',
+                text: 'لطفاً منتظر بمانید',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // ارسال فرم
+            form.submit();
+        }
+
+        // محدود کردن ورودی کد ملی به فقط اعداد
+        document.getElementById('nationality-code').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+
+            if (this.value.length > 10) {
+                this.value = this.value.slice(0, 10);
+            }
+        });
+
+
+        // مقداردهی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfileData();
+
             // رویدادهای دکمه‌ها
             document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
             document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);

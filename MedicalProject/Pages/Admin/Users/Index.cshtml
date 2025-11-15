@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   
+
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -505,7 +505,7 @@
                             <i class="fas fa-users"></i>
                             <span>کاربران</span>
                         </a>
-                        
+
                         <a asp-page="/Admin/Documents/Index" class="sidebar-link">
                             <i class="fas fa-file-alt"></i>
                             <span>مدارک کاربران</span>
@@ -641,7 +641,7 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">در انتظار تایید</p>
                                                 <p class="text-2xl font-bold text-gray-900">
-                                                    @(Model.Users.Data.Count(user => user.UserDocument.Status == UserDocumentStatus.AwaitingConfirmation))
+                                                    @(Model.Users.Data.Count(user => user.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation))
                                                 </p>
                                             </div>
                                             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -656,7 +656,7 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">کاربران مسدود</p>
-                                              
+
                                                 <p class="text-2xl font-bold text-gray-900">
                                                     @(Model.Users.Data.Count(user => user.UserBlocks?.Any(i => i.UserId == user.Id && i.BlockToDate > DateTime.Now) == true))
                                                 </p>
@@ -711,11 +711,11 @@
                                                     </td>
                                                     @*<td>@item.NationalityCode</td>*@
                                                     <td>
-                                                        <span class="badge badge-primary">@(item.UserRole?.RoleName??"Guest")</span>
+                                                        <span class="badge badge-primary">@(item.UserRole?.RoleName ?? "Guest")</span>
                                                     </td>
                                                     <td>
                                                         <span class="badge badge-success">
-                                                            @(item.UserDocument.Status.Map())
+                                                            @(item.UserDocument?.Status.Map() ?? UserDocumentStatus.NotConfirmed.Map())
 
                                                         </span>
                                                     </td>
@@ -896,7 +896,7 @@
                                     </select>
                                 </div>
                             </div>
-                          
+
                         </div>
                     </div>
                 </div>
@@ -1126,7 +1126,7 @@
         //       }
 
               // بقیه توابع بدون تغییر
-        
+
 
 
 

@@ -1,4 +1,6 @@
-﻿namespace MedicalProject.Models.Product.DTOs
+﻿using MedicalProject.Models.PurchaseReport;
+
+namespace MedicalProject.Models.Product.DTOs
 {
     public class ProductDto : BaseDto
     {
@@ -8,6 +10,8 @@
         public string Slug { get; set; }
         public SeoData SeoData { get; set; }
         public ProductStatus Status { get; set; }
+
+        public List<PurchaseReportDto>? PurchaseReportDto { get; set; }
         public InventoryDto? InventoryDto { get; set; }
     }
 }

@@ -1,11 +1,41 @@
 ﻿@page
+@using MedicalProject.Infrastructure
 @model MedicalProject.Pages.Front.ProjectsModel
 @{
     ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
 }
 
+
 @section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+
+        /* استایل‌های آیکون‌ها */
+        .stat-item i {
+            width: 1rem;
+            text-align: center;
+            color: #6b7280;
+            font-style: normal;
+        }
+
+        .view-btn i {
+            font-style: normal;
+        }
+
+        .page-btn i {
+            font-style: normal;
+        }
+
+        .btn-icon i {
+            font-style: normal;
+        }
+
+        /* اطمینان از لود فونت */
+        .fas, .far, .fab {
+            font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands' !important;
+            font-weight: 900;
+        }
+
         /* استایل‌های سفارشی برای صفحه پروژه‌ها */
         .projects-grid {
             display: grid;
@@ -158,78 +188,6 @@
                 color: #2563eb;
             }
 
-        /* فیلترها و سایدبار */
-        .filters-sidebar {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #f3f4f6;
-            padding: 1.5rem;
-            height: fit-content;
-            position: sticky;
-            top: 6rem;
-        }
-
-        .filter-section {
-            margin-bottom: 1.5rem;
-        }
-
-            .filter-section:last-child {
-                margin-bottom: 0;
-            }
-
-        .filter-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #111827;
-            margin-bottom: 1rem;
-        }
-
-        .category-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .category-btn {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            border: 1px solid #e5e7eb;
-            background: white;
-            color: #4b5563;
-            font-size: 0.875rem;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-            .category-btn:hover {
-                background: #f9fafb;
-                border-color: #d1d5db;
-            }
-
-            .category-btn.active {
-                background: #dbeafe;
-                border-color: #3b82f6;
-                color: #1e40af;
-            }
-
-        .category-count {
-            background: #e5e7eb;
-            color: #4b5563;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
-            font-size: 0.75rem;
-        }
-
-        .category-btn.active .category-count {
-            background: #3b82f6;
-            color: white;
-        }
-
         /* حالت‌های نمایش */
         .view-toggle {
             display: flex;
@@ -350,27 +308,19 @@
             }
 
         @@keyframes loading {
-            0%
+            0% {
+                background-position: 200% 0;
+            }
 
-        {
-            background-position: 200% 0;
-        }
-
-        100% {
-            background-position: -200% 0;
-        }
-
+            100% {
+                background-position: -200% 0;
+            }
         }
 
         /* رسپانسیو */
         @@media (max-width: 1024px) {
             .projects-grid {
                 grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-
-            .filters-sidebar {
-                position: static;
-                margin-bottom: 2rem;
             }
         }
 
@@ -400,18 +350,15 @@
         }
 
         @@keyframes fadeIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .slide-in {
@@ -419,18 +366,15 @@
         }
 
         @@keyframes slideIn {
-            from
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
 
-        {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         /* استایل‌های خاص برای محتوای فارسی */
@@ -519,133 +463,218 @@
 
     <!-- محتوای اصلی -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- سایدبار فیلترها -->
-            <div class="lg:w-80">
-                <div class="filters-sidebar">
-                    <!-- دسته‌بندی‌ها -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">دسته‌بندی‌ها</h3>
-                        <div class="category-list">
-                            <button class="category-btn active">
-                                <span>همه دسته‌ها</span>
-                                <span class="category-count">48</span>
-                            </button>
-                            <button class="category-btn">
-                                <span>تجهیزات تصویربرداری</span>
-                                <span class="category-count">12</span>
-                            </button>
-                            <button class="category-btn">
-                                <span>تجهیزات دندانپزشکی</span>
-                                <span class="category-count">8</span>
-                            </button>
-                            <button class="category-btn">
-                                <span>تجهیزات فیزیوتراپی</span>
-                                <span class="category-count">6</span>
-                            </button>
-                            <button class="category-btn">
-                                <span>تجهیزات لیزر</span>
-                                <span class="category-count">5</span>
-                            </button>
-                            <button class="category-btn">
-                                <span>تجهیزات آزمایشگاهی</span>
-                                <span class="category-count">7</span>
-                            </button>
-                        </div>
+        <div class="flex flex-col">
+            <!-- اطلاعات آماری -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-blue-600">48</div>
+                        <div class="text-sm text-gray-600">پروژه فعال</div>
                     </div>
-
-                    <!-- فیلتر وضعیت -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">وضعیت پروژه</h3>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" checked>
-                                <span class="mr-2 text-sm text-gray-700">فعال</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="mr-2 text-sm text-gray-700">تکمیل شده</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                <span class="mr-2 text-sm text-gray-700">ویژه</span>
-                            </label>
-                        </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-green-600">3.2M</div>
+                        <div class="text-sm text-gray-600">تومان سرمایه‌گذاری</div>
                     </div>
-
-                    <!-- فیلتر بازه سرمایه -->
-                    <div class="filter-section">
-                        <h3 class="filter-title">بازه سرمایه (میلیون تومان)</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <input type="range" min="0" max="1000" value="500" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                                <div class="flex justify-between text-xs text-gray-500 mt-1">
-                                    <span>0</span>
-                                    <span>1000</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-600">1,240</div>
+                        <div class="text-sm text-gray-600">سرمایه‌گذار</div>
                     </div>
-
-                    <!-- دکمه اعمال فیلترها -->
-                    <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        اعمال فیلترها
-                    </button>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-orange-600">24.5%</div>
+                        <div class="text-sm text-gray-600">میانگین سود</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- لیست پروژه‌ها -->
-            <div class="flex-1">
-                <!-- اطلاعات آماری -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">48</div>
-                            <div class="text-sm text-gray-600">پروژه فعال</div>
+            <!-- گرید پروژه‌ها -->
+            <div id="projectsContainer">
+                <div class="projects-grid" id="projectsGrid">
+                    @{
+                        foreach (var item in Model.Result.Data)
+                        {
+                            <div class="project-card fade-in">
+                                <div class="project-image">
+                                    <img src="@Directories.GetProductImagePathPath(item.ImageName)" alt="@item.Title" loading="lazy">
+                                    <div class="project-badges">
+                                        <span class="badge @(item.Status == Models.Product.ProductStatus.IsActive ? "active" :
+                                                                                                                                                                                        item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
+                                                                                                                                                                                        item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "") badge-success">
+                                            @(item.Status == Models.Product.ProductStatus.IsActive ? "فعال" :
+                                                                                item.Status == Models.Product.ProductStatus.NotActive ? "غیرفعال" :
+                                                                                item.Status == Models.Product.ProductStatus.IsDone ? "تکمیل شده" :
+                                                                                "نامشخص")
+                                </span>
+                            </div>
                         </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-600">3.2M</div>
-                            <div class="text-sm text-gray-600">تومان سرمایه‌گذاری</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-600">1,240</div>
-                            <div class="text-sm text-gray-600">سرمایه‌گذار</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-orange-600">24.5%</div>
-                            <div class="text-sm text-gray-600">میانگین سود</div>
-                        </div>
-                    </div>
+                        <div class="project-content">
+                            <h3 class="project-title">@item.Title</h3>
+                            <p class="project-description">@item.Description</p>
+
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width:
+                                            @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)))%"></div>
+                                    </div>
+                                    <div class="progress-info">
+                                        <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)))%</span>
+                                        <span class="progress-text">پیشرفت تأمین مالی</span>
+                                    </div>
+
+                                    <div class="project-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>@($"{item.InventoryDto?.Profit} سود" ?? "ثبت نشده است")</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>@($"تاریخ سوددهی {item.InventoryDto?.ProfitableTime}" ?? "ثبت نشده است")</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span></span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-users"></i>
+                                            <span>@(item.InventoryDto?.Dong ?? 6) سهم</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="project-pricing">
+                                        <div class="price-item">
+                                            <span class="price-label">قیمت هر سهم</span>
+                                            <span class="price-value persian-numbers">
+                                                @(item.InventoryDto?.PricePerDong != null ? $"{item.InventoryDto.PricePerDong:N0} ریال" : "قیمت ثبت نشده")
+                                            </span>
+                                        </div>
+                                        <div class="price-item">
+                                            <span class="price-label">حداقل سرمایه</span>
+                                            <span class="price-value primary persian-numbers">
+                                                @((ConvertToDecimal(item.InventoryDto?.PricePerDong) / 2)?.ToString("N0") ?? "0") ریال
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="action-buttons">
+                                        <a href="/Front/Projects/Details?slug=@item.Slug" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
+                                            مشاهده جزئیات
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                                        }
+                    }
+                    <!-- پروژه‌ها اینجا رندر می‌شوند -->
+
                 </div>
 
-                <!-- گرید پروژه‌ها -->
-                <div id="projectsContainer">
-                    <div class="projects-grid" id="projectsGrid">
-                        <!-- پروژه‌ها اینجا رندر می‌شوند -->
-                    </div>
-
-                    <!-- صفحه‌بندی -->
+                <!-- صفحه‌بندی -->
+                <!-- صفحه‌بندی -->
+                @if (Model.Result?.Data?.Any() == true && Model.Result.PageCount > 1)
+                {
                     <div class="pagination">
-                        <button class="page-btn disabled">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                        <span class="px-2 text-gray-500">...</span>
-                        <button class="page-btn">8</button>
-                        <button class="page-btn">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
+                        <!-- دکمه قبلی -->
+                        @if (Model.Result.FilterParams.PageId > 1)
+                        {
+                            <a href="?pageId=@(Model.Result.FilterParams.PageId - 1)&take=@Model.Result.FilterParams.Take"
+                               class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="page-btn disabled">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        }
+
+                        <!-- صفحات -->
+                        @{
+                            var currentPage = Model.Result.FilterParams.PageId;
+                            var totalPages = Model.Result.PageCount;
+                            var startPage = Math.Max(1, currentPage - 2);
+                            var endPage = Math.Min(totalPages, currentPage + 2);
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <a href="?pageId=1&take=@Model.Result.FilterParams.Take" class="page-btn">1</a>
+                            @if (startPage > 2)
+                            {
+                                <span class="px-2 text-gray-500">...</span>
+                            }
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <span class="page-btn active">@i</span>
+                            }
+                            else
+                            {
+                                <a href="?pageId=@i&take=@Model.Result.FilterParams.Take" class="page-btn">@i</a>
+                            }
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            @if (endPage < totalPages - 1)
+                            {
+                                <span class="px-2 text-gray-500">...</span>
+                            }
+                            <a href="?pageId=@totalPages&take=@Model.Result.FilterParams.Take" class="page-btn">@totalPages</a>
+                        }
+
+                        <!-- دکمه بعدی -->
+                        @if (Model.Result.FilterParams.PageId < Model.Result.PageCount)
+                        {
+                            <a href="?pageId=@(Model.Result.FilterParams.PageId + 1)&take=@Model.Result.FilterParams.Take"
+                               class="page-btn">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="page-btn disabled">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        }
                     </div>
-                </div>
+                }
+                
+                @*  <div class="pagination">
+                    <button class="page-btn disabled">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                    <button class="page-btn active">1</button>
+                    <button class="page-btn">2</button>
+                    <button class="page-btn">3</button>
+                    <span class="px-2 text-gray-500">...</span>
+                    <button class="page-btn">8</button>
+                    <button class="page-btn">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                </div> *@
             </div>
         </div>
     </div>
 </div>
+@functions {
+    public decimal? ConvertToDecimal(object value)
+    {
+        if (value == null) return null;
+        return decimal.TryParse(value.ToString(), out decimal result) ? result : null;
+    }
+}
+@functions {
+    private double CalculateProgress(double sum)
+    {
+        if (sum == 0 || sum == null) return 0;
+        return (sum * 100) / 6;
+    }
+}
 
 @section Scripts {
-    <script>
+    @* <script>
         // داده‌های نمونه برای پروژه‌ها
         const sampleProjects = [
             {
@@ -805,12 +834,6 @@
                         </div>
 
                         <div class="action-buttons">
-                            <button class="btn-icon" onclick="addToFavorites(${project.id})" title="افزودن به علاقه‌مندی‌ها">
-                                <i class="far fa-heart"></i>
-                            </button>
-                            <button class="btn-icon" onclick="shareProject(${project.id})" title="اشتراک‌گذاری">
-                                <i class="far fa-share-square"></i>
-                            </button>
                             <a href="/projects/${project.id}" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
                                 مشاهده جزئیات
                             </a>
@@ -820,17 +843,6 @@
             `).join('');
         }
 
-        // توابع کمکی
-        function addToFavorites(projectId) {
-            console.log('افزودن پروژه به علاقه‌مندی‌ها:', projectId);
-            // پیاده‌سازی منطق افزودن به علاقه‌مندی‌ها
-        }
-
-        function shareProject(projectId) {
-            console.log('اشتراک‌گذاری پروژه:', projectId);
-            // پیاده‌سازی منطق اشتراک‌گذاری
-        }
-
         // مدیریت تغییر حالت نمایش
         document.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -838,15 +850,6 @@
                 this.classList.add('active');
                 const viewMode = this.dataset.view;
                 renderProjects(sampleProjects, viewMode);
-            });
-        });
-
-        // مدیریت فیلتر دسته‌بندی‌ها
-        document.querySelectorAll('.category-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                // پیاده‌سازی منطق فیلتر کردن
             });
         });
 
@@ -866,5 +869,5 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderProjects(sampleProjects);
         });
-    </script>
+    </script>  *@
 }

@@ -95,12 +95,11 @@ namespace MedicalProject.Pages.Admin.Users
                     && nationalCardPhoto != null
                     && nationalityCode != null)
                 {
-                    await _service.CompletionOfInformation(new Models.User.CompletionOfInformationCommand
+                    await _service.CompletionOfInformation(new Models.User.CompletionOfInformationCommandViewModel
                     {
                         birthCertificatePhoto = birthCertificatePhoto,
                         nationalCardPhoto = nationalCardPhoto,
                         nationalityCode = nationalityCode,
-                        userId = userId,
                     });
                 }
 

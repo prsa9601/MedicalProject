@@ -14,11 +14,30 @@ namespace MedicalProject.Pages.Account
         {
             _service = service;
         }
-
+        [BindProperty(SupportsGet = true)]
         public UserDto? user { get; set; }
         public async Task OnGet()
         {
             user = await _service.GetCurrentUser();
+        }
+        public async Task<IActionResult> OnPostSendUserDocument(IFormFile nationalCardImage
+            , IFormFile birthCertificationImage, string nationalityCode)
+        {
+            var result = await _service.CompletionOfInformation(new Models.User.CompletionOfInformationCommandViewModel
+            {
+                birthCertificatePhoto = birthCertificationImage,
+                nationalCardPhoto = nationalCardImage,
+                nationalityCode = nationalityCode,
+            });
+            if (result.IsSuccess)
+            {
+                TempData["Success"] = result.MetaData.Message;
+                user = await _service.GetCurrentUser();
+            }
+            else
+                TempData["Error"] = result.MetaData.Message;
+
+            return Page();
         }
     }
 }

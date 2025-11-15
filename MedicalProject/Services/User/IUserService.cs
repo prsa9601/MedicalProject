@@ -14,7 +14,7 @@ namespace MedicalProject.Services.User
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
         Task<ApiResult> ChangeActivityAccount(ChangeActivityUserAccountCommand command);
-        Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command);
+        Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommandViewModel command);
 
 
         Task<UserDto?> GetUserById(Guid userId);
@@ -32,10 +32,10 @@ namespace MedicalProject.Services.User
             _client = client;
         }
 
-        public async Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommand command)
+        public async Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommandViewModel command)
         {
             using var form = new MultipartFormDataContent();
-            form.Add(new StringContent(command.userId.ToString()), "userId");
+            //form.Add(new StringContent(command.userId.ToString()), "userId");
             form.Add(new StringContent(command.nationalityCode.ToString()), "nationalityCode");
             form.Add(
                     new StreamContent(command.nationalCardPhoto.OpenReadStream()),

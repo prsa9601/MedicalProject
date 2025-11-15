@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   
+
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -625,7 +625,7 @@
                                             <option value="@UserDocumentStatus.WrongInformation">رد شده</option>
                                         </select>
 
-                                       @*  <select id="typeFilter" asp-for="@Model.FilterParams.DocumentType" class="input w-full sm:w-auto">
+                                        @*  <select id="typeFilter" asp-for="@Model.FilterParams.DocumentType" class="input w-full sm:w-auto">
                                             <option value="">همه انواع</option>
                                             <option value="Identity">کارت ملی</option>
                                             <option value="License">گواهی نامه</option>
@@ -648,7 +648,7 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">کل مدارک</p>
-                                                <p class="text-2xl font-bold text-gray-900">@Model.Result.EntityCount</p>
+                                                <p class="text-2xl font-bold text-gray-900">@(Model?.Result?.EntityCount ?? 0)</p>
                                             </div>
                                             <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-file-alt text-blue-600"></i>
@@ -663,7 +663,10 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">در انتظار بررسی</p>
                                                 <p class="text-2xl font-bold text-gray-900">
-                                                    @(Model.Result.Data.Count(doc => doc.UserDocument.Status == UserDocumentStatus.AwaitingConfirmation))
+                                                    @{
+                                                        int awaitingCount = Model?.Result?.Data?.Count(doc => doc?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation) ?? 0;
+                                                    }
+                                                    @(awaitingCount)
                                                 </p>
                                             </div>
                                             <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -679,7 +682,10 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">تایید شده</p>
                                                 <p class="text-2xl font-bold text-gray-900">
-                                                    @(Model.Result.Data.Count(doc => doc.UserDocument.Status == UserDocumentStatus.IsConfirmed))
+                                                    @{
+                                                        int isConfirmedCount = Model?.Result?.Data?.Count(doc => doc?.UserDocument?.Status == UserDocumentStatus.IsConfirmed) ?? 0;
+                                                    }
+                                                    @(isConfirmedCount)
                                                 </p>
                                             </div>
                                             <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -695,7 +701,10 @@
                                             <div>
                                                 <p class="text-sm font-medium text-gray-600">رد شده</p>
                                                 <p class="text-2xl font-bold text-gray-900">
-                                                    @(Model.Result.Data.Count(doc => doc.UserDocument.Status == UserDocumentStatus.WrongInformation))
+                                                    @{
+                                                        int wrongInformationCount = Model?.Result?.Data?.Count(doc => doc?.UserDocument?.Status == UserDocumentStatus.WrongInformation) ?? 0;
+                                                    }
+                                                    @(wrongInformationCount)
                                                 </p>
                                             </div>
                                             <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
@@ -726,7 +735,7 @@
                                     </thead>
                                     <tbody>
                                         @{
-                                            if (Model.Result == null )
+                                            if (Model?.Result?.Data == null || !Model.Result.Data.Any())
                                             {
                                                 <tr>
                                                     <td colspan="8" class="text-center py-4 text-gray-500">
@@ -735,165 +744,176 @@
                                                     </td>
                                                 </tr>
                                             }
-                                           else
-                                           {
-                                             int number = 1;
-                                            foreach (var item in Model.Result.Data)
+                                            else
                                             {
-                                                <tr>
-                                                    <td>
-                                                        <input type="checkbox" class="document-checkbox" value="@item.Id">
-                                                    </td>
-                                                    <td>@(number++)</td>
-                                                    <td>
-                                                        <div class="flex items-center space-x-3 space-x-reverse">
-                                                            <img src=@Directories.GetUserImageAccountPath(item.ImageName)
-                                                                 alt="@item.FirstName @item.LastName"
-                                                                 class="user-avatar">
-                                                            <div>
-                                                                <div class="font-medium text-gray-900">@item.FirstName @item.LastName</div>
-                                                                <div class="text-sm text-gray-500">@item.PhoneNumber</div>
+                                                int number = 1;
+                                                foreach (var item in Model.Result.Data)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="checkbox" class="document-checkbox" value="@item?.Id">
+                                                        </td>
+                                                        <td>@(number++)</td>
+                                                        <td>
+                                                            <div class="flex items-center space-x-3 space-x-reverse">
+                                                                @if (!string.IsNullOrEmpty(item?.ImageName))
+                                                                {
+                                                                    <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
+                                                                         alt="@item?.FirstName @item?.LastName"
+                                                                         class="user-avatar">
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="user-avatar bg-gray-200 flex items-center justify-center">
+                                                                        <i class="fas fa-user text-gray-400"></i>
+                                                                    </div>
+                                                                }
+                                                                <div>
+                                                                    <div class="font-medium text-gray-900">@item?.FirstName @item?.LastName</div>
+                                                                    <div class="text-sm text-gray-500">@item?.PhoneNumber</div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </td>
-                                                   @* <td>
-                                                        <span class="document-type-badge document-type-@item.DocumentType.ToString().ToLower()">
-                                                            item.DocumentType.Map()
-                                                        </span>
-                                                    </td>*@
-                                                    @*<td>
-                                                        <img src=@Directories.GetUserDocumentPath(item.FileName)
-                                                             alt="پیش‌نمایش مدرک"
-                                                             class="document-preview"
-                                                             onclick="showDocumentModal('@item.FileName', '@item.DocumentType.Map()')">
-                                                    </td>*@
-                                                    @*<td>
-                                                        <div class="max-w-xs truncate" title="@item.Description">
-                                                            @item.Description
-                                                        </div>
-                                                    </td>*@
-                                                    <td>
-                                                        @if (item.UserDocument.Status == UserDocumentStatus.AwaitingConfirmation)
-                                                        {
-                                                            <span class="badge badge-warning">در انتظار بررسی</span>
-                                                        }
-                                                        else if (item.UserDocument.Status == UserDocumentStatus.IsConfirmed)
-                                                        {
-                                                            <span class="badge badge-success">تایید شده</span>
-                                                        }
-                                                        else if (item.UserDocument.Status == UserDocumentStatus.WrongInformation)
-                                                        {
-                                                            <span class="badge badge-danger">رد شده</span>
-                                                        }
-                                                    </td>
-                                                    <td>@item.CreationDate.ToString("yyyy/MM/dd")</td>
-                                                    <td>
-                                                        <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <button onclick="showDocumentModal('@item.UserDocument.NationalCardPhoto', '@item.UserDocument.BirthCertificatePhoto')" 
-                                                                    class="btn btn-outline btn-sm" title="مشاهده مدرک">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            @if (item.UserDocument.Status == UserDocumentStatus.AwaitingConfirmation)
+                                                        </td>
+                                                        <td>
+                                                            @if (item?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation)
                                                             {
-                                                                <button onclick="approveDocument('@item.Id')" 
-                                                                        class="btn btn-success btn-sm" title="تایید مدرک">
-                                                                    <i class="fas fa-check"></i>
-                                                                </button>
-                                                                <button onclick="rejectDocument('@item.Id')" 
-                                                                        class="btn btn-danger btn-sm" title="رد مدرک">
-                                                                    <i class="fas fa-times"></i>
-                                                                </button>
+                                                                <span class="badge badge-warning">در انتظار بررسی</span>
                                                             }
-                                                            <button onclick="deleteDocument('@item.Id')" 
-                                                                    class="btn btn-outline btn-sm" title="حذف">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                            else if (item?.UserDocument?.Status == UserDocumentStatus.IsConfirmed)
+                                                            {
+                                                                <span class="badge badge-success">تایید شده</span>
+                                                            }
+                                                            else if (item?.UserDocument?.Status == UserDocumentStatus.WrongInformation)
+                                                            {
+                                                                <span class="badge badge-danger">رد شده</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-secondary">نامشخص</span>
+                                                            }
+                                                        </td>
+                                                        <td>@item?.CreationDate.ToString("yyyy/MM/dd")</td>
+                                                        <td>
+                                                            <div class="flex items-center space-x-2 space-x-reverse">
+                                                                @if (!string.IsNullOrEmpty(item?.UserDocument?.NationalCardPhoto) || !string.IsNullOrEmpty(item?.UserDocument?.BirthCertificatePhoto))
+                                                                {
+                                                                    <button onclick="showDocumentModal('@item?.UserDocument?.NationalCardPhoto', '@item?.UserDocument?.BirthCertificatePhoto')"
+                                                                            class="btn btn-outline btn-sm" title="مشاهده مدرک">
+                                                                        <i class="fas fa-eye"></i>
+                                                                    </button>
+                                                                }
+                                                                @if (item?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation)
+                                                                {
+                                                                    <button onclick="approveDocument('@item?.Id')"
+                                                                            class="btn btn-success btn-sm" title="تایید مدرک">
+                                                                        <i class="fas fa-check"></i>
+                                                                    </button>
+                                                                    <button onclick="rejectDocument('@item?.Id')"
+                                                                            class="btn btn-danger btn-sm" title="رد مدرک">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                }
+                                                                <button onclick="deleteDocument('@item?.Id')"
+                                                                        class="btn btn-outline btn-sm" title="حذف">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
                                             }
-                                        }}
+                                        }
                                         @Html.AntiForgeryToken()
                                     </tbody>
                                 </table>
                             </div>
 
                             <!-- Pagination -->
-                            <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
-                                <div class="text-sm text-gray-700">
-                                    نمایش
-                                    <span id="currentRange">@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) - @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
-                                    از
-                                    <span id="totalCount">@Model.Result.EntityCount</span>
-                                    مدرک
-                                </div>
-                                <div class="flex items-center space-x-2 space-x-reverse">
-                                    <!-- دکمه صفحه قبلی -->
-                                    <button onclick="loadPage(@(Model.Result.CurrentPage - 1))"
-                                            class="btn btn-outline btn-sm @(Model.Result.CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")"
-                                            @(Model.Result.CurrentPage <= 1 ? "disabled" : "")>
-                                        <i class="fas fa-chevron-right"></i>
-                                    </button>
+                            @if (Model?.Result != null)
+                            {
+                                <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
+                                    <div class="text-sm text-gray-700">
+                                        نمایش
+                                        <span id="currentRange">@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) - @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
+                                        از
+                                        <span id="totalCount">@Model.Result.EntityCount</span>
+                                        مدرک
+                                    </div>
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <!-- دکمه صفحه قبلی -->
+                                        <button onclick="loadPage(@(Model.Result.CurrentPage - 1))"
+                                                class="btn btn-outline btn-sm @(Model.Result.CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Result.CurrentPage <= 1 ? "disabled" : "")>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
 
-                                    <!-- صفحات عددی -->
-                                    @for (int i = Model.Result.StartPage; i <= Model.Result.EndPage; i++)
-                                    {
-                                        if (i == Model.Result.CurrentPage)
+                                        <!-- صفحات عددی -->
+                                        @for (int i = Model.Result.StartPage; i <= Model.Result.EndPage; i++)
                                         {
-                                            <button class="btn btn-primary btn-sm">@i</button>
+                                            if (i == Model.Result.CurrentPage)
+                                            {
+                                                <button class="btn btn-primary btn-sm">@i</button>
+                                            }
+                                            else
+                                            {
+                                                <button onclick="loadPage(@i)" class="btn btn-outline btn-sm">@i</button>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <button onclick="loadPage(@i)" class="btn btn-outline btn-sm">@i</button>
-                                        }
-                                    }
 
-                                    <!-- دکمه صفحه بعدی -->
-                                    <button onclick="loadPage(@(Model.Result.CurrentPage + 1))"
-                                            class="btn btn-outline btn-sm @(Model.Result.CurrentPage >= Model.Result.PageCount ? "opacity-50 cursor-not-allowed" : "")"
-                                            @(Model.Result.CurrentPage >= Model.Result.PageCount ? "disabled" : "")>
-                                        <i class="fas fa-chevron-left"></i>
-                                    </button>
+                                        <!-- دکمه صفحه بعدی -->
+                                        <button onclick="loadPage(@(Model.Result.CurrentPage + 1))"
+                                                class="btn btn-outline btn-sm @(Model.Result.CurrentPage >= Model.Result.PageCount ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Result.CurrentPage >= Model.Result.PageCount ? "disabled" : "")>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- انتخاب تعداد آیتم در صفحه -->
-                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
-                                <div class="flex items-center space-x-2 space-x-reverse">
-                                    <span class="text-sm text-gray-600">تعداد در هر صفحه:</span>
-                                    <select onchange="changePageSize(this.value)" class="input w-20 text-sm py-1" id="pageSizeSelect">
-                                        <option value="8" selected="@(Model.Result.Take == 8)">8</option>
-                                        <option value="16" selected="@(Model.Result.Take == 16)">16</option>
-                                        <option value="32" selected="@(Model.Result.Take == 32)">32</option>
-                                        <option value="50" selected="@(Model.Result.Take == 50)">50</option>
-                                    </select>
+                                <!-- انتخاب تعداد آیتم در صفحه -->
+                                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <span class="text-sm text-gray-600">تعداد در هر صفحه:</span>
+                                        <select onchange="changePageSize(this.value)" class="input w-20 text-sm py-1" id="pageSizeSelect">
+                                            <option value="8" selected="@(Model.Result.Take == 8)">8</option>
+                                            <option value="16" selected="@(Model.Result.Take == 16)">16</option>
+                                            <option value="32" selected="@(Model.Result.Take == 32)">32</option>
+                                            <option value="50" selected="@(Model.Result.Take == 50)">50</option>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    @Html.AntiForgeryToken()
     <!-- Document Preview Modal -->
     <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
         <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
             <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold text-gray-900" id="documentModalTitle">مشاهده مدرک</h3>
+                <h3 class="text-xl font-semibold text-gray-900" id="documentModalTitle">مشاهده مدارک</h3>
                 <button onclick="closeDocumentModal()" class="text-gray-400 hover:text-gray-600">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
 
             <div class="mt-4">
-                <div class="flex justify-center">
-                    <img id="documentModalImage" src="" alt="مدرک" class="max-w-full max-h-96 rounded-lg">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="text-lg font-medium mb-2">کارت ملی</h4>
+                        <img id="nationalCardImage" src="" alt="کارت ملی" class="w-full max-h-80 object-contain rounded-lg border">
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-medium mb-2">شناسنامه</h4>
+                        <img id="birthCertificateImage" src="" alt="شناسنامه" class="w-full max-h-80 object-contain rounded-lg border">
+                    </div>
                 </div>
                 <div class="mt-4 flex justify-center space-x-3 space-x-reverse">
-                    <button onclick="downloadDocument()" class="btn btn-primary">
+                    <button onclick="downloadAllDocuments()" class="btn btn-primary">
                         <i class="fas fa-download ml-2"></i>
-                        دانلود مدرک
+                        دانلود همه مدارک
                     </button>
                     <button onclick="closeDocumentModal()" class="btn btn-outline">
                         بستن
@@ -915,24 +935,24 @@
 
             <div class="mt-4">
                 <p class="text-gray-600 mb-4">عملیات مورد نظر را برای مدارک انتخاب شده انجام دهید:</p>
-                
+
                 <div class="space-y-3">
                     <button onclick="bulkApprove()" class="btn btn-success w-full text-right">
                         <i class="fas fa-check ml-2"></i>
                         تایید مدارک انتخاب شده
                     </button>
-                    
+
                     <button onclick="bulkReject()" class="btn btn-danger w-full text-right">
                         <i class="fas fa-times ml-2"></i>
                         رد مدارک انتخاب شده
                     </button>
-                    
+
                     <button onclick="bulkDelete()" class="btn btn-outline w-full text-right">
                         <i class="fas fa-trash ml-2"></i>
                         حذف مدارک انتخاب شده
                     </button>
                 </div>
-                
+
                 <div class="mt-6 pt-4 border-t border-gray-200">
                     <button onclick="closeBulkActionsModal()" class="btn btn-outline w-full">
                         انصراف
@@ -967,9 +987,26 @@
         });
 
         // توابع مخصوص مدیریت مدارک
-        function showDocumentModal(fileName, documentType) {
-            document.getElementById('documentModalTitle').textContent = `مشاهده مدرک - ${documentType}`;
-            document.getElementById('documentModalImage').src = `/uploads/Result/${fileName}`;
+        function showDocumentModal(nationalCardPhoto, birthCertificatePhoto) {
+            const nationalCardImage = document.getElementById('nationalCardImage');
+            const birthCertificateImage = document.getElementById('birthCertificateImage');
+
+            if (nationalCardPhoto) {
+                nationalCardImage.src = `/uploads/documents/${nationalCardPhoto}`;
+                nationalCardImage.style.display = 'block';
+            } else {
+                nationalCardImage.style.display = 'none';
+                nationalCardImage.parentElement.innerHTML = '<div class="text-center text-gray-500 py-8">کارت ملی آپلود نشده است</div>';
+            }
+
+            if (birthCertificatePhoto) {
+                birthCertificateImage.src = `/uploads/documents/${birthCertificatePhoto}`;
+                birthCertificateImage.style.display = 'block';
+            } else {
+                birthCertificateImage.style.display = 'none';
+                birthCertificateImage.parentElement.innerHTML = '<div class="text-center text-gray-500 py-8">شناسنامه آپلود نشده است</div>';
+            }
+
             document.getElementById('documentModal').classList.remove('hidden');
         }
 
@@ -977,19 +1014,32 @@
             document.getElementById('documentModal').classList.add('hidden');
         }
 
-        function downloadDocument() {
-            const imageSrc = document.getElementById('documentModalImage').src;
-            const link = document.createElement('a');
-            link.href = imageSrc;
-            link.download = 'document.jpg';
-            link.click();
+        function downloadAllDocuments() {
+            const nationalCardSrc = document.getElementById('nationalCardImage').src;
+            const birthCertificateSrc = document.getElementById('birthCertificateImage').src;
+
+            if (nationalCardSrc && !nationalCardSrc.includes('data:')) {
+                const link1 = document.createElement('a');
+                link1.href = nationalCardSrc;
+                link1.download = 'national-card.jpg';
+                link1.click();
+            }
+
+            if (birthCertificateSrc && !birthCertificateSrc.includes('data:')) {
+                const link2 = document.createElement('a');
+                link2.href = birthCertificateSrc;
+                link2.download = 'birth-certificate.jpg';
+                link2.click();
+            }
         }
 
         // انتخاب همه/عدم انتخاب همه
         function toggleSelectAll(checkbox) {
             const checkboxes = document.querySelectorAll('.document-checkbox');
             checkboxes.forEach(cb => {
-                cb.checked = checkbox.checked;
+                if (cb) {
+                    cb.checked = checkbox.checked;
+                }
             });
         }
 
@@ -1014,6 +1064,8 @@
 
         // تایید مدرک
         async function approveDocument(documentId) {
+            if (!documentId) return;
+
             const result = await Swal.fire({
                 title: 'تایید مدرک',
                 text: 'آیا از تایید این مدرک اطمینان دارید؟',
@@ -1061,6 +1113,8 @@
 
         // رد مدرک
         async function rejectDocument(documentId) {
+            if (!documentId) return;
+
             const { value: reason } = await Swal.fire({
                 title: 'رد مدرک',
                 input: 'textarea',
@@ -1113,6 +1167,8 @@
 
         // حذف مدرک
         async function deleteDocument(documentId) {
+            if (!documentId) return;
+
             const result = await Swal.fire({
                 title: 'حذف مدرک',
                 text: 'آیا از حذف این مدرک اطمینان دارید؟',
@@ -1216,7 +1272,7 @@
 
         function getSelectedDocumentIds() {
             const checkboxes = document.querySelectorAll('.document-checkbox:checked');
-            return Array.from(checkboxes).map(cb => cb.value);
+            return Array.from(checkboxes).map(cb => cb.value).filter(id => id);
         }
 
         async function performBulkAction(action, documentIds, reason = '') {
@@ -1285,6 +1341,20 @@
                 document.body.classList.remove('sidebar-mobile-open');
             }
         });
+
+        // توابع صفحه‌بندی
+        function loadPage(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        }
+
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('take', size);
+            url.searchParams.set('page', '1'); // بازگشت به صفحه اول
+            window.location.href = url.toString();
+        }
     </script>
 </body>
 </html>

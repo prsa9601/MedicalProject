@@ -1,0 +1,568 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Documents.DetailsModel
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Models.User.Enum
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>جزئیات مدارک کاربر - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .document-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .document-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .info-value {
+            color: #6b7280;
+        }
+
+        .zoom-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .zoom-image {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="/Admin/Documents/Index" class="btn btn-outline mr-4">
+                        <i class="fas fa-arrow-right ml-2"></i>
+                        بازگشت به لیست
+                    </a>
+                    <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">د</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                    </div>
+                </div>
+                <span class="text-lg font-semibold text-gray-700">پنل مدیریت - جزئیات مدارک</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- اطلاعات کاربر -->
+        <div class="card mb-6">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">اطلاعات کاربر</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center space-x-4 space-x-reverse mb-6">
+                    @if (!string.IsNullOrEmpty(Model?.User?.ImageName))
+                    {
+                        <img src="@Directories.GetUserImageAccountPath(Model.User.ImageName)" 
+                             alt="@Model.User.FirstName @Model.User.LastName" 
+                             class="w-16 h-16 rounded-full object-cover">
+                    }
+                    else
+                    {
+                        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-400 text-2xl"></i>
+                        </div>
+                    }
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">@Model?.User?.FirstName @Model?.User?.LastName</h3>
+                        <p class="text-gray-600">@Model?.User?.PhoneNumber</p>
+                        <p class="text-sm text-gray-500">کد ملی: @Model?.User.UserDocument?.NationalityCode</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="info-item">
+                        <span class="info-label">نام و نام خانوادگی:</span>
+                        <span class="info-value">@Model?.User?.FirstName @Model?.User?.LastName</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">شماره تماس:</span>
+                        <span class="info-value">@Model?.User?.PhoneNumber</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">کد ملی:</span>
+                        <span class="info-value">@Model?.User.UserDocument?.NationalityCode</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">تاریخ ثبت:</span>
+                        <span class="info-value">@Model?.User.UserDocument?.CreationDate.ToString("yyyy/MM/dd HH:mm")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- وضعیت تایید -->
+        <div class="card mb-6">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">وضعیت تایید مدارک</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        @if (Model?.User.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation)
+                        {
+                            <span class="badge badge-warning">
+                                <i class="fas fa-clock ml-2"></i>
+                                در انتظار بررسی
+                            </span>
+                        }
+                        else if (Model?.User.UserDocument?.Status == UserDocumentStatus.IsConfirmed)
+                        {
+                            <span class="badge badge-success">
+                                <i class="fas fa-check ml-2"></i>
+                                تایید شده
+                            </span>
+                        }
+                        else if (Model?.User.UserDocument?.Status == UserDocumentStatus.WrongInformation)
+                        {
+                            <span class="badge badge-danger">
+                                <i class="fas fa-times ml-2"></i>
+                                رد شده
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-warning">
+                                وضعیت نامشخص
+                            </span>
+                        }
+                    </div>
+
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        @if (Model?.User.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation)
+                        {
+                            <button onclick="approveDocument()" class="btn btn-success">
+                                <i class="fas fa-check ml-2"></i>
+                                تایید مدارک
+                            </button>
+                            <button onclick="rejectDocument()" class="btn btn-danger">
+                                <i class="fas fa-times ml-2"></i>
+                                رد مدارک
+                            </button>
+                        }
+                        else if (Model?.User.UserDocument?.Status == UserDocumentStatus.IsConfirmed)
+                        {
+                            <button onclick="rejectDocument()" class="btn btn-danger">
+                                <i class="fas fa-times ml-2"></i>
+                                تغییر به وضعیت رد
+                            </button>
+                        }
+                        else if (Model?.User.UserDocument?.Status == UserDocumentStatus.WrongInformation)
+                        {
+                            <button onclick="approveDocument()" class="btn btn-success">
+                                <i class="fas fa-check ml-2"></i>
+                                تغییر به وضعیت تایید
+                            </button>
+                        }
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(@* Model?.User.UserDocument?.ReasionReject *@ "باید درست شه"))
+                {
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div class="flex items-center mb-2">
+                            <i class="fas fa-exclamation-triangle text-red-500 ml-2"></i>
+                            <span class="font-semibold text-red-800">دلیل رد مدارک:</span>
+                        </div>
+                        <p class="text-red-700">@* @Model.User.UserDocument.RejectionReason *@ اینو باید درست کنم</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- مدارک ارسالی -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- کارت ملی -->
+            <div class="card">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-id-card ml-2"></i>
+                        کارت ملی
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if (!string.IsNullOrEmpty(Model?.User.UserDocument?.NationalCardPhoto))
+                    {
+                        <img src="@Directories.GetUserNationalCardPhotoPath(Model.User.UserDocument.NationalCardPhoto)"
+                             alt="کارت ملی" 
+                             class="document-image"
+                             onclick="zoomImage('@Directories.GetUserImageAccountPath(Model.User.UserDocument.NationalCardPhoto)')">
+                        <div class="mt-4 flex justify-center space-x-3 space-x-reverse">
+                            <button onclick="downloadImage('@Model.User.UserDocument.NationalCardPhoto', 'کارت-ملی')"
+                                    class="btn btn-outline">
+                                <i class="fas fa-download ml-2"></i>
+                                دانلود کارت ملی
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-image text-4xl mb-3"></i>
+                            <p>کارت ملی آپلود نشده است</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- شناسنامه -->
+            <div class="card">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-file-alt ml-2"></i>
+                        شناسنامه
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if (!string.IsNullOrEmpty(Model?.User.UserDocument?.BirthCertificatePhoto))
+                    {
+                        <img src="@Directories.GetUserBirthCertificatePhotoPath(Model.User.UserDocument.BirthCertificatePhoto)"
+                             alt="شناسنامه" 
+                             class="document-image"
+                             onclick="zoomImage('@Directories.GetUserBirthCertificatePhotoPath(Model.User.UserDocument.BirthCertificatePhoto)')">
+                        <div class="mt-4 flex justify-center space-x-3 space-x-reverse">
+                            <button onclick="downloadImage('@Model.User.UserDocument.BirthCertificatePhoto', 'شناسنامه')"
+                                    class="btn btn-outline">
+                                <i class="fas fa-download ml-2"></i>
+                                دانلود شناسنامه
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-image text-4xl mb-3"></i>
+                            <p>شناسنامه آپلود نشده است</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- تاریخچه تغییرات -->
+        <div class="card">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900">تاریخچه تغییرات</h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <i class="fas fa-plus-circle text-blue-500"></i>
+                            <span>ثبت اولیه مدارک</span>
+                        </div>
+                        <span class="text-sm text-gray-500">@Model?.User.UserDocument?.CreationDate.ToString("yyyy/MM/dd HH:mm")</span>
+                    </div>
+
+                    @if (Model?.User.UserDocument?.Status == UserDocumentStatus.IsConfirmed)
+                    {
+                        <div class="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <i class="fas fa-check-circle text-green-500"></i>
+                                <span>مدارک تایید شد</span>
+                            </div>
+                            <span class="text-sm text-gray-500">@Model.User.UserDocument.CreationDate.ToString("yyyy/MM/dd HH:mm")</span>
+                        </div>
+                    }
+
+                    @if (Model?.User.UserDocument?.Status == UserDocumentStatus.WrongInformation)
+                    {
+                        <div class="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <i class="fas fa-times-circle text-red-500"></i>
+                                <span>مدارک رد شد</span>
+                            </div>
+                            <span class="text-sm text-gray-500">@Model.User.UserDocument.CreationDate.ToString("yyyy/MM/dd HH:mm")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal برای نمایش زوم شده تصویر -->
+    <div id="imageZoomModal" class="zoom-modal hidden">
+        <img id="zoomedImage" class="zoom-image">
+        <button onclick="closeZoomModal()" class="absolute top-4 left-4 text-white text-2xl">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <script>
+        // تایید مدارک
+        async function approveDocument() {
+            const result = await Swal.fire({
+                title: 'تایید مدارک',
+                text: 'آیا از تایید مدارک این کاربر اطمینان دارید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله، تایید شود',
+                cancelButtonText: 'لغو',
+                confirmButtonColor: '#059669'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('documentId', '@Model?.User.UserDocument?.Id');
+
+                    const response = await fetch('?handler=Approve', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'مدارک با موفقیت تایید شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه'
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در تایید مدارک');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در تایید مدارک',
+                        icon: 'error',
+                        confirmButtonText: 'باشه'
+                    });
+                }
+            }
+        }
+
+        // رد مدارک
+        async function rejectDocument() {
+            const { value: reason } = await Swal.fire({
+                title: 'رد مدارک',
+                input: 'textarea',
+                inputLabel: 'دلیل رد مدارک',
+                inputPlaceholder: 'لطفاً دلیل رد مدارک این کاربر را وارد کنید...',
+                inputAttributes: {
+                    'aria-label': 'دلیل رد مدارک'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'رد مدارک',
+                cancelButtonText: 'لغو',
+                confirmButtonColor: '#dc2626'
+            });
+
+            if (reason) {
+                try {
+                    const formData = new FormData();
+                    formData.append('documentId', '@Model?.User.UserDocument?.Id');
+                    formData.append('reason', reason);
+
+                    const response = await fetch('?handler=Reject', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'مدارک با موفقیت رد شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه'
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در رد مدارک');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در رد مدارک',
+                        icon: 'error',
+                        confirmButtonText: 'باشه'
+                    });
+                }
+            }
+        }
+
+        // دانلود تصویر
+        function downloadImage(fileName, documentType) {
+            const imageUrl = `/uploads/documents/${fileName}`;
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = `${documentType}-${'@Model?.User.UserDocument.NationalityCode' || 'unknown'}.jpg`;
+            link.click();
+        }
+
+        // نمایش تصویر در حالت زوم
+        function zoomImage(imageUrl) {
+            document.getElementById('zoomedImage').src = imageUrl;
+            document.getElementById('imageZoomModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // بستن modal زوم
+        function closeZoomModal() {
+            document.getElementById('imageZoomModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // بستن modal با کلید ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeZoomModal();
+            }
+        });
+
+        // بستن modal با کلیک خارج
+        document.getElementById('imageZoomModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeZoomModal();
+            }
+        });
+    </script>
+</body>
+</html>
