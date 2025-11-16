@@ -1,6 +1,7 @@
-﻿@* @page
+﻿@page
 @using MedicalProject.Infrastructure
 @using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Infrastructure.Extensions
 @using MedicalProject.Models.User.Enum
 @model MedicalProject.Pages.Admin.Finance.IndexModel
 @{
@@ -358,7 +359,7 @@
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <!-- Statistics Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card">
+                       @*  <div class="stat-card">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود کل پلتفرم</p>
                                 <p class="text-2xl font-bold mt-2">@Model.TotalPlatformProfit.ToString("N0") <span class="text-sm">ریال</span></p>
@@ -367,19 +368,21 @@
                                     <span class="text-green-300 text-sm">۱۲٪ رشد</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> *@
 
                         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود کاربران</p>
-                                <p class="text-2xl font-bold mt-2">@Model.TotalUserProfit.ToString("N0") <span class="text-sm">ریال</span></p>
-                                <div class="flex items-center mt-2">
+                               <p class="text-2xl font-bold mt-2">
+    @Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0")
+    <span class="text-sm">ریال</span>
+</p> <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
                                     <span class="text-green-300 text-sm">۸٪ رشد</span>
                                 </div>
                             </div>
                         </div>
-
+@* 
                         <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">کارمزد پلتفرم</p>
@@ -390,11 +393,11 @@
                                 </div>
                             </div>
                         </div>
-
+ *@
                         <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
-                                <p class="text-2xl font-bold mt-2">@Model.TotalTransactions.ToString("N0")</p>
+                                <p class="text-2xl font-bold mt-2">@Model.Result.EntityCount.ToString("N0")</p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
                                     <span class="text-green-300 text-sm">۱۵٪ رشد</span>
@@ -424,7 +427,7 @@
                             </div>
                             <div class="p-6">
                                 <div class="chart-container">
-                                    <canvas id="userProfitChart"></canvas>
+                                    <canvas id="itemChart"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -441,19 +444,19 @@
                                 <div class="space-y-4">
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">درآمد کل:</span>
-                                        <span class="font-semibold text-green-600">@Model.TotalRevenue.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-green-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">هزینه‌ها:</span>
-                                        <span class="font-semibold text-red-600">@Model.TotalCosts.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-red-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">سود خالص:</span>
-                                        <span class="font-semibold text-blue-600">@Model.NetProfit.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-blue-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">نرخ سودآوری:</span>
-                                        <span class="font-semibold text-purple-600">@Model.ProfitMargin.ToString("P1")</span>
+                                        <span class="font-semibold text-purple-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("P1")</span>
                                     </div>
                                 </div>
                             </div>
@@ -468,19 +471,19 @@
                                 <div class="space-y-4">
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">میانگین سود کاربر:</span>
-                                        <span class="font-semibold text-green-600">@Model.AverageUserProfit.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-green-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">بیشترین سود:</span>
-                                        <span class="font-semibold text-blue-600">@Model.MaxUserProfit.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-blue-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">کمترین سود:</span>
-                                        <span class="font-semibold text-orange-600">@Model.MinUserProfit.ToString("N0") ریال</span>
+                                        <span class="font-semibold text-orange-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">کاربران سودده:</span>
-                                        <span class="font-semibold text-purple-600">@Model.ProfitableUsersCount.ToString("N0") نفر</span>
+                                        <span class="font-semibold text-purple-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") نفر</span>
                                     </div>
                                 </div>
                             </div>
@@ -566,50 +569,50 @@
                                     <tbody>
                                         @{
                                             int number = 1;
-                                            foreach (var userProfit in Model.UserProfits)
+                                            foreach (var item in Model.Result.Data)
                                             {
                                                 <tr>
                                                     <td>@(number++)</td>
                                                     <td>
                                                         <div class="flex items-center space-x-3 space-x-reverse">
-                                                            <img src="@Directories.GetUserImageAccountPath(userProfit.User.ImageName)"
-                                                                 alt="@userProfit.User.FirstName @userProfit.User.LastName"
+                                                            <img src="@Directories.GetUserImageAccountPath(item.UserId.ToString())"
+                                                                 alt="@item.UserId@item.UserId"
                                                                  class="user-avatar">
                                                             <div>
-                                                                <div class="font-medium text-gray-900">@userProfit.User.FirstName @userProfit.User.LastName</div>
-                                                                <div class="text-sm text-gray-500">شناسه: @userProfit.User.Id.ToString().Substring(0, 8)</div>
+                                                                <div class="font-medium text-gray-900">@item.UserId @item.UserId</div>
+                                                                <div class="text-sm text-gray-500">شناسه: @item.UserId.ToString().Substring(0, 8)</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>@userProfit.User.PhoneNumber</td>
-                                                    <td>@userProfit.TotalInvestment.ToString("N0") ریال</td>
-                                                    <td class="@(userProfit.TotalProfit >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @userProfit.TotalProfit.ToString("N0") ریال
+                                                    <td>@item.UserId</td>
+                                                    <td>@decimal.Parse(item.TotalPrice).ToString("N0") ریال</td>
+                                                    <td class="@(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @decimal.Parse(item.TotalProfit).ToString("N0") ریال
                                                     </td>
-                                                    <td class="@(userProfit.MonthlyProfit >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @userProfit.MonthlyProfit.ToString("N0") ریال
+                                                    <td class="@(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @decimal.Parse(item.PurchasePricePerDang).ToString("N0") ریال
                                                     </td>
                                                     <td>
-                                                        <span class="badge @(userProfit.ReturnRate >= 0 ? "badge-success" : "badge-danger")">
-                                                            @userProfit.ReturnRate.ToString("P1")
+                                                        <span class="badge @(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "badge-success" : "badge-danger")">
+                                                            @decimal.Parse(item.PurchasePricePerDang).ToString("P1")
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <span class="badge @(userProfit.TotalProfit >= 0 ? "badge-success" : "badge-danger")">
-                                                            @(userProfit.TotalProfit >= 0 ? "سودده" : "ضررده")
+                                                        <span class="badge @(decimal.Parse(item.TotalPrice) >= 0 ? "badge-success" : "badge-danger")">
+                                                            @(decimal.Parse(item.TotalProfit) >= 0 ? "سودده" : "ضررده")
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <button onclick="showUserProfitDetails('@userProfit.User.Id')" 
+                                                            <button onclick="showitemDetails('@item.UserId')" 
                                                                     class="btn btn-outline btn-sm" title="مشاهده جزئیات">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button onclick="showSettlementModal('@userProfit.User.Id')" 
+                                                            <button onclick="showSettlementModal('@item.UserId')" 
                                                                     class="btn btn-success btn-sm" title="تسویه حساب">
                                                                 <i class="fas fa-money-bill-wave"></i>
                                                             </button>
-                                                            <button onclick="generateUserReport('@userProfit.User.Id')" 
+                                                            <button onclick="generateUserReport('@item.UserId')" 
                                                                     class="btn btn-info btn-sm" title="گزارش کاربر">
                                                                 <i class="fas fa-chart-bar"></i>
                                                             </button>
@@ -626,9 +629,9 @@
                             <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
                                 <div class="text-sm text-gray-700">
                                     نمایش
-                                    <span>@((Model.CurrentPage - 1) * Model.PageSize + 1) - @Math.Min(Model.CurrentPage * Model.PageSize, Model.TotalUsers)</span>
+                                    <span>@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) - @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
                                     از
-                                    <span>@Model.TotalUsers</span>
+                                    <span>@Model.Result.EntityCount</span>
                                     کاربر
                                 </div>
                                 <div class="flex items-center space-x-2 space-x-reverse">
@@ -685,6 +688,8 @@
             </div>
         </div>
     </div>
+
+
 
     <script>
         // توابع مدیریت پنل ادمین
@@ -748,8 +753,8 @@
             });
 
             // User Profit Distribution Chart
-            const userProfitCtx = document.getElementById('userProfitChart').getContext('2d');
-            const userProfitChart = new Chart(userProfitCtx, {
+            const itemCtx = document.getElementById('itemChart').getContext('2d');
+            const itemChart = new Chart(itemCtx, {
                 type: 'doughnut',
                 data: {
                     labels: ['سود بالا (>50M)', 'سود متوسط (10M-50M)', 'سود پایین (1M-10M)', 'بدون سود'],
@@ -788,7 +793,7 @@
             document.getElementById('settlementModal').classList.add('hidden');
         }
 
-        function showUserProfitDetails(userId) {
+        function showitemDetails(userId) {
             // Implementation for showing user profit details
             alert('جزئیات سود کاربر: ' + userId);
         }
@@ -859,4 +864,4 @@
         });
     </script>
 </body>
-</html> *@
+</html> 
