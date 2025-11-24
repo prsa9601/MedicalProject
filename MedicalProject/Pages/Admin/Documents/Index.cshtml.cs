@@ -1,6 +1,8 @@
 using MedicalProject.Infrastructure.RazorUtils;
+using MedicalProject.Models.User;
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.User;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace MedicalProject.Pages.Admin.Documents
 {
@@ -24,6 +26,25 @@ namespace MedicalProject.Pages.Admin.Documents
                 Take = FilterParams.Take,
                 UserName = FilterParams.UserName,
                 UserStatus = FilterParams.UserStatus,
+            });
+        }
+        public async Task OnPostReject(Guid userId, string reason)
+        {
+            var result = await _service.ChangeUserDocumentStatus(
+                new ChangeUserDocumentStatusCommand
+                {
+                    UserId = userId,
+                    Status = Models.User.Enum.UserDocumentStatus.WrongInformation,
+                }
+            );
+        }
+        public async Task OnPostApprove(Guid userId)
+        {
+            var result = await _service.ChangeUserDocumentStatus(
+            new ChangeUserDocumentStatusCommand
+            {
+                UserId = userId,
+                Status = Models.User.Enum.UserDocumentStatus.IsConfirmed,
             });
         }
     }

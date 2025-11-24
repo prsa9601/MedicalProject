@@ -189,6 +189,15 @@
             font-weight: 500;
         }
 
+        .btn-info {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+            .btn-info:hover {
+                background-color: #0284c7;
+            }
+
         .badge-primary {
             background-color: #dbeafe;
             color: #1e40af;
@@ -793,29 +802,39 @@
                                                             }
                                                         </td>
                                                         <td>@item?.CreationDate.ToString("yyyy/MM/dd")</td>
+                                           
                                                         <td>
                                                             <div class="flex items-center space-x-2 space-x-reverse">
                                                                 @if (!string.IsNullOrEmpty(item?.UserDocument?.NationalCardPhoto) || !string.IsNullOrEmpty(item?.UserDocument?.BirthCertificatePhoto))
                                                                 {
-                                                                    <button onclick="showDocumentModal('@item?.UserDocument?.NationalCardPhoto', '@item?.UserDocument?.BirthCertificatePhoto')"
+                                                                    <button onclick="showDocumentModal('@item?.UserDocument?.NationalCardPhoto', '@item?.UserDocument?.BirthCertificatePhoto', {
+                                fullName: '@item?.FirstName @item?.LastName',
+                                phoneNumber: '@item?.PhoneNumber',
+                                nationalCode: '@item?.UserDocument?.NationalityCode'
+                            })"
                                                                             class="btn btn-outline btn-sm" title="مشاهده مدرک">
                                                                         <i class="fas fa-eye"></i>
                                                                     </button>
                                                                 }
-                                                                @if (item?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation)
+                                                                @if (item?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation ||
+                                                                                                                    item?.UserDocument?.Status == UserDocumentStatus.WrongInformation)
                                                                 {
                                                                     <button onclick="approveDocument('@item?.Id')"
                                                                             class="btn btn-success btn-sm" title="تایید مدرک">
                                                                         <i class="fas fa-check"></i>
-                                                                    </button>
+                                                                    </button>    
+                                                                }
+                                                                @if (item?.UserDocument?.Status == UserDocumentStatus.AwaitingConfirmation ||
+                                                                                                                    item?.UserDocument?.Status == UserDocumentStatus.IsConfirmed)
+                                                                {
                                                                     <button onclick="rejectDocument('@item?.Id')"
                                                                             class="btn btn-danger btn-sm" title="رد مدرک">
                                                                         <i class="fas fa-times"></i>
                                                                     </button>
                                                                 }
-                                                                <button onclick="deleteDocument('@item?.Id')"
-                                                                        class="btn btn-outline btn-sm" title="حذف">
-                                                                    <i class="fas fa-trash"></i>
+                                                                <button onclick="showDocumentDetails('@item?.Id')"
+                                                                        class="btn btn-info btn-sm" title="مشاهده جزئیات">
+                                                                    <i class="fas fa-info-circle"></i>
                                                                 </button>
                                                             </div>
                                                         </td>
@@ -888,38 +907,116 @@
             </div>
         </div>
     </div>
-    @Html.AntiForgeryToken()
     <!-- Document Preview Modal -->
+    <!-- Document Preview Modal - Updated Version -->
     <div id="documentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
-            <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold text-gray-900" id="documentModalTitle">مشاهده مدارک</h3>
-                <button onclick="closeDocumentModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times"></i>
+        <div class="relative top-4 mx-auto p-4 border w-full max-w-6xl h-[95vh] shadow-2xl rounded-xl bg-white flex flex-col">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-2xl font-bold text-gray-900" id="documentModalTitle">مشاهده مدارک کاربر</h3>
+                <button onclick="closeDocumentModal()" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
 
-            <div class="mt-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <h4 class="text-lg font-medium mb-2">کارت ملی</h4>
-                        <img id="nationalCardImage" src="" alt="کارت ملی" class="w-full max-h-80 object-contain rounded-lg border">
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium mb-2">شناسنامه</h4>
-                        <img id="birthCertificateImage" src="" alt="شناسنامه" class="w-full max-h-80 object-contain rounded-lg border">
+            <div class="mt-4 flex-1 overflow-auto">
+                <!-- User Information Section -->
+                <div class="bg-blue-50 p-4 rounded-lg mb-6">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-3">اطلاعات کاربر</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">نام و نام خانوادگی:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="userFullName">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">شماره تماس:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="userPhoneNumber">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">کد ملی:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="userNationalCode">-</p>
+                        </div>
                     </div>
                 </div>
-                <div class="mt-4 flex justify-center space-x-3 space-x-reverse">
-                    <button onclick="downloadAllDocuments()" class="btn btn-primary">
-                        <i class="fas fa-download ml-2"></i>
-                        دانلود همه مدارک
-                    </button>
-                    <button onclick="closeDocumentModal()" class="btn btn-outline">
-                        بستن
-                    </button>
+
+                <!-- Documents Section -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <!-- National Card Section -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-id-card ml-2"></i>
+                                کارت ملی
+                            </h4>
+                        </div>
+                        <div class="p-4">
+                            <div id="nationalCardContainer" class="text-center">
+                                <img id="nationalCardImage" src="" alt="کارت ملی"
+                                     class="w-full max-h-[500px] object-contain rounded-lg border-2 border-dashed border-gray-300 cursor-zoom-in transition-all duration-300 hover:border-blue-400"
+                                     onclick="zoomImage(this)">
+                                <div id="nationalCardPlaceholder" class="hidden text-center text-gray-500 py-12">
+                                    <i class="fas fa-id-card text-4xl mb-3 text-gray-300"></i>
+                                    <p class="text-lg">کارت ملی آپلود نشده است</p>
+                                </div>
+                            </div>
+                            @*<div class="mt-4 flex justify-center space-x-3 space-x-reverse">
+                                <button onclick="downloadDocument('nationalCard')" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-download ml-2"></i>
+                                    دانلود کارت ملی
+                                </button>
+                            </div>*@
+                        </div>
+                    </div>
+
+                    <!-- Birth Certificate Section -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg">
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 p-4">
+                            <h4 class="text-lg font-semibold text-white flex items-center">
+                                <i class="fas fa-file-certificate ml-2"></i>
+                                شناسنامه
+                            </h4>
+                        </div>
+                        <div class="p-4">
+                            <div id="birthCertificateContainer" class="text-center">
+                                <img id="birthCertificateImage" src="" alt="شناسنامه"
+                                     class="w-full max-h-[500px] object-contain rounded-lg border-2 border-dashed border-gray-300 cursor-zoom-in transition-all duration-300 hover:border-green-400"
+                                     onclick="zoomImage(this)">
+                                <div id="birthCertificatePlaceholder" class="hidden text-center text-gray-500 py-12">
+                                    <i class="fas fa-file-certificate text-4xl mb-3 text-gray-300"></i>
+                                    <p class="text-lg">شناسنامه آپلود نشده است</p>
+                                </div>
+                            </div>
+                            @*<div class="mt-4 flex justify-center space-x-3 space-x-reverse">
+                                <button onclick="downloadDocument('birthCertificate')" class="btn btn-success btn-sm">
+                                    <i class="fas fa-download ml-2"></i>
+                                    دانلود شناسنامه
+                                </button>
+                            </div>*@
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-center space-x-4 space-x-reverse">
+                @*<button onclick="downloadAllDocuments()" class="btn btn-primary">
+                    <i class="fas fa-download ml-2"></i>
+                    دانلود همه مدارک
+                </button>*@
+                <button onclick="closeDocumentModal()" class="btn btn-outline">
+                    <i class="fas fa-times ml-2"></i>
+                    بستن
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Zoom Modal -->
+    <div id="imageZoomModal" class="fixed inset-0 bg-black bg-opacity-90 z-[60] hidden">
+        <div class="relative w-full h-full flex items-center justify-center">
+            <button onclick="closeZoomModal()" class="absolute top-4 left-4 text-white text-2xl p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="zoomedImage" src="" alt="تصویر بزرگ شده" class="max-w-full max-h-full object-contain">
         </div>
     </div>
 
@@ -987,51 +1084,154 @@
         });
 
         // توابع مخصوص مدیریت مدارک
-        function showDocumentModal(nationalCardPhoto, birthCertificatePhoto) {
+               // تابع نمایش مدال مدارک با اطلاعات کامل کاربر
+        function showDocumentModal(nationalCardPhoto, birthCertificatePhoto, userData = null) {
             const nationalCardImage = document.getElementById('nationalCardImage');
             const birthCertificateImage = document.getElementById('birthCertificateImage');
+            const nationalCardPlaceholder = document.getElementById('nationalCardPlaceholder');
+            const birthCertificatePlaceholder = document.getElementById('birthCertificatePlaceholder');
+            const nationalCardContainer = document.getElementById('nationalCardContainer');
+            const birthCertificateContainer = document.getElementById('birthCertificateContainer');
 
-            if (nationalCardPhoto) {
-                nationalCardImage.src = `/uploads/documents/${nationalCardPhoto}`;
-                nationalCardImage.style.display = 'block';
-            } else {
-                nationalCardImage.style.display = 'none';
-                nationalCardImage.parentElement.innerHTML = '<div class="text-center text-gray-500 py-8">کارت ملی آپلود نشده است</div>';
+            // نمایش اطلاعات کاربر
+            if (userData) {
+                document.getElementById('userFullName').textContent = userData.fullName || '-';
+                document.getElementById('userPhoneNumber').textContent = userData.phoneNumber || '-';
+                document.getElementById('userNationalCode').textContent = userData.nationalCode || '-';
             }
 
+            // مدیریت نمایش کارت ملی
+            if (nationalCardPhoto) {
+                nationalCardImage.src =  `@Directories.GetUserNationalCardPhotoPath("${nationalCardPhoto}")`;
+                nationalCardImage.style.display = 'block';
+                nationalCardPlaceholder.classList.add('hidden');
+            } else {
+                nationalCardImage.style.display = 'none';
+                nationalCardPlaceholder.classList.remove('hidden');
+            }
+
+            // مدیریت نمایش شناسنامه
             if (birthCertificatePhoto) {
-                birthCertificateImage.src = `/uploads/documents/${birthCertificatePhoto}`;
+                birthCertificateImage.src =  `@Directories.GetUserBirthCertificatePhotoPath("${birthCertificatePhoto}")`;
                 birthCertificateImage.style.display = 'block';
+                birthCertificatePlaceholder.classList.add('hidden');
             } else {
                 birthCertificateImage.style.display = 'none';
-                birthCertificateImage.parentElement.innerHTML = '<div class="text-center text-gray-500 py-8">شناسنامه آپلود نشده است</div>';
+                birthCertificatePlaceholder.classList.remove('hidden');
             }
 
             document.getElementById('documentModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول صفحه اصلی
         }
 
         function closeDocumentModal() {
             document.getElementById('documentModal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; // فعال کردن مجدد اسکرول
         }
 
-        function downloadAllDocuments() {
-            const nationalCardSrc = document.getElementById('nationalCardImage').src;
-            const birthCertificateSrc = document.getElementById('birthCertificateImage').src;
-
-            if (nationalCardSrc && !nationalCardSrc.includes('data:')) {
-                const link1 = document.createElement('a');
-                link1.href = nationalCardSrc;
-                link1.download = 'national-card.jpg';
-                link1.click();
-            }
-
-            if (birthCertificateSrc && !birthCertificateSrc.includes('data:')) {
-                const link2 = document.createElement('a');
-                link2.href = birthCertificateSrc;
-                link2.download = 'birth-certificate.jpg';
-                link2.click();
-            }
+        // تابع زوم تصویر
+        function zoomImage(imgElement) {
+            const zoomedImage = document.getElementById('zoomedImage');
+            zoomedImage.src = imgElement.src;
+            document.getElementById('imageZoomModal').classList.remove('hidden');
         }
+
+        function closeZoomModal() {
+            document.getElementById('imageZoomModal').classList.add('hidden');
+        }
+
+        // تابع دانلود مدرک خاص
+        // function downloadDocument(type) {
+        //     let imageSrc, fileName;
+
+        //     if (type === 'nationalCard') {
+        //         imageSrc = document.getElementById('nationalCardImage').src;
+        //         fileName = 'کارت-ملی.jpg';
+        //     } else if (type === 'birthCertificate') {
+        //         imageSrc = document.getElementById('birthCertificateImage').src;
+        //         fileName = 'شناسنامه.jpg';
+        //     }
+
+        //     if (imageSrc && !imageSrc.includes('data:')) {
+        //         const link = document.createElement('a');
+        //         link.href = imageSrc;
+        //         link.download = fileName;
+        //         link.click();
+        //     } else {
+        //         Swal.fire({
+        //             title: 'خطا!',
+        //             text: 'مدرک مورد نظر موجود نیست',
+        //             icon: 'error',
+        //             confirmButtonText: 'باشه'
+        //         });
+        //     }
+        // }
+
+        // // تابع دانلود همه مدارک
+        // function downloadAllDocuments() {
+        //     const nationalCardSrc = document.getElementById('nationalCardImage').src;
+        //     const birthCertificateSrc = document.getElementById('birthCertificateImage').src;
+
+        //     let downloaded = false;
+
+        //     if (nationalCardSrc && !nationalCardSrc.includes('data:')) {
+        //         const link1 = document.createElement('a');
+        //         link1.href = nationalCardSrc;
+        //         link1.download = 'کارت-ملی.jpg';
+        //         link1.click();
+        //         downloaded = true;
+        //     }
+
+        //     // تاخیر برای دانلود فایل دوم
+        //     setTimeout(() => {
+        //         if (birthCertificateSrc && !birthCertificateSrc.includes('data:')) {
+        //             const link2 = document.createElement('a');
+        //             link2.href = birthCertificateSrc;
+        //             link2.download = 'شناسنامه.jpg';
+        //             link2.click();
+        //             downloaded = true;
+        //         }
+
+        //         if (!downloaded) {
+        //             Swal.fire({
+        //                 title: 'خطا!',
+        //                 text: 'هیچ مدرکی برای دانلود موجود نیست',
+        //                 icon: 'error',
+        //                 confirmButtonText: 'باشه'
+        //             });
+        //         }
+        //     }, 500);
+        // }
+
+        // بستن مدال با کلید ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDocumentModal();
+                closeZoomModal();
+            }
+        });
+        function closeDocumentModal() {
+            document.getElementById('documentModal').classList.add('hidden');
+        }
+
+        // function downloadAllDocuments() {
+        //     const nationalCardSrc = document.getElementById('nationalCardImage').src;
+        //     const birthCertificateSrc = document.getElementById('birthCertificateImage').src;
+
+        //     if (nationalCardSrc && !nationalCardSrc.includes('data:')) {
+        //         const link1 = document.createElement('a');
+        //         link1.href = nationalCardSrc;
+        //         link1.download = 'national-card.jpg';
+        //         link1.click();
+        //     }
+
+        //     if (birthCertificateSrc && !birthCertificateSrc.includes('data:')) {
+        //         const link2 = document.createElement('a');
+        //         link2.href = birthCertificateSrc;
+        //         link2.download = 'birth-certificate.jpg';
+        //         link2.click();
+        //     }
+        // }
 
         // انتخاب همه/عدم انتخاب همه
         function toggleSelectAll(checkbox) {
@@ -1063,8 +1263,8 @@
         }
 
         // تایید مدرک
-        async function approveDocument(documentId) {
-            if (!documentId) return;
+        async function approveDocument(userId) {
+            if (!userId) return;
 
             const result = await Swal.fire({
                 title: 'تایید مدرک',
@@ -1078,7 +1278,7 @@
             if (result.isConfirmed) {
                 try {
                     const formData = new FormData();
-                    formData.append('documentId', documentId);
+                    formData.append('userId', userId);
 
                     const response = await fetch('?handler=Approve', {
                         method: 'POST',
@@ -1112,8 +1312,8 @@
         }
 
         // رد مدرک
-        async function rejectDocument(documentId) {
-            if (!documentId) return;
+        async function rejectDocument(userId) {
+            if (!userId) return;
 
             const { value: reason } = await Swal.fire({
                 title: 'رد مدرک',
@@ -1131,7 +1331,7 @@
             if (reason) {
                 try {
                     const formData = new FormData();
-                    formData.append('documentId', documentId);
+                    formData.append('userId', userId);
                     formData.append('reason', reason);
 
                     const response = await fetch('?handler=Reject', {
@@ -1166,8 +1366,8 @@
         }
 
         // حذف مدرک
-        async function deleteDocument(documentId) {
-            if (!documentId) return;
+        async function deleteDocument(userId) {
+            if (!userId) return;
 
             const result = await Swal.fire({
                 title: 'حذف مدرک',
@@ -1181,7 +1381,7 @@
             if (result.isConfirmed) {
                 try {
                     const formData = new FormData();
-                    formData.append('documentId', documentId);
+                    formData.append('userId', userId);
 
                     const response = await fetch('?handler=Delete', {
                         method: 'POST',

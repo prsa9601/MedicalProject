@@ -1,0 +1,566 @@
+﻿@page
+@model MedicalProject.Pages.Account.BankInformationModel
+@{
+    ViewData["Title"] = "اطلاعات بانکی";
+}
+
+@section Styles {
+    <style>
+        /* استایل‌های پایه */
+        .bank-info-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .bank-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+        }
+
+        .bank-card-header {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .bank-card-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .submit-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+            }
+
+            .submit-btn:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+            }
+
+        .bank-logo {
+            width: 40px;
+            height: 40px;
+            background: #f3f4f6;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+
+        .input-with-icon .form-input {
+            padding-left: 3rem;
+        }
+
+        .sheba-prefix {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #374151;
+            font-weight: 500;
+            background: #f3f4f6;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #d1d5db;
+        }
+
+        .sheba-input {
+            padding-left: 5rem !important;
+        }
+
+        /* استایل‌های واکنش‌گرا */
+        @@media (max-width: 640px) {
+            .bank-info-container {
+                padding: 1rem;
+            }
+
+            .bank-card-body {
+                padding: 1.5rem;
+            }
+
+            .sheba-prefix {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.4rem;
+            }
+
+            .sheba-input {
+                padding-left: 4.5rem !important;
+            }
+        }
+
+        /* انیمیشن‌ها */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* استایل برای وضعیت‌های مختلف */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 1px solid #a7f3d0;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 1px solid #fecaca;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* شمارشگر ارقام */
+        .char-counter {
+            font-size: 0.75rem;
+            text-align: left;
+            margin-top: 0.25rem;
+        }
+
+            .char-counter.valid {
+                color: #10b981;
+            }
+
+            .char-counter.invalid {
+                color: #ef4444;
+            }
+
+        /* استایل برای فیلدهای معتبر/نامعتبر */
+        .form-input.valid {
+            border-color: #10b981;
+        }
+
+        .form-input.invalid {
+            border-color: #ef4444;
+        }
+
+        /* راهنمای شماره شبا */
+        .sheba-guide {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: #0369a1;
+        }
+
+        .sheba-example {
+            font-family: monospace;
+            background: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            margin: 0.25rem 0;
+            display: inline-block;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="bank-info-container fade-in">
+        <!-- هدر صفحه -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">اطلاعات بانکی</h1>
+            <p class="text-gray-600">لطفا اطلاعات حساب بانکی خود را برای واریز سود وارد کنید</p>
+        </div>
+
+        <!-- کارت فرم -->
+        <div class="bank-card fade-in">
+            <div class="bank-card-header">
+                <div class="bank-logo mx-auto">
+                    <i class="fas fa-university text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-xl font-bold">ثبت اطلاعات حساب بانکی</h2>
+            </div>
+
+            <div class="bank-card-body">
+                <!-- پیام موفقیت -->
+                <div id="successMessage" class="success-message hidden">
+                    <i class="fas fa-check-circle ml-2"></i>
+                    اطلاعات بانکی با موفقیت ثبت شد
+                </div>
+
+                <!-- پیام خطا -->
+                <div id="errorMessage" class="error-message hidden">
+                    <i class="fas fa-exclamation-circle ml-2"></i>
+                    <span id="errorText"></span>
+                </div>
+
+                <form id="bankInfoForm" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- نام و نام خانوادگی صاحب کارت -->
+                    <div class="form-group">
+                        <label for="accountHolderName" class="form-label required-field">نام و نام خانوادگی صاحب کارت</label>
+                        <input type="text"
+                               id="accountHolderName"
+                               name="AccountHolderName"
+                               class="form-input"
+                               placeholder="نام و نام خانوادگی به فارسی"
+                               required
+                               maxlength="100"
+                               value="@Model.AccountHolderName">
+                        <div class="form-hint">نام باید دقیقا مطابق با نام در کارت بانکی باشد</div>
+                    </div>
+
+                    <!-- شماره شبا -->
+                    <div class="form-group">
+                        <label for="shebaNumber" class="form-label required-field">شماره شبا</label>
+                        <div class="input-with-icon">
+                            <span class="sheba-prefix">IR</span>
+                            <input type="text"
+                                   id="shebaNumber"
+                                   name="ShebaNumber"
+                                   class="form-input sheba-input"
+                                   placeholder="24 رقم بعد از IR را وارد کنید"
+                                   required
+                                   maxlength="24"
+                                   dir="ltr"
+                                   inputmode="numeric"
+                                   value="@Model.ShebaNumber?.Replace("IR", "")">
+                        </div>
+                        <div class="char-counter" id="shebaCounter">
+                            <span id="shebaCount">0</span>/24 رقم
+                        </div>
+                        <div class="sheba-guide">
+                            <strong>راهنما:</strong> فقط 24 رقم بعد از IR را وارد کنید<br>
+                            <span class="sheba-example">مثال: 060170000000280589570000</span>
+                        </div>
+                    </div>
+
+                    <!-- شماره کارت -->
+                    <div class="form-group">
+                        <label for="cardNumber" class="form-label">شماره کارت بانکی</label>
+                        <div class="input-with-icon">
+                            <i class="input-icon fas fa-credit-card"></i>
+                            <input type="text"
+                                   id="cardNumber"
+                                   name="CardNumber"
+                                   class="form-input"
+                                   placeholder="6219 8610 1234 5678"
+                                   maxlength="19"
+                                   dir="ltr"
+                                   inputmode="numeric"
+                                   value="@Model.CardNumber">
+                        </div>
+                        <div class="form-hint">16 رقم شماره کارت (اختیاری - برای شناسایی سریعتر)</div>
+                    </div>
+
+                    <!-- دکمه ارسال -->
+                    <button type="submit" id="submitBtn" class="submit-btn">
+                        <i class="fas fa-save ml-2"></i>
+                        ذخیره اطلاعات بانکی
+                    </button>
+                </form>
+
+                <!-- نشان امنیت -->
+                <div class="security-badge">
+                    <i class="fas fa-shield-alt text-green-500"></i>
+                    <span class="text-sm text-gray-600">اطلاعات شما به صورت امن ذخیره می‌شود</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- اطلاعات کمکی -->
+        <div class="mt-6 text-center">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="font-semibold text-blue-800 mb-2">راهنمایی:</h3>
+                <p class="text-blue-700 text-sm">
+                    • شماره شبا را می‌توانید از طریق اپلیکیشن بانک یا اینترنت بانک دریافت کنید<br>
+                    • شماره کارت برای شناسایی سریعتر حساب (اختیاری)<br>
+                    • اطلاعات حساب فقط برای واریز سود سرمایه‌گذاری استفاده می‌شود<br>
+                    • می‌توانید در هر زمان اطلاعات خود را به روزرسانی کنید
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر DOM
+            const form = document.getElementById('bankInfoForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const shebaInput = document.getElementById('shebaNumber');
+            const cardInput = document.getElementById('cardNumber');
+            const shebaCounter = document.getElementById('shebaCounter');
+            const shebaCount = document.getElementById('shebaCount');
+            const accountHolderName = document.getElementById('accountHolderName');
+
+            // مدیریت شماره شبا
+            shebaInput.addEventListener('input', function(e) {
+                // فقط اعداد مجاز
+                let value = e.target.value.replace(/\D/g, '');
+
+                // محدود کردن به 24 رقم
+                value = value.substring(0, 24);
+
+                // به روزرسانی شمارشگر
+                updateShebaCounter(value.length);
+
+                // ذخیره مقدار بدون فاصله
+                e.target.value = value;
+
+                // اعتبارسنجی ظاهری
+                validateShebaVisual(value);
+            });
+
+            // به روزرسانی شمارشگر شبا
+            function updateShebaCounter(count) {
+                shebaCount.textContent = count;
+                if (count === 24) {
+                    shebaCounter.classList.add('valid');
+                    shebaCounter.classList.remove('invalid');
+                } else {
+                    shebaCounter.classList.remove('valid');
+                    shebaCounter.classList.add('invalid');
+                }
+            }
+
+            // اعتبارسنجی ظاهری شبا
+            function validateShebaVisual(value) {
+                if (value.length === 24) {
+                    shebaInput.classList.add('valid');
+                    shebaInput.classList.remove('invalid');
+                } else {
+                    shebaInput.classList.remove('valid');
+                    shebaInput.classList.add('invalid');
+                }
+            }
+
+            // مدیریت شماره کارت
+            cardInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+
+                // محدود کردن به 16 رقم
+                value = value.substring(0, 16);
+
+                // فرمت کردن با فاصله هر 4 رقم
+                let formatted = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formatted += ' ';
+                    }
+                    formatted += value[i];
+                }
+
+                e.target.value = formatted;
+
+                // اعتبارسنجی ظاهری
+                validateCardVisual(value);
+            });
+
+            // اعتبارسنجی ظاهری کارت
+            function validateCardVisual(value) {
+                if (value.length === 16 || value.length === 0) {
+                    cardInput.classList.add('valid');
+                    cardInput.classList.remove('invalid');
+                } else {
+                    cardInput.classList.remove('valid');
+                    cardInput.classList.add('invalid');
+                }
+            }
+
+            // مدیریت نام صاحب حساب
+            accountHolderName.addEventListener('input', function(e) {
+                // فقط حروف فارسی و فاصله مجاز
+                const persianRegex = /^[\u0600-\u06FF\s]*$/;
+                if (!persianRegex.test(e.target.value)) {
+                    e.target.value = e.target.value.replace(/[^\u0600-\u06FF\s]/g, '');
+                }
+
+                // اعتبارسنجی ظاهری
+                validateNameVisual(e.target.value);
+            });
+
+            // اعتبارسنجی ظاهری نام
+            function validateNameVisual(value) {
+                if (value.trim().length > 0) {
+                    accountHolderName.classList.add('valid');
+                    accountHolderName.classList.remove('invalid');
+                } else {
+                    accountHolderName.classList.remove('valid');
+                    accountHolderName.classList.add('invalid');
+                }
+            }
+
+            // اعتبارسنجی فیلدها
+            function validateSheba(sheba) {
+                const cleanSheba = sheba.replace(/\s/g, '');
+                return /^[0-9]{24}$/.test(cleanSheba);
+            }
+
+            function validateCardNumber(cardNumber) {
+                if (!cardNumber) return true; // اختیاری است
+                const cleanCard = cardNumber.replace(/\s/g, '');
+                return /^[0-9]{16}$/.test(cleanCard);
+            }
+
+            function validateName(name) {
+                const persianRegex = /^[\u0600-\u06FF\s]+$/;
+                return persianRegex.test(name) && name.trim().length > 0;
+            }
+
+            // ارسال فرم
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // جمع‌آوری داده‌ها
+                const formData = {
+                    accountHolderName: accountHolderName.value.trim(),
+                    shebaNumber: shebaInput.value.trim(),
+                    cardNumber: cardInput.value.trim()
+                };
+
+                // اعتبارسنجی و نمایش alert
+                if (!validateName(formData.accountHolderName)) {
+                    alert('لطفا نام و نام خانوادگی معتبر به فارسی وارد کنید');
+                    accountHolderName.focus();
+                    return;
+                }
+
+                if (!validateSheba(formData.shebaNumber)) {
+                    const cleanSheba = formData.shebaNumber.replace(/\s/g, '');
+                    alert(`شماره شبا باید دقیقاً 24 رقم باشد. ${cleanSheba.length} رقم وارد شده است.`);
+                    shebaInput.focus();
+                    return;
+                }
+
+                if (!validateCardNumber(formData.cardNumber)) {
+                    alert('شماره کارت باید 16 رقم باشد یا خالی بماند');
+                    cardInput.focus();
+                    return;
+                }
+                
+                // اگر همه چیز درست بود
+                // alert('اطلاعات بانکی با موفقیت اعتبارسنجی شد');
+                
+                // در اینجا می‌توانید فرم را ارسال کنید
+                form.submit();
+            });
+
+            // مقداردهی اولیه شمارشگر
+            if (shebaInput.value) {
+                const initialCount = shebaInput.value.replace(/\D/g, '').length;
+                updateShebaCounter(initialCount);
+                validateShebaVisual(shebaInput.value);
+            }
+
+            // اعتبارسنجی اولیه سایر فیلدها
+            validateNameVisual(accountHolderName.value);
+            validateCardVisual(cardInput.value.replace(/\s/g, ''));
+        });
+    </script>
+
+
+    <script src="~/Alert.js"></script>
+}

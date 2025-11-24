@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Newtonsoft.Json.Linq;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using System.Security.Claims;
 
 namespace MedicalProject.Infrastructure;
 
@@ -33,6 +37,7 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
         }
 
+        
         var response = await base.SendAsync(request, cancellationToken);
 
         if (response.Headers.TryGetValues("X-Auth-Token", out var tokens))
@@ -46,6 +51,12 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
                 Expires = DateTime.UtcNow.AddMinutes(30),
                 Path = "/"
             });
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(newToken);
+            var claims = jwtToken.Claims;
+            var identity = new ClaimsIdentity(claims, "jwt");
+            var principal = new ClaimsPrincipal(identity);
+            _httpContextAccessor.HttpContext.User = principal;
         }
 
         //if (!request.Headers.TryGetValues("Authorization", out var i))

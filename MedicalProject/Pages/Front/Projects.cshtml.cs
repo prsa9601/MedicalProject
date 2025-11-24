@@ -27,9 +27,9 @@ namespace MedicalProject.Pages.Front
         {
             Result = await _service.GetFilterForIndexPage(new Models.Product.DTOs.ProductFilterParam
             {
-                Status = Models.Product.ProductStatus.IsActive,
+                //Status = Models.Product.ProductStatus.IsActive,
                 PageId = pageId,
-                Take = take
+                Take = take,
             });
             
             return Page();

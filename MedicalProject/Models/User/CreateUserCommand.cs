@@ -9,6 +9,12 @@ namespace MedicalProject.Models.User
         public required string lastName { get; set; }
         public required string password { get; set; }
     }
+
+    public class ChangeUserDocumentStatusCommand 
+    {
+        public Guid UserId { get; set; }
+        public UserDocumentStatus Status { get; set; }
+    }
     public class EditUserCommand
     {
         public Guid userId { get; set; }
@@ -24,6 +30,15 @@ namespace MedicalProject.Models.User
         public required string lastName { get; set; }
         public required string password { get; set; }
     }
+   
+    public class AddBankAccountCommandViewModel
+    {
+        public required string CardNumber { get; set; }
+        public required string ShabaNumber { get; set; }
+        public required string FullName { get; set; }
+    }
+
+
     public class ChangePasswordCommand
     {
         public Guid userId { get; set; }

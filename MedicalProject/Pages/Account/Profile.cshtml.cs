@@ -37,7 +37,7 @@ namespace MedicalProject.Pages.Account
             else
                 TempData["Error"] = result.MetaData.Message;
 
-            return Page();
+            return Redirect("/Account/Profile");
         }
     }
 }

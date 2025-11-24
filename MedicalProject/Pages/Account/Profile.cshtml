@@ -14,12 +14,12 @@
     <title>پروفایل من - پلتفرم دنگ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- SweetAlert2 -->
+    @*  <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
 
     <style>
 
@@ -687,15 +687,8 @@
 </head>
 <body>
     <div id="app">
-        <!-- Loading State -->
-        <div id="loading-section" class="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div class="text-center">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4">در حال بارگذاری...</h2>
-            </div>
-        </div>
-
         <!-- Main Content -->
-        <div id="content-section" style="display: none;">
+        <div id="content-section">
             <!-- Header -->
             <div class="bg-white shadow-sm border-b border-gray-200">
                 <div class="max-w-7xl mx-auto px-4 py-8">
@@ -794,11 +787,31 @@
 
                         <!-- KYC Documents -->
                         @{
-                            if (Model.user.UserDocument == null || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.NotConfirmed)
+                            if (Model.user.UserDocument == null || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.NotConfirmed
+                            || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
                             {
                                 <div class="card">
                                     <div class="p-6">
                                         <h2 class="text-xl font-semibold text-gray-900 mb-6">اسناد هویت (KYC)</h2>
+                                        @if (Model.user.UserDocument != null)
+                                        {
+                                            @if (Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
+                                            {
+                                                <!-- Warning Alert -->
+                                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                                                    <div class="flex items-start">
+                                                        <i class="fas fa-exclamation-triangle text-yellow-600 ml-2 mt-1"></i>
+                                                        <div>
+                                                            <h4 class="text-yellow-800 font-semibold text-sm">توجه مهم</h4>
+                                                            <p class="text-yellow-700 text-sm mt-1">
+                                                                در صورت عدم دسترسی به کارت ملی، می‌توانید از گواهینامه رانندگی معتبر به جای آن استفاده کنید.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+
                                         <form method="post" asp-page-handler="SendUserDocument" enctype="multipart/form-data" id="kyc-form">
                                             <div class="space-y-4">
                                                 <!-- National Code -->
@@ -945,6 +958,24 @@
                                         <i class="fas fa-chart-line ml-2"></i>
                                         سرمایه‌گذاری‌های من
                                     </button>
+                                    @{
+                                        if (Model.user.BankAccount == null || Model.user.BankAccount.IsConfirmed == false)
+                                        {
+                                            <button onclick="location.href='/Account/BankInformation'"
+                                                    class="btn btn-outline w-full text-right">
+                                                <i class="fas fa-eye ml-2"></i>
+                                                ثبت اطلاعات حساب
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button disabled="true"
+                                                    class="btn btn-outline w-full text-right">
+                                                <i class="fas fa-eye ml-2"></i>
+                                                اطلاعات حساب شما ثبت شده است
+                                            </button>
+                                        }
+                                    }
                                     <button onclick="window.location.href = '/Front/Projects'"
                                             class="btn btn-outline w-full text-right">
                                         <i class="fas fa-bullseye ml-2"></i>
@@ -966,130 +997,89 @@
 
     <script>
         // وضعیت برنامه
-        let state = {
-            loading: true,
-            isEditing: false,
-            user: null
-        };
-
-        // تابع فرمت ارز
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('fa-IR').format(amount) + ' ریال';
-        }
-
-        // تابع فرمت تاریخ
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('fa-IR');
-        }
-
-        // تابع وضعیت KYC
-        function getKYCStatusBadge(status) {
-            const statusMap = {
-                approved: { variant: 'success', text: 'تأیید شده', icon: 'fa-check-circle' },
-                pending: { variant: 'warning', text: 'در انتظار', icon: 'fa-clock' },
-                rejected: { variant: 'danger', text: 'رد شده', icon: 'fa-exclamation-circle' },
-                not_submitted: { variant: 'secondary', text: 'ارسال نشده', icon: 'fa-exclamation-circle' }
-            };
-            return statusMap[status] || { variant: 'secondary', text: status, icon: 'fa-exclamation-circle' };
-        }
-
-        // تابع بارگذاری داده‌های پروفایل
-        function loadProfileData() {
-            state.loading = true;
-            updateUI();
-
-            // شبیه‌سازی بارگذاری از API
-            setTimeout(() => {
-                state.loading = false;
-                updateUI();
-                populateUserData();
-            }, 1000);
-        }
-
-        // تابع پر کردن داده‌های کاربر
-        // function populateUserData() {
-        //     // اطلاعات شخصی
-        //     document.getElementById('first-name').value = '@Model.user.FirstName';
-        //     document.getElementById('last-name').value = '@Model.user.LastName';
-        //     document.getElementById('phone').value = '@Model.user.PhoneNumber';
-
-        //     // اطلاعات خلاصه
-        //     document.getElementById('profile-name').textContent = '@Model.user.FirstName @Model.user.LastName';
-        //     document.getElementById('profile-phone').textContent = '@Model.user.PhoneNumber';
-        //     document.getElementById('wallet-balance').textContent = formatCurrency(50000000);
-        //     document.getElementById('total-invested').textContent = formatCurrency(472500000);
-        //     document.getElementById('total-profit').textContent = formatCurrency(45500000);
-        //     document.getElementById('join-date').textContent = '۱۴۰۲/۱۰/۱۵';
-        //     document.getElementById('last-login').textContent = '۱۴۰۲/۱۱/۲۰';
-
-        //     // وضعیت KYC
-        //     const kycStatus = getKYCStatusBadge('approved');
-        //     const kycBadge = document.getElementById('kyc-badge');
-        //     const profileKycBadge = document.getElementById('profile-kyc-badge');
-
-        //     kycBadge.className = `badge badge-${kycStatus.variant}`;
-        //     kycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
-
-        //     profileKycBadge.className = `badge badge-${kycStatus.variant}`;
-        //     profileKycBadge.innerHTML = `<i class="fas ${kycStatus.icon} ml-1"></i> ${kycStatus.text}`;
-        // }
+        let isEditing = true;
 
         // تابع تغییر حالت ویرایش
         function toggleEditMode() {
-            state.isEditing = !state.isEditing;
-            updateUI();
+            isEditing = !isEditing;
 
-            const inputs = document.querySelectorAll('#content-section input');
-            inputs.forEach(input => {
-                input.disabled = !state.isEditing;
-            });
+            // فقط فیلدهای نام و نام خانوادگی تغییر حالت می‌دهند
+            const firstName = document.getElementById('first-name');
+            const lastName = document.getElementById('last-name');
+
+            if (firstName) firstName.disabled = !isEditing;
+            if (lastName) lastName.disabled = !isEditing;
+
+            // شماره تلفن همیشه غیرفعال باشد
+            const phone = document.getElementById('phone');
+            if (phone) phone.disabled = true;
+
+            // کد ملی همیشه فعال باشد
+            const nationalityCode = document.getElementById('nationality-code');
+            if (nationalityCode) nationalityCode.disabled = false;
+
+            // به‌روزرسانی دکمه‌ها
+            updateButtons();
         }
 
         // تابع ذخیره پروفایل
         function saveProfile() {
-            // شبیه‌سازی ذخیره
-            setTimeout(() => {
-                state.isEditing = false;
-                updateUI();
-                alert('پروفایل با موفقیت به‌روزرسانی شد');
-            }, 1000);
-        }
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
 
-        // تابع آپلود اسناد KYC
-        function uploadKYCDocuments() {
-            const nationalCard = document.getElementById('national-card').files[0];
-            const bankStatement = document.getElementById('bank-statement').files[0];
-
-            if (!nationalCard && !bankStatement) {
-                alert('لطفاً حداقل یک سند انتخاب کنید');
+            // اعتبارسنجی
+            if (!firstName.trim() || !lastName.trim()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطا',
+                    text: 'لطفاً نام و نام خانوادگی را وارد کنید',
+                    confirmButtonText: 'متوجه شدم'
+                });
                 return;
             }
 
-            // شبیه‌سازی آپلود
+            // نمایش وضعیت ذخیره
+            Swal.fire({
+                title: 'در حال ذخیره...',
+                text: 'لطفاً منتظر بمانید',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // شبیه‌سازی ذخیره (در واقعیت باید فرم سابمیت شود)
             setTimeout(() => {
-                document.getElementById('national-card').value = '';
-                document.getElementById('bank-statement').value = '';
-                alert('اسناد با موفقیت آپلود شدند');
-            }, 1000);
+                isEditing = false;
+                updateButtons();
+
+                // به‌روزرسانی نام در پروفایل (فقط برای نمایش)
+                const profileName = document.getElementById('profile-name');
+                if (profileName) {
+                    profileName.textContent = `${firstName} ${lastName}`;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'موفق',
+                    text: 'پروفایل با موفقیت به‌روزرسانی شد',
+                    confirmButtonText: 'متوجه شدم'
+                });
+
+                // در اینجا می‌توانید فرم را سابمیت کنید تا تغییرات در سرور ذخیره شود
+                // document.getElementById('profile-form').submit();
+
+            }, 1500);
         }
 
-        // تابع به‌روزرسانی UI
-        function updateUI() {
-            const loadingSection = document.getElementById('loading-section');
-            const contentSection = document.getElementById('content-section');
+        // تابع به‌روزرسانی دکمه‌ها
+        function updateButtons() {
             const editBtn = document.getElementById('edit-btn');
             const cancelBtn = document.getElementById('cancel-edit-btn');
             const saveBtn = document.getElementById('save-btn');
 
-            if (state.loading) {
-                loadingSection.style.display = 'flex';
-                contentSection.style.display = 'none';
-            } else {
-                loadingSection.style.display = 'none';
-                contentSection.style.display = 'block';
-
-                if (state.isEditing) {
+            if (editBtn && cancelBtn && saveBtn) {
+                if (isEditing) {
                     editBtn.style.display = 'none';
                     cancelBtn.style.display = 'flex';
                     saveBtn.style.display = 'flex';
@@ -1103,98 +1093,80 @@
 
         // مقداردهی اولیه
         document.addEventListener('DOMContentLoaded', function() {
-            loadProfileData();
-
             // رویدادهای دکمه‌ها
-            document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
-            document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);
-            document.getElementById('save-btn').addEventListener('click', saveProfile);
-            document.getElementById('upload-kyc-btn').addEventListener('click', uploadKYCDocuments);
-        });
+            const editBtn = document.getElementById('edit-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            const saveBtn = document.getElementById('save-btn');
 
+            if (editBtn) editBtn.addEventListener('click', toggleEditMode);
+            if (cancelBtn) cancelBtn.addEventListener('click', toggleEditMode);
+            if (saveBtn) saveBtn.addEventListener('click', saveProfile);
 
+            // اضافه کردن event listener برای فرم KYC
+            const kycForm = document.getElementById('kyc-form');
+            if (kycForm) {
+                kycForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
 
-                // تابع اعتبارسنجی کد ملی
-        function validateNationalCode(code) {
-            if (!/^\d{10}$/.test(code)) {
-                return false;
-            }
+                    const nationalCode = document.getElementById('nationality-code');
+                    const nationalCard = document.getElementById('national-card-image');
+                    const birthCertificate = document.getElementById('birth-certification-image');
 
-            // الگوریتم اعتبارسنجی کد ملی
-            var check = parseInt(code[9]);
-            var sum = 0;
-            for (var i = 0; i < 9; i++) {
-                sum += parseInt(code[i]) * (10 - i);
-            }
-            var remainder = sum % 11;
+                    // اعتبارسنجی کد ملی
+                    if (!/^\d{10}$/.test(nationalCode.value)) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'کد ملی وارد شده معتبر نیست',
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                        return;
+                    }
 
-            return (remainder < 2 && check === remainder) || (remainder >= 2 && check === 11 - remainder);
-        }
+                    if (!nationalCard.files[0] || !birthCertificate.files[0]) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطا',
+                            text: 'لطفاً تمامی اسناد را انتخاب کنید',
+                            confirmButtonText: 'متوجه شدم'
+                        });
+                        return;
+                    }
 
-        // تابع آپلود اسناد KYC
-        function uploadKYCDocuments(event) {
-            event.preventDefault();
+                    // نمایش وضعیت آپلود
+                    Swal.fire({
+                        title: 'در حال آپلود...',
+                        text: 'لطفاً منتظر بمانید',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
 
-            const form = document.getElementById('kyc-form');
-            const nationalCode = document.getElementById('nationality-code').value;
-            const nationalCard = document.getElementById('national-card-image').files[0];
-            const birthCertificate = document.getElementById('birth-certification-image').files[0];
-
-            // اعتبارسنجی کد ملی
-            if (!validateNationalCode(nationalCode)) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطا',
-                    text: 'کد ملی وارد شده معتبر نیست',
-                    confirmButtonText: 'متوجه شدم'
+                    // ارسال فرم
+                    this.submit();
                 });
-                return;
             }
 
-            if (!nationalCard || !birthCertificate) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطا',
-                    text: 'لطفاً تمامی اسناد را انتخاب کنید',
-                    confirmButtonText: 'متوجه شدم'
+            // محدود کردن ورودی کد ملی به فقط اعداد
+            const nationalityCode = document.getElementById('nationality-code');
+            if (nationalityCode) {
+                nationalityCode.addEventListener('input', function(e) {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    if (this.value.length > 10) {
+                        this.value = this.value.slice(0, 10);
+                    }
                 });
-                return;
             }
 
-            // نمایش وضعیت آپلود
-            Swal.fire({
-                title: 'در حال آپلود...',
-                text: 'لطفاً منتظر بمانید',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // ارسال فرم
-            form.submit();
-        }
-
-        // محدود کردن ورودی کد ملی به فقط اعداد
-        document.getElementById('nationality-code').addEventListener('input', function(e) {
-            this.value = this.value.replace(/[^0-9]/g, '');
-
-            if (this.value.length > 10) {
-                this.value = this.value.slice(0, 10);
+            // اطمینان از غیرفعال بودن شماره تلفن
+            const phone = document.getElementById('phone');
+            if (phone) {
+                phone.disabled = true;
+                phone.title = 'شماره تلفن قابل تغییر نیست';
             }
-        });
-
-
-        // مقداردهی اولیه
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProfileData();
-
-            // رویدادهای دکمه‌ها
-            document.getElementById('edit-btn').addEventListener('click', toggleEditMode);
-            document.getElementById('cancel-edit-btn').addEventListener('click', toggleEditMode);
-            document.getElementById('save-btn').addEventListener('click', saveProfile);
-            document.getElementById('upload-kyc-btn').addEventListener('click', uploadKYCDocuments);
         });
     </script>
+
 </body>
 </html>

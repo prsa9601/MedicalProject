@@ -8,8 +8,10 @@ namespace MedicalProject.Services.User
     {
         Task<ApiResult> Create(CreateUserCommand command);
         Task<ApiResult> Edit(EditUserCommand command);
+        Task<ApiResult> AddBankAccount(AddBankAccountCommandViewModel command);
         Task<ApiResult<string>> Remove(Guid userId);
         Task<ApiResult> ChangePassword(ChangePasswordCommand command);
+        Task<ApiResult> ChangeUserDocumentStatus(ChangeUserDocumentStatusCommand command);
         Task<ApiResult<Guid>> CreateForAdmin(CreateUserForAdminCommand command);
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
@@ -155,6 +157,18 @@ namespace MedicalProject.Services.User
         {
             var result = await _client.GetFromJsonAsync<ApiResult<UserDto?>>($"User/GetCurrentUser");
             return result?.Data;
+        }
+
+        public async Task<ApiResult> ChangeUserDocumentStatus(ChangeUserDocumentStatusCommand command)
+        {
+            var result = await _client.PatchAsJsonAsync("User/ChangeUserDocumentStatus", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<ApiResult> AddBankAccount(AddBankAccountCommandViewModel command)
+        {
+            var result = await _client.PostAsJsonAsync("User/AddBankAccount", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
     }
 }

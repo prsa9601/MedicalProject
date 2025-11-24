@@ -61,26 +61,69 @@ builder.Services.AddAuthentication(option =>
         ValidateIssuer = true,
         ValidateIssuerSigningKey = true
     };
-    //کار نمیکنه
-    //option.Events = new JwtBearerEvents
-    //{
-    //    OnChallenge = async context =>
-    //    {
-    //        // جلوگیری از پاسخ پیش‌فرض
-    //        context.HandleResponse();
+}).AddCookie(options =>
+      {
+          options.Cookie.Name = "auth-Token";
+          options.Cookie.HttpOnly = true;
+          options.Cookie.SecurePolicy = Microsoft.AspNetCore.Http.CookieSecurePolicy.Always;
+          options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+          options.Cookie.MaxAge = TimeSpan.FromMinutes(60);
 
-    //        //if (context.Request.Path.StartsWithSegments("/api"))
-    //        //{
-    //        //    context.Response.StatusCode = 401;
-    //        //    await context.Response.WriteAsync("Unauthorized");
-    //        //}
-    //        if ((int)context.Response.StatusCode == 401)
-    //        {
-    //            context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
-    //        }
-    //    }
-    //};
-});
+          options.Events = new CookieAuthenticationEvents
+          {
+              // ۶. هنگامی که کاربر لاگین نکرده
+              OnRedirectToLogin = async context =>
+              {
+                  // مدیریت redirect به صفحه لاگین
+                  if (context.Request.Path.StartsWithSegments("/api"))
+                  {
+                      context.Response.StatusCode = 401;
+                      await context.Response.WriteAsync("Unauthorized");
+                  }
+                  else
+                  {
+                      context.Response.Redirect("/Login");
+                  }
+              },
+              //
+              //// ۷. هنگامی که کاربر از لاگ اوت بازدید می‌کند
+              //OnRedirectToLogout = async context =>
+              //{
+              //    // مدیریت redirect به صفحه خروج
+              //    context.Response.Redirect("/Logout");
+              //},
+              //
+              //// ۸. هنگامی که کوکی منقضی شده
+              //OnRedirectToReturnUrl = async context =>
+              //{
+              //    // مدیریت بازگشت به URL اصلی
+              //    context.Response.Redirect(context.RedirectUri);
+              //}
+
+          };
+
+
+
+
+          //option.Events = new JwtBearerEvents
+          //{
+          //    OnChallenge = async context =>
+          //    {
+          //        // جلوگیری از پاسخ پیش‌فرض
+          //        context.HandleResponse();
+
+          //        //if (context.Request.Path.StartsWithSegments("/api"))
+          //        //{
+          //        //    context.Response.StatusCode = 401;
+          //        //    await context.Response.WriteAsync("Unauthorized");
+          //        //}
+          //        if ((int)context.Response.StatusCode == 401)
+          //        {
+          //            context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
+          //        }
+          //    }
+          //};
+      });
 
 
 

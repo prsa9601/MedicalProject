@@ -1,0 +1,675 @@
+﻿<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .btn-info {
+            background-color: #0891b2;
+            color: white;
+        }
+
+            .btn-info:hover {
+                background-color: #0e7490;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 40;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-content {
+            flex: 1;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 20px;
+                margin-left: 0.75rem;
+            }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+        /* حالت موبایل */
+        .sidebar-mobile-open .admin-sidebar {
+            transform: translateX(0);
+        }
+
+        .sidebar-mobile-open .admin-main {
+            margin-right: 0;
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 80px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 80px;
+        }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .sidebar-collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+            .sidebar-collapsed .sidebar-link i {
+                margin-left: 0;
+            }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+        }
+
+        /* استایل‌های عمومی */
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(45deg);
+            }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a asp-page="/Admin/Dashboard" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Dashboard") == true ? "active" : "")">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+
+                        <a asp-page="/Admin/Users/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Users") == true ? "active" : "")">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
+                        </a>
+
+                        <a asp-page="/Admin/Finance/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Finance") == true ? "active" : "")">
+                            <i class="fas fa-chart-line"></i>
+                            <span>مدیریت مالی</span>
+                        </a>
+
+                        <a asp-page="/Admin/Documents/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Documents") == true ? "active" : "")">
+                            <i class="fas fa-file-alt"></i>
+                            <span>مدارک کاربران</span>
+                        </a>
+
+                        <a asp-page="/Admin/Product/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Product") == true ? "active" : "")">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Orders/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Orders") == true ? "active" : "")">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سرمایه‌گذاری‌ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Settings/Index" class="sidebar-link @(ViewContext.RouteData.Values["Page"]?.ToString().Contains("Settings") == true ? "active" : "")">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Sidebar Footer -->
+                <div class="p-4 border-t border-blue-700">
+                    <div class="text-center text-blue-200 text-sm">
+                        نسخه ۱.۰.۰
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-content">
+                @RenderBody()
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 mt-auto">
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="text-sm text-gray-600">
+                            © @DateTime.Now.Year پلتفرم دنگ. تمامی حقوق محفوظ است.
+                        </div>
+                        <div class="flex items-center space-x-4 space-x-reverse mt-2 md:mt-0">
+                            <span class="text-sm text-gray-500">طراحی شده با ❤️ در ایران</span>
+                            <div class="flex items-center space-x-2 space-x-reverse text-sm text-green-600">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span>آنلاین</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // مدیریت کلیک روی دکمه سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768) {
+                const sidebar = document.querySelector('.admin-sidebar');
+                const toggleButton = document.getElementById('sidebarToggle');
+
+                if (sidebar && !sidebar.contains(event.target) && !toggleButton.contains(event.target)) {
+                    document.body.classList.remove('sidebar-mobile-open');
+                }
+            }
+        });
+
+        // مدیریت ریسایز پنجره
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+
+        // توابع عمومی برای آلرت
+        function showAlert(icon, title, text, timer = null) {
+            const config = {
+                icon: icon,
+                title: title,
+                text: text,
+                confirmButtonText: 'متوجه شدم',
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'persian-swal',
+                    title: 'persian-swal-title',
+                    htmlContainer: 'persian-swal-text'
+                }
+            };
+
+            if (timer) {
+                config.timer = timer;
+                config.showConfirmButton = false;
+            }
+
+            return Swal.fire(config);
+        }
+
+        const Alert = {
+            success: (message, title = 'موفقیت') => {
+                return showAlert('success', title, message, 3000);
+            },
+            error: (message, title = 'خطا') => {
+                return showAlert('error', title, message, 5000);
+            },
+            warning: (message, title = 'هشدار') => {
+                return showAlert('warning', title, message, 4000);
+            },
+            info: (message, title = 'اطلاعیه') => {
+                return showAlert('info', title, message, 4000);
+            },
+            confirm: (title, text, confirmText = 'بله، مطمئنم', cancelText = 'خیر') => {
+                return Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: confirmText,
+                    cancelButtonText: cancelText,
+                    customClass: {
+                        popup: 'persian-swal'
+                    }
+                });
+            }
+        };
+
+        // استایل‌های سفارشی برای فارسی
+        const style = document.createElement('style');
+        style.textContent = `
+            .persian-swal {
+                font-family: "Vazir", "Tahoma", "Segoe UI", sans-serif !important;
+                direction: rtl !important;
+                text-align: right !important;
+            }
+            .persian-swal-title {
+                font-size: 18px !important;
+                font-weight: bold !important;
+                margin-bottom: 15px !important;
+            }
+            .persian-swal-text {
+                font-size: 14px !important;
+                line-height: 1.6 !important;
+            }
+            .swal2-confirm, .swal2-cancel {
+                font-family: "Vazir", "Tahoma", "Segoe UI", sans-serif !important;
+                font-size: 14px !important;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+            @if (TempData["Success"] != null)
+            {
+                    <text>
+                    Alert.success('@TempData["Success"]');
+                    </text>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                    <text>
+                    Alert.error('@TempData["Error"]');
+                    </text>
+            }
+
+            @if (TempData["Warning"] != null)
+            {
+                    <text>
+                    Alert.warning('@TempData["Warning"]');
+                    </text>
+            }
+
+            @if (TempData["Info"] != null)
+            {
+                    <text>
+                    Alert.info('@TempData["Info"]');
+                    </text>
+            }
+        }
+
+        // مقداردهی اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
+        });
+
+        // قرار دادن در global scope
+        window.Alert = Alert;
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

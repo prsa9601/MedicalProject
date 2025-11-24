@@ -1,0 +1,1023 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Infrastructure.Utils
+@model MedicalProject.Pages.Admin.Users.AccountVerificationModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تایید حساب کاربری - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: #ef4444;
+        }
+
+        .status-pending {
+            background-color: #f59e0b;
+        }
+
+        /* استایل‌های سفارشی برای صفحه تایید حساب */
+        .verification-card {
+            border-left: 4px solid #3b82f6;
+        }
+
+        .verification-card.success {
+            border-left-color: #10b981;
+        }
+
+        .verification-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .verification-card.danger {
+            border-left-color: #ef4444;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+            .checklist-item:last-child {
+                border-bottom: none;
+            }
+
+        .checklist-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+
+        .checklist-icon.success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .checklist-icon.warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .checklist-icon.danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            padding: 1rem;
+            border-right: 3px solid #e5e7eb;
+            margin-bottom: 1rem;
+            background-color: #f9fafb;
+            border-radius: 0.5rem;
+        }
+
+            .activity-item.success {
+                border-right-color: #10b981;
+                background-color: #f0fdf4;
+            }
+
+            .activity-item.warning {
+                border-right-color: #f59e0b;
+                background-color: #fffbeb;
+            }
+
+            .activity-item.danger {
+                border-right-color: #ef4444;
+                background-color: #fef2f2;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a asp-page="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+
+                        <a asp-page="/Admin/Users/Index" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>کاربران</span>
+                        </a>
+
+                        <a asp-page="/Admin/Documents/Index" class="sidebar-link">
+                            <i class="fas fa-file-alt"></i>
+                            <span>مدارک کاربران</span>
+                        </a>
+
+                        <a asp-page="/Admin/Product/Index" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>پروژه‌ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Orders/Index" class="sidebar-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>سرمایه گزاری ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Finance/Index" class="sidebar-link">
+                            <i class="fas fa-chart-line"></i>
+                            <span>مدیریت مالی</span>
+                        </a>
+
+                        <a asp-page="/Admin/Users/AccountVerification" class="sidebar-link active">
+                            <i class="fas fa-user-check"></i>
+                            <span>تایید حساب‌ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Settings/Index" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <a href="/Admin/Users/Index" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت
+                                </a>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">تایید حساب کاربری</h1>
+                                    <p class="mt-1 text-sm text-gray-600">بررسی و تایید وضعیت حساب کاربران</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <button onclick="exportVerificationReport()" class="btn btn-outline">
+                                    <i class="fas fa-download ml-2"></i>
+                                    خروجی گزارش
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- User Profile Header -->
+                    <div class="card mb-8">
+                        <div class="p-6">
+                            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                                <div class="flex items-center space-x-4 space-x-reverse mb-4 lg:mb-0">
+                                    <img src="@Directories.GetUserImageAccountPath(Model.UserId.ToString())"
+                                         alt="@Model.UserProfile.FirstName @Model.UserProfile.LastName"
+                                         class="user-avatar"
+                                         onerror="this.src='https://ui-avatars.com/api/?name=@Model.UserProfile.FirstName+@Model.UserProfile.LastName&background=3B82F6&color=fff&size=128'">
+                                    <div>
+                                        <h2 class="text-xl font-bold text-gray-900">@Model.UserProfile.FirstName @Model.UserProfile.LastName</h2>
+                                        <p class="text-gray-600">شناسه کاربر: @Model.UserId.ToString().Substring(0, 8)</p>
+                                        <div class="flex items-center mt-2 space-x-4 space-x-reverse">
+                                            <span class="text-sm text-gray-500">
+                                                <i class="fas fa-phone ml-1"></i>
+                                                @Model.UserProfile.PhoneNumber
+                                            </span>
+                                            <span class="text-sm text-gray-500">
+                                                <i class="fas fa-calendar ml-1"></i>
+                                                عضو از @Model.UserProfile.CreationDate.ToPersianDate()
+                                            </span>
+                                            <span class="badge @(Model.AccountStatus == "تایید شده" ? "badge-success" : Model.AccountStatus == "در انتظار تایید" ? "badge-warning" : "badge-danger")">
+                                                @Model.AccountStatus
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <button onclick="verifyAccount()" class="btn btn-success" @(Model.AccountStatus == "تایید شده" ? "disabled" : "")>
+                                        <i class="fas fa-check ml-2"></i>
+                                        تایید حساب
+                                    </button>
+                                    <button onclick="rejectAccount()" class="btn btn-danger" @(Model.AccountStatus == "رد شده" ? "disabled" : "")>
+                                        <i class="fas fa-times ml-2"></i>
+                                        رد حساب
+                                    </button>
+                                    <button onclick="contactUser()" class="btn btn-outline">
+                                        <i class="fas fa-envelope ml-2"></i>
+                                        تماس با کاربر
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verification Status -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Verification Checklist -->
+                        <div class="card verification-card @(Model.VerificationScore >= 80 ? "success" : Model.VerificationScore >= 50 ? "warning" : "danger")">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">چک‌لیست تایید حساب</h3>
+                                <p class="text-sm text-gray-600 mt-1">امتیاز تایید: @Model.VerificationScore%</p>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-2">
+                                    @foreach (var check in Model.VerificationChecks)
+                                    {
+                                        <div class="checklist-item">
+                                            <div class="checklist-icon @(check.Status ? "success" : "warning")">
+                                                <i class="fas @(check.Status ? "fa-check" : "fa-times") text-xs"></i>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="font-medium text-gray-900">@check.Title</p>
+                                                <p class="text-sm text-gray-600">@check.Description</p>
+                                            </div>
+                                            <span class="badge @(check.Status ? "badge-success" : "badge-warning")">
+                                                @(check.Status ? "تایید شده" : "نیازمند بررسی")
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Information -->
+                        <div class="card">
+                            <div class="p-6 border-b border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900">اطلاعات حساب</h3>
+                            </div>
+                            <div class="p-6">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">وضعیت حساب:</span>
+                                        <span class="badge @(Model.AccountStatus == "تایید شده" ? "badge-success" : Model.AccountStatus == "در انتظار تایید" ? "badge-warning" : "badge-danger")">
+                                            @Model.AccountStatus
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">تاریخ ایجاد حساب:</span>
+                                        <span class="text-gray-900">@Model.UserProfile.CreationDate.ToPersianDate()</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">آخرین فعالیت:</span>
+                                        <span class="text-gray-900">@Model.LastActivityDate.ToPersianDate()</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">تعداد سرمایه‌گذاری‌ها:</span>
+                                        <span class="text-gray-900">@Model.InvestmentCount مورد</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">مبلغ کل سرمایه‌گذاری:</span>
+                                        <span class="text-gray-900">@Model.TotalInvestment.ToString("N0") ریال</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-gray-600">امتیاز اعتباری:</span>
+                                        <span class="text-gray-900">@Model.CreditScore از 100</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Verification Actions -->
+                    <div class="card mb-8">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">عملیات تایید</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-check text-green-600 text-xl"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">تایید حساب</h4>
+                                    <p class="text-sm text-gray-600 mb-3">حساب کاربر به طور کامل تایید می‌شود</p>
+                                    <button onclick="verifyAccount()" class="btn btn-success w-full" @(Model.AccountStatus == "تایید شده" ? "disabled" : "")>
+                                        تایید حساب
+                                    </button>
+                                </div>
+
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-times text-red-600 text-xl"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">رد حساب</h4>
+                                    <p class="text-sm text-gray-600 mb-3">حساب کاربر رد شده و مسدود می‌شود</p>
+                                    <button onclick="rejectAccount()" class="btn btn-danger w-full" @(Model.AccountStatus == "رد شده" ? "disabled" : "")>
+                                        رد حساب
+                                    </button>
+                                </div>
+
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-clock text-blue-600 text-xl"></i>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-900 mb-2">تعلیق موقت</h4>
+                                    <p class="text-sm text-gray-600 mb-3">حساب کاربر به طور موقت تعلیق می‌شود</p>
+                                    <button onclick="suspendAccount()" class="btn btn-warning w-full">
+                                        تعلیق حساب
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="card">
+                        <div class="p-6 border-b border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900">تاریخچه فعالیت‌ها</h3>
+                        </div>
+                        <div class="p-6">
+                            <div class="activity-log">
+                                @foreach (var activity in Model.ActivityLog)
+                                {
+                                    <div class="activity-item @(activity.Type == "success" ? "success" : activity.Type == "warning" ? "warning" : "danger")">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <span class="font-medium text-gray-900">@activity.Title</span>
+                                            <span class="text-sm text-gray-500">@activity.Date.ToPersianDate()</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">@activity.Description</p>
+                                        @if (!string.IsNullOrEmpty(activity.ActionBy))
+                                        {
+                                            <div class="flex justify-between items-center mt-2">
+                                                <span class="text-xs text-gray-500">توسط: @activity.ActionBy</span>
+                                                <span class="badge @(activity.Type == "success" ? "badge-success" : activity.Type == "warning" ? "badge-warning" : "badge-danger")">
+                                                    @activity.Status
+                                                </span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 class="text-xl font-semibold text-gray-900" id="modalTitle">تایید حساب کاربری</h3>
+                <button onclick="closeVerificationModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <form id="verificationForm">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="form-label">نوع اقدام</label>
+                            <select id="actionType" class="input" required>
+                                <option value="verify">تایید حساب</option>
+                                <option value="reject">رد حساب</option>
+                                <option value="suspend">تعلیق موقت</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="form-label">توضیحات</label>
+                            <textarea id="verificationDescription" class="input" rows="4" placeholder="علت تایید/رد حساب را شرح دهید..." required></textarea>
+                        </div>
+
+                        <div>
+                            <label class="form-label">مدت تعلیق (در صورت انتخاب تعلیق)</label>
+                            <select id="suspensionDuration" class="input">
+                                <option value="1">۱ روز</option>
+                                <option value="3">۳ روز</option>
+                                <option value="7">۷ روز</option>
+                                <option value="30">۳۰ روز</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-3 space-x-reverse mt-6">
+                        <button type="button" onclick="closeVerificationModal()" class="btn btn-outline">
+                            لغو
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check ml-2"></i>
+                            تایید اقدام
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // توابع تایید حساب
+        let currentAction = '';
+
+        function verifyAccount() {
+            currentAction = 'verify';
+            document.getElementById('modalTitle').textContent = 'تایید حساب کاربری';
+            document.getElementById('actionType').value = 'verify';
+            document.getElementById('suspensionDuration').style.display = 'none';
+            document.querySelector('label[for="suspensionDuration"]').style.display = 'none';
+            document.getElementById('verificationModal').classList.remove('hidden');
+        }
+
+        function rejectAccount() {
+            currentAction = 'reject';
+            document.getElementById('modalTitle').textContent = 'رد حساب کاربری';
+            document.getElementById('actionType').value = 'reject';
+            document.getElementById('suspensionDuration').style.display = 'none';
+            document.querySelector('label[for="suspensionDuration"]').style.display = 'none';
+            document.getElementById('verificationModal').classList.remove('hidden');
+        }
+
+        function suspendAccount() {
+            currentAction = 'suspend';
+            document.getElementById('modalTitle').textContent = 'تعلیق موقت حساب';
+            document.getElementById('actionType').value = 'suspend';
+            document.getElementById('suspensionDuration').style.display = 'block';
+            document.querySelector('label[for="suspensionDuration"]').style.display = 'block';
+            document.getElementById('verificationModal').classList.remove('hidden');
+        }
+
+        function closeVerificationModal() {
+            document.getElementById('verificationModal').classList.add('hidden');
+        }
+
+        function exportVerificationReport() {
+            alert('گزارش تایید حساب در حال آماده‌سازی و دانلود است...');
+        }
+
+        function contactUser() {
+            if (confirm('آیا مایل به برقراری تماس با کاربر هستید؟')) {
+                alert('در حال برقراری تماس با کاربر...');
+            }
+        }
+
+        // مدیریت فرم تایید
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const actionType = document.getElementById('actionType').value;
+            const description = document.getElementById('verificationDescription').value;
+            const suspensionDuration = document.getElementById('suspensionDuration').value;
+
+            let message = '';
+            switch (actionType) {
+                case 'verify':
+                    message = 'آیا از تایید حساب کاربر اطمینان دارید؟';
+                    break;
+                case 'reject':
+                    message = 'آیا از رد حساب کاربر اطمینان دارید؟';
+                    break;
+                case 'suspend':
+                    message = `آیا از تعلیق حساب کاربر به مدت ${suspensionDuration} روز اطمینان دارید؟`;
+                    break;
+            }
+
+            if (confirm(message)) {
+                // ارسال درخواست به سرور
+                console.log('اقدام تایید حساب:', {
+                    actionType,
+                    description,
+                    suspensionDuration
+                });
+
+                alert('عملیات با موفقیت انجام شد');
+                closeVerificationModal();
+                
+                // رفرش صفحه
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+        });
+
+        // مدیریت تغییر نوع اقدام
+        document.getElementById('actionType').addEventListener('change', function() {
+            const actionType = this.value;
+            const suspensionField = document.getElementById('suspensionDuration');
+            const suspensionLabel = document.querySelector('label[for="suspensionDuration"]');
+
+            if (actionType === 'suspend') {
+                suspensionField.style.display = 'block';
+                suspensionLabel.style.display = 'block';
+            } else {
+                suspensionField.style.display = 'none';
+                suspensionLabel.style.display = 'none';
+            }
+        });
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+    </script>
+</body>
+</html>

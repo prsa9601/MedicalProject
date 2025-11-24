@@ -1122,6 +1122,15 @@
         // });
      </script>*@
 
+   @*   <script>
+               fetch("/your-api-endpoint")
+        .then(response => {
+          if (response.headers.get("X-Refresh-Page") === "true") {
+            location.reload();
+          }
+        });
+     </script> *@
+
     <!-- jQuery اول (اگر استفاده می‌کنی) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- سپس SweetAlert -->

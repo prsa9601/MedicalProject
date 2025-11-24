@@ -39,6 +39,12 @@ namespace MedicalProject.Pages.Auth
             });
             if (result.IsSuccess)
             {
+                if (result.Data.ContainsValue("Register"))
+                {
+                    TempData["Success"] = "کد تایید برای شما ارسال شد." +
+                        "ابتدا ثبت نام کنید.";
+                    return Redirect($"VerificationOtpCode?phoneNumber={PhoneNumber}&action={ForAuthAction.Register}");
+                }
                 TempData["Success"] = "کد تایید برای شما ارسال شد.";
                 return Redirect($"VerificationOtpCode?phoneNumber={PhoneNumber}&action={Action}");
             }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MedicalProject.Pages.Admin.Finance
 {
-    public class IndexModel : BaseRazorFilter<PurchaseReportFilterParam>
+    public class IndexModel : BaseRazorFilter<UserPurchaseReportFilterParam>
     {
         private readonly IPurchaseReportService _service;
 
@@ -19,9 +19,23 @@ namespace MedicalProject.Pages.Admin.Finance
         [BindProperty(SupportsGet = true)]
         public PurchaseReportFilterResult? Result { get; set; }
         
+        [BindProperty(SupportsGet = true)]
+        public PurchaseReportUserInvestmentFilterResult? UserPurchaseReportResult { get; set; }
+        
         public async Task OnGet(CancellationToken cancellationToken)
         {
-            Result = await _service.GetFilterForAdmin(FilterParams, cancellationToken);
+            Result = await _service.GetFilterForAdmin(new PurchaseReportFilterParam
+            {
+                EndDate = FilterParams.EndDate,
+                StartDate = FilterParams.StartDate,
+                PageId = FilterParams.PageId,
+                Take = FilterParams.Take,
+                PhoneNumber = FilterParams.PhoneNumber,
+                ProductId = FilterParams.ProductId,
+                PurchaseReportFilter = FilterParams.PurchaseReportFilter,
+                    
+            }, cancellationToken);
+            UserPurchaseReportResult = await _service.GetFilterUserForAdmin(FilterParams, cancellationToken);
         }
     }
 }

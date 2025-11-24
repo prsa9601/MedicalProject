@@ -81,6 +81,15 @@
             pointer-events: none;
             color: #6b7280;
         }
+
+        .profit-item {
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.75rem 0;
+        }
+
+            .profit-item:last-child {
+                border-bottom: none;
+            }
     </style>
 }
 
@@ -264,22 +273,23 @@
                             </div>
 
                             <!-- Investment Summary -->
-                            <div class="bg-blue-50 rounded-lg p-4 space-y-2">
-                             
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-gray-600">سود تخمینی سالانه</span>
+                            <div class="bg-blue-50 rounded-lg p-4 space-y-3">
+                                <div class="flex justify-between text-sm profit-item">
+                                    <span class="text-gray-600">سود ماهیانه</span>
                                     <span class="font-medium text-green-600">
-                                        <span id="annualProfit">
-                                            @FormatPrice(CalculationOfAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime))
-                                        </span> ریال
+                                        <span id="monthlyProfit">0</span> ریال
                                     </span>
                                 </div>
-                                <div class="flex justify-between text-sm font-bold">
+                                <div class="flex justify-between text-sm profit-item">
+                                    <span class="text-gray-600">سود تخمینی سالانه</span>
+                                    <span class="font-medium text-green-600">
+                                        <span id="annualProfit">0</span> ریال
+                                    </span>
+                                </div>
+                                <div class="flex justify-between text-sm font-bold profit-item">
                                     <span class="text-gray-700">کل بازدهی ۵ ساله</span>
                                     <span class="text-green-600">
-                                        <span id="totalProfit">
-                                            @FormatPrice(CalculationOfFiveAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime))
-                                        </span> ریال
+                                        <span id="totalProfit">0</span> ریال
                                     </span>
                                 </div>
                             </div>
@@ -513,32 +523,56 @@
 
             const dongSelect = document.getElementById('dongAmount');
             const quickDongButtons = document.querySelectorAll('.quick-dong-btn');
+            const monthlyProfit = document.getElementById('monthlyProfit');
             const annualProfit = document.getElementById('annualProfit');
             const totalProfit = document.getElementById('totalProfit');
 
-            // Function to update investment summary
-            function updateInvestmentSummary(dongValue) {
-                const annual = (1000000 * dongValue * 0.18).toLocaleString('fa-IR');
-                const total = (1000000 * dongValue * 0.18 * 5).toLocaleString('fa-IR');
+            // محاسبه سود پایه برای یک دانگ (این مقادیر باید از سرور گرفته شوند)
+            const baseAnnualProfitPerDong = @CalculationOfAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime);
+            const baseMonthlyProfitPerDong = baseAnnualProfitPerDong / 12;
+            const baseFiveYearProfitPerDong = baseAnnualProfitPerDong * 5;
 
-                annualProfit.textContent = @CalculationOfAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime).ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
-                totalProfit.textContent =  @CalculationOfFiveAnnualProfit(Model.Product.InventoryDto?.Profit, Model.Product.InventoryDto?.ProfitableTime).ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+            console.log('Base profits:', {
+                monthly: baseMonthlyProfitPerDong,
+                annual: baseAnnualProfitPerDong,
+                fiveYear: baseFiveYearProfitPerDong
+            });
+
+            // Function to update investment summary based on selected dong
+            function updateInvestmentSummary(dongValue) {
+                // محاسبه سودها بر اساس تعداد دانگ انتخاب شده
+                const monthlyProfitValue = baseMonthlyProfitPerDong * dongValue;
+                const annualProfitValue = baseAnnualProfitPerDong * dongValue;
+                const fiveYearProfitValue = baseFiveYearProfitPerDong * dongValue;
+
+                console.log('Updating profits for dong:', dongValue, {
+                    monthly: monthlyProfitValue,
+                    annual: annualProfitValue,
+                    fiveYear: fiveYearProfitValue
+                });
+
+                // نمایش مقادیر با فرمت فارسی
+                monthlyProfit.textContent = Math.round(monthlyProfitValue).toLocaleString('fa-IR');
+                annualProfit.textContent = Math.round(annualProfitValue).toLocaleString('fa-IR');
+                totalProfit.textContent = Math.round(fiveYearProfitValue).toLocaleString('fa-IR');
             }
 
-            // Initialize with default value
+            // Initialize with default value (نیم دانگ)
             updateInvestmentSummary(0.5);
 
             // Handle select change
             if (dongSelect) {
                 dongSelect.addEventListener('change', function() {
                     const selectedValue = parseFloat(this.value);
+                    console.log('Select changed to:', selectedValue);
                     updateInvestmentSummary(selectedValue);
 
                     // Update quick buttons selection
                     quickDongButtons.forEach(btn => {
-                        btn.classList.remove('selected');
-                        if (parseFloat(btn.getAttribute('data-dong')) === selectedValue) {
-                            btn.classList.add('selected');
+                        const btnValue = parseFloat(btn.getAttribute('data-dong'));
+                        btn.classList.remove('selected', 'bg-blue-600', 'text-white');
+                        if (Math.abs(btnValue - selectedValue) < 0.01) {
+                            btn.classList.add('selected', 'bg-blue-600', 'text-white');
                         }
                     });
                 });
@@ -548,21 +582,37 @@
             quickDongButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const dongValue = parseFloat(this.getAttribute('data-dong'));
+                    console.log('Button clicked, dong value:', dongValue);
 
                     // Set select value
                     if (dongSelect) {
-                        dongSelect.value = dongValue;
+                        dongSelect.value = dongValue.toString();
+
+                        // ایجاد event change دستی
+                        const event = new Event('change');
+                        dongSelect.dispatchEvent(event);
                     }
 
                     // Update selection state
                     quickDongButtons.forEach(btn => {
-                        btn.classList.remove('selected');
+                        btn.classList.remove('selected', 'bg-blue-600', 'text-white');
+                        btn.classList.add('btn-outline');
                     });
-                    this.classList.add('selected');
+                    this.classList.remove('btn-outline');
+                    this.classList.add('selected', 'bg-blue-600', 'text-white');
 
                     // Update summary
                     updateInvestmentSummary(dongValue);
                 });
+            });
+
+            // مقدار اولیه برای دکمه‌ها (نیم دانگ انتخاب شده)
+            quickDongButtons.forEach(btn => {
+                const btnValue = parseFloat(btn.getAttribute('data-dong'));
+                if (Math.abs(btnValue - 0.5) < 0.01) {
+                    btn.classList.remove('btn-outline');
+                    btn.classList.add('selected', 'bg-blue-600', 'text-white');
+                }
             });
 
             // فقط از تغییر دستی از طریق کیبورد جلوگیری می‌کنیم

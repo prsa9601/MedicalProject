@@ -2,6 +2,7 @@
 @using MedicalProject.Infrastructure
 @using MedicalProject.Infrastructure.EnumUtil
 @using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Infrastructure.ProfitUtil
 @using MedicalProject.Models.User.Enum
 @model MedicalProject.Pages.Admin.Finance.IndexModel
 @{
@@ -19,18 +20,18 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        /* استایل‌های سفارشی - مشابه قالب کاربران */
+        /* استایل‌های سفارشی */
         html {
             direction: rtl;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
@@ -42,6 +43,18 @@
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
         }
 
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -56,25 +69,73 @@
             cursor: pointer;
         }
 
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
         .btn-primary {
             background-color: #2563eb;
             color: white;
         }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
 
         .btn-success {
             background-color: #059669;
             color: white;
         }
 
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
         .btn-warning {
             background-color: #d97706;
             color: white;
         }
 
-        .btn-info {
-            background-color: #0891b2;
-            color: white;
-        }
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
 
         .card {
             background-color: white;
@@ -88,9 +149,37 @@
             transition: all 0.3s;
         }
 
-        .card-hover:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transform: translateY(-0.25rem);
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
         }
 
         .badge {
@@ -100,6 +189,11 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
         }
 
         .badge-success {
@@ -117,9 +211,21 @@
             color: #991b1b;
         }
 
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
         .badge-info {
             background-color: #d1f5f9;
             color: #0e7490;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* استایل‌های مخصوص پنل ادمین */
@@ -135,6 +241,18 @@
             transition: all 0.3s;
         }
 
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
         .sidebar-link {
             display: flex;
             align-items: center;
@@ -145,9 +263,29 @@
             transition: all 0.2s;
         }
 
-        .sidebar-link:hover, .sidebar-link.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
         }
 
         .table {
@@ -155,28 +293,84 @@
             border-collapse: collapse;
         }
 
-        .table th, .table td {
-            padding: 0.75rem 1rem;
-            text-align: right;
-            border-bottom: 1px solid #e5e7eb;
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .table th {
-            background-color: #f9fafb;
-            font-weight: 600;
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
             color: #374151;
         }
 
-        .profit-positive {
-            color: #059669;
-            font-weight: 600;
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
         }
 
-        .profit-negative {
-            color: #dc2626;
-            font-weight: 600;
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
         }
 
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: #ef4444;
+        }
+
+        .status-pending {
+            background-color: #f59e0b;
+        }
+
+        /* استایل‌های سفارشی برای صفحه مالی */
         .chart-container {
             position: relative;
             height: 300px;
@@ -192,15 +386,61 @@
             overflow: hidden;
         }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(45deg);
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(45deg);
+            }
+
+        .profit-positive {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .profit-negative {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
         }
     </style>
 </head>
@@ -301,11 +541,6 @@
                             <span>کاربران</span>
                         </a>
 
-                        <a asp-page="/Admin/Finance/Index" class="sidebar-link active">
-                            <i class="fas fa-chart-line"></i>
-                            <span>مدیریت مالی</span>
-                        </a>
-
                         <a asp-page="/Admin/Documents/Index" class="sidebar-link">
                             <i class="fas fa-file-alt"></i>
                             <span>مدارک کاربران</span>
@@ -318,7 +553,12 @@
 
                         <a asp-page="/Admin/Orders/Index" class="sidebar-link">
                             <i class="fas fa-shopping-cart"></i>
-                            <span>سرمایه‌گذاری‌ها</span>
+                            <span>سرمایه گزاری ها</span>
+                        </a>
+
+                        <a asp-page="/Admin/Finance/Index" class="sidebar-link active">
+                            <i class="fas fa-chart-line"></i>
+                            <span>مدیریت مالی</span>
                         </a>
 
                         <a asp-page="/Admin/Settings/Index" class="sidebar-link">
@@ -359,41 +599,20 @@
                 <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <!-- Statistics Cards -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                       @*  <div class="stat-card">
-                            <div class="relative z-10">
-                                <p class="text-sm opacity-90">سود کل پلتفرم</p>
-                                <p class="text-2xl font-bold mt-2">@Model.TotalPlatformProfit.ToString("N0") <span class="text-sm">ریال</span></p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">۱۲٪ رشد</span>
-                                </div>
-                            </div>
-                        </div> *@
-
                         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود کاربران</p>
-                               <p class="text-2xl font-bold mt-2">
-    @Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0")
-    <span class="text-sm">ریال</span>
-</p> <div class="flex items-center mt-2">
+                                <p class="text-2xl font-bold mt-2">
+                                    @Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0")
+                                    <span class="text-sm">ریال</span>
+                                </p>
+                                <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
                                     <span class="text-green-300 text-sm">۸٪ رشد</span>
                                 </div>
                             </div>
                         </div>
-@* 
-                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                            <div class="relative z-10">
-                                <p class="text-sm opacity-90">کارمزد پلتفرم</p>
-                                <p class="text-2xl font-bold mt-2">@Model.TotalPlatformFee.ToString("N0") <span class="text-sm">ریال</span></p>
-                                <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">۵٪ رشد</span>
-                                </div>
-                            </div>
-                        </div>
- *@
+
                         <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
@@ -404,30 +623,29 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <!-- Profit Chart -->
-                        <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h3 class="text-lg font-semibold text-gray-900">روند سود ماهانه</h3>
-                            </div>
-                            <div class="p-6">
-                                <div class="chart-container">
-                                    <canvas id="profitChart"></canvas>
+                        <!-- اضافه کردن کارت‌های آماری دیگر -->
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <div class="relative z-10">
+                                <p class="text-sm opacity-90">میانگین سود</p>
+                                <p class="text-2xl font-bold mt-2">
+                                    @(Model.Result.EntityCount > 0 ? (Model.Result.Data.SafeSum(i => i.TotalPrice) / Model.Result.EntityCount).ToString("N0") : "0")
+                                    <span class="text-sm">ریال</span>
+                                </p>
+                                <div class="flex items-center mt-2">
+                                    <i class="fas fa-chart-line ml-1 text-green-300"></i>
+                                    <span class="text-green-300 text-sm">پایدار</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- User Profit Distribution -->
-                        <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h3 class="text-lg font-semibold text-gray-900">توزیع سود کاربران</h3>
-                            </div>
-                            <div class="p-6">
-                                <div class="chart-container">
-                                    <canvas id="itemChart"></canvas>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                            <div class="relative z-10">
+                                <p class="text-sm opacity-90">کاربران فعال</p>
+                                <p class="text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
+                                <div class="flex items-center mt-2">
+                                    <i class="fas fa-users ml-1 text-green-300"></i>
+                                    <span class="text-green-300 text-sm">۱۰٪ رشد</span>
                                 </div>
                             </div>
                         </div>
@@ -436,7 +654,7 @@
                     <!-- Financial Summary -->
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                         <!-- Platform Summary -->
-                        <div class="card">
+                        @* <div class="card">
                             <div class="p-6 border-b border-gray-200">
                                 <h3 class="text-lg font-semibold text-gray-900">خلاصه مالی پلتفرم</h3>
                             </div>
@@ -460,7 +678,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> *@
 
                         <!-- User Profit Summary -->
                         <div class="card">
@@ -470,19 +688,27 @@
                             <div class="p-6">
                                 <div class="space-y-4">
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">میانگین سود کاربر:</span>
+                                        <span class="text-gray-600">میانگین سرمایه گزاری کاربران:</span>
                                         <span class="font-semibold text-green-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">بیشترین سود:</span>
-                                        <span class="font-semibold text-blue-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
+                                        <span class="text-gray-600">بیشترین سرمایه گزاری:</span>
+                                        <span class="font-semibold text-blue-600">
+                                            @{
+                                                var maxInvestment = Model.UserPurchaseReportResult.Data
+                                                .OrderByDescending(i => i.PurchaseReport.OrderByDescending(i => i.TotalPrice))
+                                                .FirstOrDefault();
+                                                string formattedProfit = decimal.Parse(maxInvestment?.PurchaseReport.FirstOrDefault().TotalPrice).ToString("N0");
+                                            }
+                                            @formattedProfit ریال
+                                        </span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کمترین سود:</span>
+                                        <span class="text-gray-600">کمترین سرمایه گزاری:</span>
                                         <span class="font-semibold text-orange-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کاربران سودده:</span>
+                                        <span class="text-gray-600">کاربرانی که باید سود برایشان واریز بشود:</span>
                                         <span class="font-semibold text-purple-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") نفر</span>
                                     </div>
                                 </div>
@@ -490,7 +716,7 @@
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="card">
+                        @*  <div class="card">
                             <div class="p-6 border-b border-gray-200">
                                 <h3 class="text-lg font-semibold text-gray-900">عملیات سریع</h3>
                             </div>
@@ -514,7 +740,7 @@
                                     </button>
                                 </div>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
 
                     <!-- User Profit List -->
@@ -537,10 +763,8 @@
 
                                     <select id="profitFilter" class="input w-full sm:w-auto">
                                         <option value="">همه وضعیت‌ها</option>
-                                        <option value="positive">سود مثبت</option>
-                                        <option value="negative">سود منفی</option>
-                                        <option value="high">سود بالا</option>
-                                        <option value="low">سود پایین</option>
+                                        <option value="positive">سود باید واریز شود</option>
+                                        <option value="negative">تمامی سود ها واریز شده</option>
                                     </select>
 
                                     <button onclick="applyProfitFilters()" class="btn btn-primary w-full sm:w-auto">
@@ -561,7 +785,6 @@
                                             <th>سرمایه‌گذاری کل</th>
                                             <th>سود کل</th>
                                             <th>سود ماه جاری</th>
-                                            <th>نرخ بازدهی</th>
                                             <th>وضعیت</th>
                                             <th>عملیات</th>
                                         </tr>
@@ -569,52 +792,42 @@
                                     <tbody>
                                         @{
                                             int number = 1;
-                                            foreach (var item in Model.Result.Data)
+                                            foreach (var item in Model.UserPurchaseReportResult.Data)
                                             {
                                                 <tr>
                                                     <td>@(number++)</td>
                                                     <td>
                                                         <div class="flex items-center space-x-3 space-x-reverse">
-                                                            <img src="@Directories.GetUserImageAccountPath(item.UserId.ToString())"
-                                                                 alt="@item.UserId@item.UserId"
+                                                            <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
+                                                                 alt="@item.FirstName @item.Lastame"
                                                                  class="user-avatar">
                                                             <div>
-                                                                <div class="font-medium text-gray-900">@item.UserId @item.UserId</div>
-                                                                <div class="text-sm text-gray-500">شناسه: @item.UserId.ToString().Substring(0, 8)</div>
+                                                                <div class="font-medium text-gray-900">@item.FirstName @item.Lastame</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>@item.UserId</td>
-                                                    <td>@decimal.Parse(item.TotalPrice).ToString("N0") ریال</td>
-                                                    <td class="@(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @decimal.Parse(item.TotalProfit).ToString("N0") ریال
+                                                    <td>@item.PhoneNumber</td>
+                                                    <td>@item.PurchaseReport.SafeSum(i => i.TotalPrice).ToString("N0") ریال</td>
+                                                    <td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.PurchaseReport.SafeSum(i => i.TotalProfit).ToString("N0") ریال
                                                     </td>
-                                                    <td class="@(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @decimal.Parse(item.PurchasePricePerDang).ToString("N0") ریال
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge @(decimal.Parse(item.PurchasePricePerDang) >= 0 ? "badge-success" : "badge-danger")">
-                                                            @decimal.Parse(item.PurchasePricePerDang).ToString("P1")
-                                                        </span>
+                                                    <td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang).ToString("N0") ریال
                                                     </td>
                                                     <td>
-                                                        <span class="badge @(decimal.Parse(item.TotalPrice) >= 0 ? "badge-success" : "badge-danger")">
-                                                            @(decimal.Parse(item.TotalProfit) >= 0 ? "سودده" : "ضررده")
+                                                        <span class="badge @(ProfitDepositStatus.CheckStatus(item) == false ? "badge-success" : "badge-danger")">
+                                                            @(ProfitDepositStatus.CheckStatus(item) == false ? "واریز نشده" : "واریز شده")
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <button onclick="showitemDetails('@item.UserId')" 
+                                                            <button onclick="location.href='Finance/UserReport/@item.UserId'"
                                                                     class="btn btn-outline btn-sm" title="مشاهده جزئیات">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button onclick="showSettlementModal('@item.UserId')" 
+                                                            <button onclick="showSettlementModal('@item.UserId')"
                                                                     class="btn btn-success btn-sm" title="تسویه حساب">
                                                                 <i class="fas fa-money-bill-wave"></i>
-                                                            </button>
-                                                            <button onclick="generateUserReport('@item.UserId')" 
-                                                                    class="btn btn-info btn-sm" title="گزارش کاربر">
-                                                                <i class="fas fa-chart-bar"></i>
                                                             </button>
                                                         </div>
                                                     </td>
@@ -689,8 +902,6 @@
         </div>
     </div>
 
-
-
     <script>
         // توابع مدیریت پنل ادمین
         function toggleSidebar() {
@@ -704,81 +915,6 @@
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profileDropdown');
             dropdown.classList.toggle('hidden');
-        }
-
-        // مدیریت چارت‌ها
-        function initializeCharts() {
-            // Profit Chart
-            const profitCtx = document.getElementById('profitChart').getContext('2d');
-            const profitChart = new Chart(profitCtx, {
-                type: 'line',
-                data: {
-                    labels: ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
-                    datasets: [{
-                        label: 'سود پلتفرم',
-                        data: [12000000, 19000000, 15000000, 25000000, 22000000, 30000000],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }, {
-                        label: 'سود کاربران',
-                        data: [8000000, 12000000, 10000000, 18000000, 15000000, 22000000],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            rtl: true
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return value.toLocaleString() + ' ریال';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // User Profit Distribution Chart
-            const itemCtx = document.getElementById('itemChart').getContext('2d');
-            const itemChart = new Chart(itemCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['سود بالا (>50M)', 'سود متوسط (10M-50M)', 'سود پایین (1M-10M)', 'بدون سود'],
-                    datasets: [{
-                        data: [15, 35, 45, 5],
-                        backgroundColor: [
-                            '#10b981',
-                            '#3b82f6',
-                            '#f59e0b',
-                            '#ef4444'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            rtl: true
-                        }
-                    }
-                }
-            });
         }
 
         // توابع مدال‌ها
@@ -839,9 +975,13 @@
             closeSettlementModal();
         });
 
-        // Initialize charts when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
         });
 
         // بستن منوها هنگام کلیک خارج
@@ -852,16 +992,108 @@
             if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
                 profileDropdown.classList.add('hidden');
             }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
         });
 
-        // مدیریت کلیک روی دکمه سایدبار
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            } else {
-                toggleSidebar();
+        // جستجوی لحظه‌ای
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            // شبیه‌سازی جستجوی لحظه‌ای
+            if (searchTerm.length >= 3) {
+                console.log('جستجو برای:', searchTerm);
             }
         });
     </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- سپس SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/Alert.js"></script>
+
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+        // موفقیت
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                    Alert.success(decodePersianText('@TempData["Success"]'));
+                </text>
+        }
+
+        // خطا
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                    const errorMsg = decodePersianText('@TempData["Error"]');
+                    if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                    Alert.notFound(errorMsg);
+                    } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                    Alert.serverError(errorMsg);
+                    } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                    Alert.badRequest(errorMsg);
+                    } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                    Alert.unauthorized(errorMsg);
+                    } else {
+                    Alert.error(errorMsg);
+                    }
+                </text>
+        }
+
+        // هشدار
+        @if (TempData["Warning"] != null)
+        {
+                <text>
+                    const warningMsg = decodePersianText('@TempData["Warning"]');
+                    if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                    Alert.validationWarning(warningMsg);
+                    } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                    Alert.financialWarning(warningMsg);
+                    } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                    Alert.securityWarning(warningMsg);
+                    } else {
+                    Alert.warning(warningMsg);
+                    }
+                </text>
+        }
+
+        // اطلاعیه
+        @if (TempData["Info"] != null)
+        {
+                <text>
+                    const infoMsg = decodePersianText('@TempData["Info"]');
+                    if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                    Alert.systemInfo(infoMsg);
+                    } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                    Alert.financialInfo(infoMsg);
+                    } else {
+                    Alert.info(infoMsg);
+                    }
+                </text>
+        }
+        }
+    </script>
 </body>
-</html> 
+</html>
+<!-- اضافه کردن این بخش در <body> -->
+@*    @if (TempData["Success"] != null)
+                {
+                    <input type="hidden" id="tempdata-success" value="@TempData["Success"]" />
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <input type="hidden" id="tempdata-error" value="@TempData["Error"]" />
+                }
+                @if (TempData["Warning"] != null)
+                {
+                    <input type="hidden" id="tempdata-warning" value="@TempData["Warning"]" />
+                }
+                @if (TempData["Info"] != null)
+                {
+                    <input type="hidden" id="tempdata-info" value="@TempData["Info"]" />
+                } *@

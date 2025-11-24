@@ -1,0 +1,616 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Utils
+@model MedicalProject.Pages.Front.Payment.InvoiceModel
+@{
+    ViewData["Title"] = "رسید پرداخت - پلتفرم دنگ";
+}
+
+@section Styles {
+    <style>
+        .invoice-container {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+
+        .invoice-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invoice-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            opacity: 0.1;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .invoice-body {
+            padding: 3rem 2rem;
+        }
+
+        .invoice-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #1e293b;
+            font-weight: 600;
+            text-align: left;
+        }
+
+        .product-card {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .price-breakdown {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 1rem;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .total-amount {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.03);
+            z-index: 1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .security-stamp {
+            border: 2px dashed #10b981;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            background: #f0fdf4;
+        }
+
+        .timeline {
+            position: relative;
+            padding-right: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            right: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e2e8f0;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            right: -2rem;
+            top: 0.25rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #3b82f6;
+        }
+
+        .timeline-item.completed .timeline-dot {
+            background: #10b981;
+            box-shadow: 0 0 0 2px #10b981;
+        }
+
+        .timeline-item.current .timeline-dot {
+            background: #f59e0b;
+            box-shadow: 0 0 0 2px #f59e0b;
+            animation: pulse 2s infinite;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        @@keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+            }
+        }
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            .invoice-card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+            }
+            .action-buttons {
+                display: none;
+            }
+            body {
+                background: white !important;
+            }
+            .invoice-container {
+                padding: 0;
+            }
+        }
+    </style>
+}
+
+<div class="invoice-container">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Invoice Card -->
+        <div class="invoice-card">
+            <!-- Watermark -->
+            <div class="watermark">پرداخت موفق</div>
+            
+            <!-- Header -->
+            <div class="invoice-header">
+                <div class="invoice-pattern"></div>
+                <div class="relative z-10">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h1 class="text-3xl font-bold text-white">رسید پرداخت</h1>
+                                    <p class="text-blue-100 mt-1">پلتفرم سرمایه‌گذاری دنگ</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left lg:text-right">
+                            <div class="status-badge">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                پرداخت موفق
+                            </div>
+                            <div class="mt-3 text-blue-100">
+                                <div class="text-sm">تاریخ پرداخت</div>
+                                <div class="font-semibold text-white">@DateTime.Now.ToPersianDate() - @DateTime.Now.ToString("HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Body -->
+            <div class="invoice-body">
+                <!-- Order Information -->
+                <div class="invoice-section">
+                    <h2 class="section-title">اطلاعات سفارش</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">شماره سفارش</span>
+                            <span class="info-value font-mono">@($"ORD-{DateTime.Now:yyyyMMdd-HHmmss}")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">کد رهگیری</span>
+                            <span class="info-value font-mono">@($"TRK-{Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper()}")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">تاریخ و ساعت</span>
+                            <span class="info-value">@DateTime.Now.ToPersianDate() - @DateTime.Now.ToString("HH:mm")</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">وضعیت</span>
+                            <span class="info-value text-green-600 font-semibold">تکمیل شده</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Information -->
+                <div class="invoice-section">
+                    <h2 class="section-title">اطلاعات محصول</h2>
+                    <div class="product-card">
+                        <div class="flex flex-col lg:flex-row gap-6">
+                            @if (Model.Product != null && !string.IsNullOrEmpty(Model.Product.ImageName))
+                            {
+                                <img src="@Directories.GetProductImagePathPath(Model.Product.ImageName)"
+                                     alt="@Model.Product.Title"
+                                     class="w-24 h-24 rounded-xl object-cover shadow-lg flex-shrink-0" />
+                            }
+                            else
+                            {
+                                <div class="w-24 h-24 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                                    <svg class="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                </div>
+                            }
+                            <div class="flex-1">
+                                <h3 class="text-xl font-bold text-gray-900 mb-2">@(Model.Product?.Title ?? "محصول")</h3>
+                                <p class="text-gray-600 mb-4 line-clamp-2">@(Model.Product?.Description?.Length > 150 ? Model.Product.Description.Substring(0, 150) + "..." : Model.Product?.Description)</p>
+                                <div class="flex flex-wrap gap-4 text-sm">
+                                    <div class="flex items-center gap-2 text-gray-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                        </svg>
+                                        <span>@Model.Product.InventoryDto.Dong.ToString("0.0") دانگ</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-gray-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                                        </svg>
+                                        <span>سرمایه‌گذاری جزئی</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Details -->
+                <div class="invoice-section">
+                    <h2 class="section-title">جزئیات پرداخت</h2>
+                    <div class="price-breakdown">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">قیمت هر دانگ</span>
+                                <span class="font-semibold text-gray-900">
+                                    @if (Model.Product?.InventoryDto != null)
+                                    {
+                                        decimal pricePerDong = 0;
+                                        decimal.TryParse(Model.Product.InventoryDto.PricePerDong, out pricePerDong);
+                                        <text>@pricePerDong.ToString("N0", new System.Globalization.CultureInfo("fa-IR")) ریال</text>
+                                    }
+                                    else
+                                    {
+                                        <text>۰ ریال</text>
+                                    }
+                                </span>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">تعداد دانگ</span>
+                                <span class="font-semibold text-gray-900">@Model.Product.InventoryDto.Dong.ToString("0.0")</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-t border-gray-200 pt-4">
+                                <span class="text-gray-600">کارمزد تراکنش</span>
+                                <span class="font-semibold text-gray-900">۰ ریال</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2">
+                                <span class="text-gray-600">مالیات</span>
+                                <span class="font-semibold text-gray-900">۰ ریال</span>
+                            </div>
+                            <div class="total-amount">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-white text-lg font-semibold">مبلغ کل</span>
+                                    <span class="text-white text-xl font-bold">
+                                        @{
+                                            decimal totalPrice = 0;
+                                            if (Model.Product?.InventoryDto != null)
+                                            {
+                                                decimal pricePerDong = 0;
+                                                decimal.TryParse(Model.Product.InventoryDto.PricePerDong, out pricePerDong);
+                                                totalPrice = pricePerDong * (decimal)Model.Product.InventoryDto.Dong;
+                                            }
+                                        }
+                                        @totalPrice.ToString("N0", new System.Globalization.CultureInfo("fa-IR")) ریال
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Timeline -->
+                <div class="invoice-section">
+                    <h2 class="section-title">روند پرداخت</h2>
+                    <div class="timeline">
+                        <div class="timeline-item completed">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">ثبت سفارش</h4>
+                                        <p class="text-gray-600 text-sm mt-1">سفارش شما با موفقیت ثبت شد</p>
+                                    </div>
+                                    <span class="text-sm text-gray-500">@DateTime.Now.AddMinutes(-10).ToString("HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">انتقال به درگاه پرداخت</h4>
+                                        <p class="text-gray-600 text-sm mt-1">اتصال به درگاه بانک سامان</p>
+                                    </div>
+                                    <span class="text-sm text-gray-500">@DateTime.Now.AddMinutes(-5).ToString("HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item completed">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">پرداخت موفق</h4>
+                                        <p class="text-gray-600 text-sm mt-1">تراکنش با موفقیت انجام شد</p>
+                                    </div>
+                                    <span class="text-sm text-gray-500">@DateTime.Now.ToString("HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item current">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-content">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900">تأیید نهایی</h4>
+                                        <p class="text-gray-600 text-sm mt-1">در انتظار تأیید نهایی سیستم</p>
+                                    </div>
+                                    <span class="text-sm text-gray-500">در حال انجام</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security & Verification -->
+                <div class="invoice-section">
+                    <h2 class="section-title">تأییدیه امنیتی</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="security-stamp">
+                            <div class="flex items-center justify-center gap-3 mb-3">
+                                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                <span class="text-lg font-bold text-green-600">تأیید شده</span>
+                            </div>
+                            <p class="text-sm text-gray-600 text-center">
+                                این تراکنش با موفقیت توسط سیستم پرداخت الکترونیک تأیید گردید
+                            </p>
+                        </div>
+                        <div class="text-center">
+                            <div class="qr-code">
+                                <!-- QR Code Placeholder -->
+                                <div class="text-center text-gray-400">
+                                    <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                                    </svg>
+                                    <div class="text-xs">QR Code</div>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-3">اسکن برای بررسی سریع</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons no-print">
+                    <button onclick="window.print()" class="btn btn-primary flex items-center justify-center gap-3 py-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        چاپ رسید
+                    </button>
+                    <a href="/Front/Projects/Details?slug=@Model.Product?.Slug" class="btn btn-outline flex items-center justify-center gap-3 py-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        بازگشت به محصول
+                    </a>
+                    <a href="/Profile/Investments" class="btn btn-success flex items-center justify-center gap-3 py-4">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        سرمایه‌گذاری‌های من
+                    </a>
+                </div>
+
+                <!-- Print Only Section -->
+                <div class="print-only mt-8 pt-6 border-t border-gray-300">
+                    <div class="text-center text-gray-600 text-sm">
+                        <p>این سند به صورت خودکار تولید شده و نیاز به امضا ندارد</p>
+                        <p class="mt-2">تاریخ چاپ: @DateTime.Now.ToPersianDate() - @DateTime.Now.ToString("HH:mm")</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Notes -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6 no-print">
+            <div class="flex items-start gap-4">
+                <svg class="w-6 h-6 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <h3 class="font-semibold text-blue-900 mb-2">نکات مهم</h3>
+                    <ul class="text-blue-800 space-y-2 text-sm">
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1.5 w-1.5 h-1.5 bg-blue-600 rounded-full flex-shrink-0"></span>
+                            <span>این رسید را برای پیگیری‌های بعدی نزد خود نگه دارید</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1.5 w-1.5 h-1.5 bg-blue-600 rounded-full flex-shrink-0"></span>
+                            <span>شماره رهگیری بالا را در صورت نیاز به پشتیبانی ارائه دهید</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="mt-1.5 w-1.5 h-1.5 bg-blue-600 rounded-full flex-shrink-0"></span>
+                            <span>سرمایه‌گذاری شما از تاریخ تأیید نهایی شروع به سوددهی می‌کند</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-scroll to top for better print experience
+            if (window.location.search.includes('print=true')) {
+                window.print();
+            }
+
+            // Add print event listener
+            window.addEventListener('afterprint', function() {
+                // Optional: Redirect or show message after printing
+                console.log('Print completed');
+            });
+        });
+
+        // Enhanced print function
+        function enhancedPrint() {
+            // Add print parameter to URL
+            const url = new URL(window.location);
+            url.searchParams.set('print', 'true');
+            window.history.replaceState({}, '', url);
+            
+            // Trigger print
+            window.print();
+            
+            // Remove parameter after print
+            url.searchParams.delete('print');
+            window.history.replaceState({}, '', url);
+        }
+
+        // Replace default print with enhanced version
+        const printButton = document.querySelector('button[onclick="window.print()"]');
+        if (printButton) {
+            printButton.onclick = enhancedPrint;
+        }
+    </script>
+}
