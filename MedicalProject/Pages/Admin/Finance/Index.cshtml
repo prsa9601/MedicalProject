@@ -695,10 +695,13 @@
                                         <span class="text-gray-600">بیشترین سرمایه گزاری:</span>
                                         <span class="font-semibold text-blue-600">
                                             @{
-                                                var maxInvestment = Model.UserPurchaseReportResult.Data
-                                                .OrderByDescending(i => i.PurchaseReport.OrderByDescending(i => i.TotalPrice))
+                                                // اگر TotalPrice از نوع decimal? (nullable) است:
+                                                var maxInvestment = Model.UserPurchaseReportResult.Data?
+                                                .OrderByDescending(d => d.PurchaseReport != null && d.PurchaseReport.Any()
+                                                ? d.PurchaseReport.Max(p => p.TotalPrice ?? "0")
+                                                : "0")
                                                 .FirstOrDefault();
-                                                string formattedProfit = decimal.Parse(maxInvestment?.PurchaseReport.FirstOrDefault().TotalPrice).ToString("N0");
+                                                string formattedProfit = decimal.Parse(maxInvestment?.PurchaseReport.FirstOrDefault().TotalPrice).ToString("N0")??"0";
                                             }
                                             @formattedProfit ریال
                                         </span>
@@ -815,7 +818,7 @@
                                                         @item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang).ToString("N0") ریال
                                                     </td>
                                                     <td>
-                                                        <span class="badge @(ProfitDepositStatus.CheckStatus(item) == false ? "badge-success" : "badge-danger")">
+                                                        <span class="badge @(ProfitDepositStatus.CheckStatus(item) == true ? "badge-success" : "badge-danger")">
                                                             @(ProfitDepositStatus.CheckStatus(item) == false ? "واریز نشده" : "واریز شده")
                                                         </span>
                                                     </td>
