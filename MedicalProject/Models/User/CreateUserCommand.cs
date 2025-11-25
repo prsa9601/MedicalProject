@@ -57,6 +57,13 @@ namespace MedicalProject.Models.User
         public Guid userId { get; set; }
         public UserDocumentStatus userStatus { get; set; }
     }
+
+    public class ChangeConfirmationBankAccountCommand 
+    {
+        public Guid UserId { get; set; }
+        public bool IsConfirmed { get; set; }
+    }
+
     public class ChangeActivityUserAccountCommand
     {
         public Guid userId { get; set; }

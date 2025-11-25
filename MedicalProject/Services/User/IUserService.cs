@@ -16,6 +16,7 @@ namespace MedicalProject.Services.User
         Task<ApiResult> SetImage(SetImageUserCommand command);
         Task<ApiResult> ConfirmedAccount(ConfirmedAccountUserCommand command);
         Task<ApiResult> ChangeActivityAccount(ChangeActivityUserAccountCommand command);
+        Task<ApiResult> ChangeConfirmationBankAccount(ChangeConfirmationBankAccountCommand command);
         Task<ApiResult> CompletionOfInformation(CompletionOfInformationCommandViewModel command);
 
 
@@ -168,6 +169,12 @@ namespace MedicalProject.Services.User
         public async Task<ApiResult> AddBankAccount(AddBankAccountCommandViewModel command)
         {
             var result = await _client.PostAsJsonAsync("User/AddBankAccount", command);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<ApiResult> ChangeConfirmationBankAccount(ChangeConfirmationBankAccountCommand command)
+        { 
+            var result = await _client.PatchAsJsonAsync("User/ChangeConfirmationBankAccount", command);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
     }

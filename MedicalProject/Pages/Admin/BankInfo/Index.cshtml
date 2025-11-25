@@ -1,0 +1,897 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@model MedicalProject.Pages.Admin.BankInfo.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت اطلاعات بانکی کاربران - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها و استایل‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html { 
+            direction: rtl; 
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif; 
+        }
+        body { 
+            background-color: #f9fafb; 
+            color: #111827; 
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif; 
+        }
+        .dir-ltr { 
+            direction: ltr; 
+            text-align: left; 
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .btn-primary { background-color: #2563eb; color: white; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+        .btn-success { background-color: #059669; color: white; }
+        .btn-success:hover { background-color: #047857; }
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+        .btn-outline { border: 1px solid #d1d5db; color: #374151; background-color: white; }
+        .btn-outline:hover { background-color: #f9fafb; }
+        .btn-warning { background-color: #d97706; color: white; }
+        .btn-warning:hover { background-color: #b45309; }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+        .card-hover {
+            transition: all 0.3s;
+        }
+        .card-hover:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-0.25rem);
+        }
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .input:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .badge-success { background-color: #d1fae5; color: #065f46; }
+        .badge-warning { background-color: #fef3c7; color: #92400e; }
+        .badge-danger { background-color: #fee2e2; color: #991b1b; }
+        .badge-secondary { background-color: #f3f4f6; color: #6b7280; }
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        .table-responsive { overflow-x: auto; }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table th, .table td {
+            padding: 0.75rem 1rem;
+            text-align: right;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        .table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+            .admin-main {
+                margin-right: 0;
+            }
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">3</span>
+                    </a>
+
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">ادمین</span>
+                        </button>
+
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>داشبورد
+                            </a>
+                            <a href="/Profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit" class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto py-4">
+                    <nav class="space-y-1">
+                        <a asp-page="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i><span>داشبورد</span>
+                        </a>
+                        <a asp-page="/Admin/Users/Index" class="sidebar-link">
+                            <i class="fas fa-users"></i><span>کاربران</span>
+                        </a>
+                        <a asp-page="/Admin/Documents/Index" class="sidebar-link">
+                            <i class="fas fa-file-alt"></i><span>مدارک کاربران</span>
+                        </a>
+                        <a asp-page="/Admin/BankInfo/Index" class="sidebar-link active">
+                            <i class="fas fa-credit-card"></i><span>اطلاعات بانکی</span>
+                        </a>
+                        <a asp-page="/Admin/Product/Index" class="sidebar-link">
+                            <i class="fas fa-project-diagram"></i><span>پروژه‌ها</span>
+                        </a>
+                        <a asp-page="/Admin/Orders/Index" class="sidebar-link">
+                            <i class="fas fa-shopping-cart"></i><span>سرمایه گزاری ها</span>
+                        </a>
+                        <a asp-page="/Admin/Settings/Index" class="sidebar-link">
+                            <i class="fas fa-cog"></i><span>تنظیمات</span>
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">مدیریت اطلاعات بانکی کاربران</h1>
+                                <p class="mt-1 text-sm text-gray-600">بررسی و تایید اطلاعات بانکی ارسال شده توسط کاربران</p>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <button onclick="exportToExcel()" class="btn btn-outline">
+                                    <i class="fas fa-download ml-2"></i>خروجی Excel
+                                </button>
+                                <button onclick="showBulkActions()" class="btn btn-primary">
+                                    <i class="fas fa-tasks ml-2"></i>عملیات گروهی
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- نمایش پیام‌ها -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-check-circle text-green-600 ml-2"></i>
+                                <span class="text-green-800">@TempData["SuccessMessage"]</span>
+                            </div>
+                        </div>
+                    }
+                    
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                            <div class="flex items-center">
+                                <i class="fas fa-times-circle text-red-600 ml-2"></i>
+                                <span class="text-red-800">@TempData["ErrorMessage"]</span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Bank Information List -->
+                    <div class="card">
+                        <div class="p-6">
+                            <form method="get">
+                                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-4 lg:space-y-0">
+                                    <h2 class="text-lg font-semibold text-gray-900">لیست اطلاعات بانکی کاربران</h2>
+
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse">
+                                        <div class="relative w-full sm:w-64">
+                                            <input type="text"
+                                                   name="PhoneNumber"
+                                                   value="@Model.FilterParams.PhoneNumber"
+                                                   placeholder="جستجو بر اساس شماره تماس..."
+                                                   class="input pl-10">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fas fa-search text-gray-400"></i>
+                                            </div>
+                                        </div>
+
+                                        <select name="IsActive" class="input w-full sm:w-auto">
+                                            <option value="">همه وضعیت‌ها</option>
+                                            <option value="true" selected="@(Model.FilterParams.IsActive == true)">فعال</option>
+                                            <option value="false" selected="@(Model.FilterParams.IsActive == false)">غیرفعال</option>
+                                        </select>
+
+                                        <button class="btn btn-primary w-full sm:w-auto">
+                                            <i class="fas fa-filter ml-2"></i>اعمال فیلتر
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Statistics Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                @{
+                                    var totalUsers = Model.Users?.EntityCount ?? 0;
+                                    var pendingCount = Model.Users?.Data?.Count(u => u?.BankAccount != null && !u.BankAccount.IsConfirmed) ?? 0;
+                                    var verifiedCount = Model.Users?.Data?.Count(u => u?.BankAccount != null && u.BankAccount.IsConfirmed) ?? 0;
+                                }
+                                
+                                <div class="card card-hover">
+                                    <div class="p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">کل کاربران</p>
+                                                <p class="text-2xl font-bold text-gray-900">@totalUsers</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-users text-blue-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card card-hover">
+                                    <div class="p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">در انتظار بررسی</p>
+                                                <p class="text-2xl font-bold text-gray-900">@pendingCount</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-clock text-yellow-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card card-hover">
+                                    <div class="p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-600">تایید شده</p>
+                                                <p class="text-2xl font-bold text-gray-900">@verifiedCount</p>
+                                            </div>
+                                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check-circle text-green-600"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Bank Info Table -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                                            <th>#</th>
+                                            <th>کاربر</th>
+                                            <th>اطلاعات بانکی</th>
+                                            <th>وضعیت</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Users?.Data == null || !Model.Users.Data.Any())
+                                        {
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4 text-gray-500">
+                                                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                                                    <div>کاربری یافت نشد</div>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            int number = 1;
+                                            foreach (var user in Model.Users.Data)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <input type="checkbox" class="user-checkbox" value="@user?.Id">
+                                                    </td>
+                                                    <td>@(number++)</td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-3 space-x-reverse">
+                                                            @if (!string.IsNullOrEmpty(user?.ImageName))
+                                                            {
+                                                                <img src="@Directories.GetUserImageAccountPath(user.ImageName)"
+                                                                     alt="@user?.FirstName @user?.LastName"
+                                                                     class="user-avatar">
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="user-avatar bg-gray-200 flex items-center justify-center">
+                                                                    <i class="fas fa-user text-gray-400"></i>
+                                                                </div>
+                                                            }
+                                                            <div>
+                                                                <div class="font-medium text-gray-900">@user?.FirstName @user?.LastName</div>
+                                                                <div class="text-sm text-gray-500">@user?.PhoneNumber</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        @if (user?.BankAccount != null)
+                                                        {
+                                                            <div class="space-y-1">
+                                                                <div class="flex items-center justify-between">
+                                                                    <span class="text-sm text-gray-600">شماره شبا:</span>
+                                                                    <span class="font-medium dir-ltr">@user.BankAccount.Shaba</span>
+                                                                </div>
+                                                                <div class="flex items-center justify-between">
+                                                                    <span class="text-sm text-gray-600">شماره کارت:</span>
+                                                                    <span class="font-medium dir-ltr">@user.BankAccount.CardNumber</span>
+                                                                </div>
+                                                                <div class="flex items-center justify-between">
+                                                                    <span class="text-sm text-gray-600">صاحب حساب:</span>
+                                                                    <span class="font-medium">@user.BankAccount.FullName</span>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-gray-400">اطلاعات بانکی ثبت نشده</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (user?.BankAccount != null)
+                                                        {
+                                                            if (user.BankAccount.IsConfirmed)
+                                                            {
+                                                                <span class="badge badge-success">تایید شده</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge badge-warning">تایید نشده</span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge badge-secondary">ثبت نشده</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                                            @if (user?.BankAccount != null)
+                                                            {
+                                                                <button onclick="viewBankDetails('@user?.Id', '@user?.FirstName', '@user?.LastName', '@user?.PhoneNumber', '@user?.IsActive', '@user?.BankAccount?.FullName', '@user?.BankAccount?.Shaba', '@user?.BankAccount?.CardNumber', '@user?.BankAccount?.IsConfirmed')" 
+                                                                        class="btn btn-outline btn-sm" title="مشاهده جزئیات">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                                
+                                                                @if (!user.BankAccount.IsConfirmed)
+                                                                {
+                                                                    <button onclick="verifyBankInfo('@user?.Id')" 
+                                                                            class="btn btn-success btn-sm" title="تایید اطلاعات">
+                                                                        <i class="fas fa-check"></i>
+                                                                    </button>
+                                                                }
+                                                                
+                                                                @if (user.BankAccount.IsConfirmed)
+                                                                {
+                                                                    <button onclick="rejectBankInfo('@user?.Id')" 
+                                                                            class="btn btn-danger btn-sm" title="رد اطلاعات">
+                                                                        <i class="fas fa-times"></i>
+                                                                    </button>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-gray-400 text-sm">بدون اطلاعات بانکی</span>
+                                                            }
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            @Html.AntiForgeryToken()
+                            <!-- Pagination -->
+                            @if (Model.Users != null)
+                            {
+                                <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
+                                    <div class="text-sm text-gray-700">
+                                        نمایش
+                                        <span>@((Model.Users.CurrentPage - 1) * Model.Users.Take + 1) - @Math.Min(Model.Users.CurrentPage * Model.Users.Take, Model.Users.EntityCount)</span>
+                                        از
+                                        <span>@Model.Users.EntityCount</span>
+                                        کاربر
+                                    </div>
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <!-- دکمه صفحه قبلی -->
+                                        <button onclick="loadPage(@(Model.Users.CurrentPage - 1))"
+                                                class="btn btn-outline btn-sm @(Model.Users.CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Users.CurrentPage <= 1 ? "disabled" : "")>
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+
+                                        <!-- صفحات عددی -->
+                                        @for (int i = Model.Users.StartPage; i <= Model.Users.EndPage; i++)
+                                        {
+                                            if (i == Model.Users.CurrentPage)
+                                            {
+                                                <button class="btn btn-primary btn-sm">@i</button>
+                                            }
+                                            else
+                                            {
+                                                <button onclick="loadPage(@i)" class="btn btn-outline btn-sm">@i</button>
+                                            }
+                                        }
+
+                                        <!-- دکمه صفحه بعدی -->
+                                        <button onclick="loadPage(@(Model.Users.CurrentPage + 1))"
+                                                class="btn btn-outline btn-sm @(Model.Users.CurrentPage >= Model.Users.PageCount ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Users.CurrentPage >= Model.Users.PageCount ? "disabled" : "")>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Details Modal -->
+    <div id="bankDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-4 mx-auto p-4 border w-full max-w-4xl shadow-2xl rounded-xl bg-white">
+            <div class="flex justify-between items-center pb-4 border-b">
+                <h3 class="text-2xl font-bold text-gray-900">جزئیات اطلاعات بانکی</h3>
+                <button onclick="closeBankDetailsModal()" class="text-gray-500 hover:text-gray-700 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div class="mt-4 space-y-6">
+                <!-- User Information -->
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                        <i class="fas fa-user ml-2"></i>
+                        اطلاعات کاربر
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">نام و نام خانوادگی:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="detailUserName">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">شماره تماس:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="detailUserPhone">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-blue-700">وضعیت کاربر:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="detailUserStatus">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Information -->
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-purple-800 mb-3 flex items-center">
+                        <i class="fas fa-credit-card ml-2"></i>
+                        اطلاعات بانکی
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-purple-700">نام صاحب حساب:</label>
+                            <p class="text-gray-800 font-medium mt-1" id="detailAccountOwner">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-purple-700">شماره شبا:</label>
+                            <p class="text-gray-800 font-medium mt-1 dir-ltr text-left font-mono" id="detailShabaNumber">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-purple-700">شماره کارت:</label>
+                            <p class="text-gray-800 font-medium mt-1 dir-ltr text-left font-mono" id="detailCardNumber">-</p>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-purple-700">وضعیت تایید:</label>
+                            <span id="detailVerificationStatus" class="badge badge-secondary mt-1">نامشخص</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-gray-200 flex justify-end space-x-3 space-x-reverse">
+                <button onclick="closeBankDetailsModal()" class="btn btn-outline">
+                    <i class="fas fa-times ml-2"></i>
+                    بستن
+                </button>
+                <button onclick="verifyCurrentBankInfo()" class="btn btn-success" id="verifyBtn">
+                    <i class="fas fa-check ml-2"></i>
+                    تایید اطلاعات
+                </button>
+                <button onclick="rejectCurrentBankInfo()" class="btn btn-danger" id="rejectBtn">
+                    <i class="fas fa-times ml-2"></i>
+                    رد اطلاعات
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // متغیرهای سراسری
+        let currentUserId = null;
+
+        // توابع مدیریت پنل
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                document.body.classList.toggle('sidebar-mobile-open');
+            } else {
+                document.body.classList.toggle('sidebar-collapsed');
+            }
+        });
+
+        // توابع مدیریت اطلاعات بانکی
+        function viewBankDetails(userId, firstName, lastName, phoneNumber, isActive, fullName, shaba, cardNumber, isConfirmed) {
+            currentUserId = userId;
+
+            // پر کردن اطلاعات در مودال
+            document.getElementById('detailUserName').textContent = firstName + ' ' + lastName;
+            document.getElementById('detailUserPhone').textContent = phoneNumber;
+            document.getElementById('detailUserStatus').textContent = isActive === 'True' ? 'فعال' : 'غیرفعال';
+            
+            document.getElementById('detailAccountOwner').textContent = fullName || '-';
+                   document.getElementById('detailShabaNumber').textContent = formatShaba(shaba) || '-';
+            document.getElementById('detailCardNumber').textContent = cardNumber || '-';
+
+            // وضعیت تایید
+            const statusElement = document.getElementById('detailVerificationStatus');
+            if (isConfirmed === 'True') {
+                statusElement.className = 'badge badge-success mt-1';
+                statusElement.textContent = 'تایید شده';
+                document.getElementById('verifyBtn').style.display = 'none';
+                document.getElementById('rejectBtn').style.display = 'inline-flex';
+            } else {
+                statusElement.className = 'badge badge-warning mt-1';
+                statusElement.textContent = 'در انتظار بررسی';
+                document.getElementById('verifyBtn').style.display = 'inline-flex';
+                document.getElementById('rejectBtn').style.display = 'inline-flex';
+            }
+
+            // نمایش مودال
+            document.getElementById('bankDetailsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBankDetailsModal() {
+            document.getElementById('bankDetailsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentUserId = null;
+        }
+
+        async function verifyBankInfo(userId) {
+            const result = await Swal.fire({
+                title: 'تایید اطلاعات بانکی',
+                text: 'آیا از تایید این اطلاعات بانکی اطمینان دارید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله، تایید شود',
+                cancelButtonText: 'لغو'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('userId', userId);
+
+                    const response = await fetch('?handler=VerifyBankInfo', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'اطلاعات بانکی با موفقیت تایید شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه'
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در تایید اطلاعات بانکی');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در تایید اطلاعات بانکی',
+                        icon: 'error',
+                        confirmButtonText: 'باشه'
+                    });
+                }
+            }
+        }
+       
+        
+        function formatShaba(shaba) {
+            // حذف فاصله‌های اضافی
+            shaba = shaba.replace(/\s+/g, '');
+
+            // تقسیم هر 4 کاراکتر و چسباندن با فاصله
+            return shaba.match(/.{1,4}/g).join(' ');
+        }
+
+
+
+        async function rejectBankInfo(userId) {
+            const { value: reason } = await Swal.fire({
+                title: 'رد اطلاعات بانکی',
+                input: 'textarea',
+                inputLabel: 'دلیل رد اطلاعات بانکی',
+                inputPlaceholder: 'لطفاً دلیل رد این اطلاعات بانکی را وارد کنید...',
+                showCancelButton: true,
+                confirmButtonText: 'رد اطلاعات',
+                cancelButtonText: 'لغو'
+            });
+
+            if (reason) {
+                try {
+                    const formData = new FormData();
+                    formData.append('userId', userId);
+                    formData.append('reason', reason);
+
+                    const response = await fetch('?handler=RejectBankInfo', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'اطلاعات بانکی با موفقیت رد شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه'
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در رد اطلاعات بانکی');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در رد اطلاعات بانکی',
+                        icon: 'error',
+                        confirmButtonText: 'باشه'
+                    });
+                }
+            }
+        }
+
+        // توابع مربوط به مودال جزئیات
+        function verifyCurrentBankInfo() {
+            if (currentUserId) {
+                verifyBankInfo(currentUserId);
+            }
+        }
+
+        function rejectCurrentBankInfo() {
+            if (currentUserId) {
+                rejectBankInfo(currentUserId);
+            }
+        }
+
+        // انتخاب همه/عدم انتخاب همه
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(cb => {
+                if (cb) {
+                    cb.checked = checkbox.checked;
+                }
+            });
+        }
+
+        // نمایش مودال عملیات گروهی
+        function showBulkActions() {
+            const selectedCount = document.querySelectorAll('.user-checkbox:checked').length;
+            if (selectedCount === 0) {
+                Swal.fire({
+                    title: 'هشدار!',
+                    text: 'لطفاً حداقل یک کاربر را انتخاب کنید.',
+                    icon: 'warning',
+                    confirmButtonText: 'باشه'
+                });
+                return;
+            }
+            
+            Swal.fire({
+                title: 'غیرفعال',
+                text: 'عملیات گروهی در حال حاضر غیرفعال است.',
+                icon: 'info',
+                confirmButtonText: 'باشه'
+            });
+        }
+
+        function getSelectedUserIds() {
+            const checkboxes = document.querySelectorAll('.user-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value).filter(id => id);
+        }
+
+        function exportToExcel() {
+            Swal.fire({
+                title: 'در حال آماده‌سازی',
+                text: 'خروجی Excel در حال آماده‌سازی است...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        }
+
+        function loadPage(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        }
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+
+        // بستن مدال با کلید ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeBankDetailsModal();
+            }
+        });
+    </script>
+
+    @Html.AntiForgeryToken()
+</body>
+</html>

@@ -1,6 +1,7 @@
 ﻿@page
 @using MedicalProject.Infrastructure
 @using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Infrastructure.Utils
 @using MedicalProject.Models.User.Enum
 @model MedicalProject.Pages.Admin.Users.IndexModel
 @{
@@ -724,7 +725,7 @@
                                                             @(item.IsActive ? "بله" : "خیر")
                                                         </span>
                                                     </td>
-                                                    <td>@item.CreationDate</td>
+                                                    <td>@item.CreationDate.ToPersianDate()</td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
                                                             <a asp-page="Edit" asp-route-userId="@item.Id" class="btn btn-outline btn-sm" title="ویرایش">

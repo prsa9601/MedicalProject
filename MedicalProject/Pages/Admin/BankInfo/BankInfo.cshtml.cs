@@ -3,7 +3,7 @@ using MedicalProject.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace MedicalProject.Pages.Admin.Finance
+namespace MedicalProject.Pages.Admin.BankInfo
 {
     public class BankInfoModel : PageModel
     {

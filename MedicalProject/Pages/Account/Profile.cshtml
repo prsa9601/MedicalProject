@@ -959,12 +959,20 @@
                                         سرمایه‌گذاری‌های من
                                     </button>
                                     @{
-                                        if (Model.user.BankAccount == null || Model.user.BankAccount.IsConfirmed == false)
+                                        if (Model.user.BankAccount == null)
                                         {
                                             <button onclick="location.href='/Account/BankInformation'"
                                                     class="btn btn-outline w-full text-right">
                                                 <i class="fas fa-eye ml-2"></i>
                                                 ثبت اطلاعات حساب
+                                            </button>
+                                        }
+                                         if(Model.user.BankAccount.IsConfirmed == false)
+                                                                        {
+                                            <button onclick="location.href='/Account/BankInformation'"
+                                                    class="btn btn-outline w-full text-right">
+                                                <i class="fas fa-eye ml-2"></i>
+                                                ویرایش اطلاعات حساب
                                             </button>
                                         }
                                         else
