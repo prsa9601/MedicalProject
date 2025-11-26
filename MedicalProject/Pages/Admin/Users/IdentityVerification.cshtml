@@ -576,49 +576,8 @@
                 </div>
 
                 <!-- Sidebar Menu -->
-                <div class="flex-1 overflow-y-auto py-4">
-                    <nav class="space-y-1">
-                        <a asp-page="/Admin/Dashboard" class="sidebar-link">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>داشبورد</span>
-                        </a>
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
 
-                        <a asp-page="/Admin/Users/Index" class="sidebar-link">
-                            <i class="fas fa-users"></i>
-                            <span>کاربران</span>
-                        </a>
-
-                        <a asp-page="/Admin/Documents/Index" class="sidebar-link">
-                            <i class="fas fa-file-alt"></i>
-                            <span>مدارک کاربران</span>
-                        </a>
-
-                        <a asp-page="/Admin/Product/Index" class="sidebar-link">
-                            <i class="fas fa-project-diagram"></i>
-                            <span>پروژه‌ها</span>
-                        </a>
-
-                        <a asp-page="/Admin/Orders/Index" class="sidebar-link">
-                            <i class="fas fa-shopping-cart"></i>
-                            <span>سرمایه گزاری ها</span>
-                        </a>
-
-                        <a asp-page="/Admin/Finance/Index" class="sidebar-link">
-                            <i class="fas fa-chart-line"></i>
-                            <span>مدیریت مالی</span>
-                        </a>
-
-                        <a asp-page="/Admin/Users/IdentityVerification" class="sidebar-link active">
-                            <i class="fas fa-user-shield"></i>
-                            <span>تایید هویت</span>
-                        </a>
-
-                        <a asp-page="/Admin/Settings/Index" class="sidebar-link">
-                            <i class="fas fa-cog"></i>
-                            <span>تنظیمات</span>
-                        </a>
-                    </nav>
-                </div>
             </div>
         </div>
 

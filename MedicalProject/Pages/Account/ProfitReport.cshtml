@@ -1,0 +1,298 @@
+﻿@page
+@model MedicalProject.Pages.Account.ProfitReportModel
+@{
+    ViewData["Title"] = "گزارش سودهای واریز شده";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- هدر صفحه -->
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">گزارش سودهای واریز شده</h1>
+        <p class="text-gray-600 mt-2">مشاهده تاریخچه سودهای دریافت شده و وضعیت پرداخت‌ها</p>
+    </div>
+
+    <!-- کارت‌های آماری -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-wallet text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">سود دریافت شده</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            @Model.Result.TotalProfitReceived.ToString("N0") ریال
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-clock text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">سود در انتظار</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            @Model.Result.TotalPendingProfit.ToString("N0") ریال
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">تعداد سرمایه‌گذاری</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            @Model.Result.InvestmentCount
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- فیلترها -->
+    <div class="card mb-8">
+        <div class="p-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="form-label">وضعیت پرداخت</label>
+                    <select asp-for="FilterParams.Status" class="input">
+                        <option value="">همه وضعیت‌ها</option>
+                        <option value="2">پرداخت شده</option>
+                        <option value="1">پرداخت نشده</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">از تاریخ</label>
+                    <input type="date" asp-for="FilterParams.StartDate" class="input" />
+                </div>
+                <div>
+                    <label class="form-label">تا تاریخ</label>
+                    <input type="date" asp-for="FilterParams.EndDate" class="input" />
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" class="btn btn-primary w-full">
+                        <i class="fas fa-filter ml-2"></i>
+                        اعمال فیلتر
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- تاریخچه پرداخت سود -->
+    <div class="card mb-8">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">تاریخچه پرداخت سود</h2>
+        </div>
+        <div class="p-6">
+            @if (!Model.Result.ProfitPurchases.Any())
+            {
+                <div class="text-center py-8">
+                    <i class="fas fa-receipt text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500">هیچ پرداخت سودی یافت نشد</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>محصول</th>
+                                <th>دوره</th>
+                                <th>تاریخ سررسید</th>
+                                <th>مبلغ سود</th>
+                                <th>روش پرداخت</th>
+                                <th>وضعیت</th>
+                                <th>تاریخ پرداخت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var payment in Model.Result.ProfitPurchases.OrderByDescending(p => p.ForWhatTime))
+                            {
+                                <tr>
+                                    <td>@payment.ForWhatPeriod</td>
+                                    <td>
+                                        <div class="flex items-center space-x-3 space-x-reverse">
+                                            <img src="@Directories.GetProductImage(payment.ProductImage)" 
+                                                 alt="@payment.ProductName"
+                                                 class="w-10 h-10 rounded-lg object-cover"
+                                                 onerror="this.src='https://ui-avatars.com/api/?name=@payment.ProductName&background=3B82F6&color=fff&size=128'">
+                                            <span class="font-medium">@payment.ProductName</span>
+                                        </div>
+                                    </td>
+                                    <td>دوره @payment.ForWhatPeriod</td>
+                                    <td>@payment.ForWhatTime.ToPersianDate()</td>
+                                    <td class="font-semibold text-green-600">
+                                        @payment.AmountPaid.ToString("N0") ریال
+                                    </td>
+                                    <td>@payment.PaymentMethod</td>
+                                    <td>
+                                        @if (payment.Status == ProfitStatus.Success)
+                                        {
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check ml-1"></i>
+                                                پرداخت شده
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-times ml-1"></i>
+                                                پرداخت نشده
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>@payment.CreationDate.ToPersianDate()</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- سرمایه‌گذاری‌های فعال -->
+    <div class="card">
+        <div class="p-6 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">سرمایه‌گذاری‌های فعال</h2>
+        </div>
+        <div class="p-6">
+            @if (!Model.Result.Investments.Any())
+            {
+                <div class="text-center py-8">
+                    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500">هیچ سرمایه‌گذاری فعالی وجود ندارد</p>
+                </div>
+            }
+            else
+            {
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach (var investment in Model.Result.Investments)
+                    {
+                        <div class="card card-hover">
+                            <div class="p-4">
+                                <div class="flex items-center space-x-3 space-x-reverse mb-4">
+                                    <img src="@Directories.GetProductImage(investment.ProductImage)" 
+                                         alt="@investment.ProductName"
+                                         class="w-12 h-12 rounded-lg object-cover"
+                                         onerror="this.src='https://ui-avatars.com/api/?name=@investment.ProductName&background=3B82F6&color=fff&size=128'">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">@investment.ProductName</h3>
+                                        <p class="text-sm text-gray-500">@investment.InvestmentDate.ToPersianDate()</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">مبلغ سرمایه‌گذاری:</span>
+                                        <span class="font-medium">@investment.InvestedAmount.ToString("N0") ریال</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">تعداد دنگ:</span>
+                                        <span class="font-medium">@investment.PurchaseDang.ToString("N0")</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">سود تولید شده:</span>
+                                        <span class="font-medium text-green-600">@investment.TotalProfitGenerated.ToString("N0") ریال</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4 pt-4 border-t border-gray-200">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-500">وضعیت</span>
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-circle ml-1 text-xs"></i>
+                                            فعال
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- دوره‌های پرداخت نشده -->
+    @if (Model.Result.UnpaidProfits.Any())
+    {
+        <div class="card mt-8">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">دوره‌های پرداخت نشده</h2>
+            </div>
+            <div class="p-6">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>محصول</th>
+                                <th>دوره</th>
+                                <th>تاریخ سررسید</th>
+                                <th>مبلغ预计</th>
+                                <th>وضعیت</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var unpaid in Model.Result.UnpaidProfits)
+                            {
+                                <tr>
+                                    <td>@unpaid.ProductName</td>
+                                    <td>دوره @unpaid.PeriodNumber</td>
+                                    <td>@unpaid.DueDate.ToPersianDate()</td>
+                                    <td class="font-semibold text-orange-600">
+                                        @unpaid.ExpectedAmount.ToString("N0") ریال
+                                    </td>
+                                    <td>
+                                        @if (unpaid.IsOverdue)
+                                        {
+                                            <span class="badge badge-danger">
+                                                <i class="fas fa-exclamation-triangle ml-1"></i>
+                                                معوقه
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">
+                                                <i class="fas fa-clock ml-1"></i>
+                                                در انتظار
+                                            </span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('صفحه گزارش سود کاربر بارگذاری شد');
+            
+            // مدیریت تاریخ‌ها
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('input[type="date"]').max = today;
+        });
+    </script>
+}

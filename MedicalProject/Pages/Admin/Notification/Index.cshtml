@@ -1,0 +1,637 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Notification.IndexModel
+@{
+    ViewData["Title"] = "مدیریت نوتیفیکیشن";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- هدر صفحه -->
+    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
+        <div>
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">مدیریت نوتیفیکیشن</h1>
+            <p class="text-gray-600 mt-2">ارسال پیام به کاربران خاص یا ارسال همگانی</p>
+        </div>
+        <button onclick="openCreateModal()" class="btn btn-primary mt-4 lg:mt-0">
+            <i class="fas fa-plus ml-2"></i>
+            ارسال نوتیفیکیشن جدید
+        </button>
+    </div>
+
+    <!-- آمار سریع -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-paper-plane text-blue-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">کل نوتیفیکیشن‌ها</p>
+                        <p class="text-2xl font-bold text-gray-900">@Model.TotalNotifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-check text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">ارسال شده</p>
+                        <p class="text-2xl font-bold text-gray-900">@Model.SentNotifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">در انتظار</p>
+                        <p class="text-2xl font-bold text-gray-900">@Model.PendingNotifications</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="p-6">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-users text-purple-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">کاربران فعال</p>
+                        <p class="text-2xl font-bold text-gray-900">@Model.ActiveUsers</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- فیلترها -->
+    <div class="card mb-8">
+        <div class="p-6">
+            <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div>
+                    <label class="form-label">نوع نوتیفیکیشن</label>
+                    <select asp-for="FilterParams.Type" class="input">
+                        <option value="">همه انواع</option>
+                        <option value="1">اطلاعات</option>
+                        <option value="2">موفقیت</option>
+                        <option value="3">هشدار</option>
+                        <option value="4">خطا</option>
+                        <option value="5">تبلیغاتی</option>
+                        <option value="6">سیستمی</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">وضعیت ارسال</label>
+                    <select asp-for="FilterParams.IsSent" class="input">
+                        <option value="">همه وضعیت‌ها</option>
+                        <option value="true">ارسال شده</option>
+                        <option value="false">در انتظار</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">از تاریخ</label>
+                    <input type="date" asp-for="FilterParams.StartDate" class="input" />
+                </div>
+                <div>
+                    <label class="form-label">تا تاریخ</label>
+                    <input type="date" asp-for="FilterParams.EndDate" class="input" />
+                </div>
+                <div class="flex items-end space-x-3 space-x-reverse">
+                    <button type="submit" class="btn btn-primary flex-1">
+                        <i class="fas fa-filter ml-2"></i>
+                        اعمال فیلتر
+                    </button>
+                    <a href="?pageid=1&take=10" class="btn btn-outline">
+                        <i class="fas fa-refresh ml-2"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- جدول نوتیفیکیشن‌ها -->
+    <div class="card">
+        <div class="p-6">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>عنوان</th>
+                            <th>نوع</th>
+                            <th>اولویت</th>
+                            <th>گیرندگان</th>
+                            <th>وضعیت</th>
+                            <th>تاریخ ایجاد</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.FilterResult.Data.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-bell text-4xl mb-2"></i>
+                                    <p>هیچ نوتیفیکیشنی یافت نشد</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var notification in Model.FilterResult.Data)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="max-w-xs">
+                                            <div class="font-medium text-gray-900 truncate">@notification.Title</div>
+                                            <div class="text-sm text-gray-500 truncate">@notification.Message</div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetNotificationTypeBadge(notification.Type)">
+                                            @GetNotificationTypeText(notification.Type)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetPriorityBadge(notification.Priority)">
+                                            @GetPriorityText(notification.Priority)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (notification.IsBroadcast)
+                                        {
+                                            <span class="badge badge-primary">
+                                                <i class="fas fa-globe ml-1"></i>
+                                                همگانی
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">
+                                                <i class="fas fa-user ml-1"></i>
+                                                @notification.TargetUsers.Count نفر
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (notification.IsSent)
+                                        {
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-check ml-1"></i>
+                                                ارسال شده
+                                            </span>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                @notification.ReadCount/@notification.SentCount مطالعه
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-warning">
+                                                <i class="fas fa-clock ml-1"></i>
+                                                در انتظار
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>@notification.CreationDate.ToPersianDate()</td>
+                                    <td>
+                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                            <button onclick="viewNotification('@notification.Id')" 
+                                                    class="btn btn-outline btn-sm" title="مشاهده">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            @if (!notification.IsSent)
+                                            {
+                                                <button onclick="editNotification('@notification.Id')" 
+                                                        class="btn btn-outline btn-sm" title="ویرایش">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button onclick="sendNotification('@notification.Id')" 
+                                                        class="btn btn-success btn-sm" title="ارسال">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                                <button onclick="deleteNotification('@notification.Id')" 
+                                                        class="btn btn-danger btn-sm" title="حذف">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- صفحه‌بندی -->
+            @if (Model.FilterResult.PageCount > 1)
+            {
+                <div class="flex justify-center mt-6">
+                    <nav class="flex items-center space-x-2 space-x-reverse">
+                        @for (int i = 1; i <= Model.FilterResult.PageCount; i++)
+                        {
+                            <a href="?pageid=@i&take=@Model.FilterResult.FilterParams.Take@GetFilterQueryString()" 
+                               class="px-3 py-1 rounded-lg @(i == Model.FilterResult.FilterParams.PageId ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
+                                @i
+                            </a>
+                        }
+                    </nav>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- مدال ایجاد/ویرایش نوتیفیکیشن -->
+<div id="notificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+    <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center pb-3 border-b">
+            <h3 id="modalTitle" class="text-xl font-semibold text-gray-900">ارسال نوتیفیکیشن جدید</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="notificationForm" class="mt-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">عنوان <span class="text-red-500">*</span></label>
+                        <input type="text" id="title" class="input" placeholder="عنوان پیام" required maxlength="200">
+                    </div>
+
+                    <div>
+                        <label class="form-label">نوع پیام</label>
+                        <select id="type" class="input">
+                            <option value="1">اطلاعات</option>
+                            <option value="2">موفقیت</option>
+                            <option value="3">هشدار</option>
+                            <option value="4">خطا</option>
+                            <option value="5">تبلیغاتی</option>
+                            <option value="6">سیستمی</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">اولویت</label>
+                        <select id="priority" class="input">
+                            <option value="1">کم</option>
+                            <option value="2" selected>متوسط</option>
+                            <option value="3">بالا</option>
+                            <option value="4">فوری</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="form-label">نوع ارسال</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="isBroadcast" value="true" checked 
+                                       onchange="toggleUserSelection()" class="ml-2">
+                                <span>ارسال همگانی (به همه کاربران)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="isBroadcast" value="false" 
+                                       onchange="toggleUserSelection()" class="ml-2">
+                                <span>ارسال به کاربران خاص</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="form-label">متن پیام <span class="text-red-500">*</span></label>
+                        <textarea id="message" class="input" rows="6" placeholder="متن کامل پیام..." required maxlength="1000"></textarea>
+                        <div class="text-xs text-gray-500 mt-1">
+                            <span id="charCount">0</span> / 1000 کاراکتر
+                        </div>
+                    </div>
+
+                    <div id="userSelectionSection" class="hidden">
+                        <label class="form-label">انتخاب کاربران</label>
+                        <div class="space-y-2">
+                            <div class="flex space-x-2 space-x-reverse">
+                                <input type="text" id="userSearch" class="input flex-1" placeholder="جستجو بر اساس نام، شماره تلفن یا ایمیل...">
+                                <button type="button" onclick="searchUsers()" class="btn btn-outline">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div id="userSearchResults" class="max-h-40 overflow-y-auto border rounded-lg hidden"></div>
+                            <div id="selectedUsers" class="space-y-2 max-h-32 overflow-y-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 space-x-reverse mt-6 pt-4 border-t">
+                <button type="button" onclick="closeModal()" class="btn btn-outline">
+                    لغو
+                </button>
+                <button type="submit" id="submitButton" class="btn btn-primary">
+                    <i class="fas fa-paper-plane ml-2"></i>
+                    ارسال نوتیفیکیشن
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let currentNotificationId = null;
+        let selectedUsers = new Map();
+
+        // توابع مدال
+        function openCreateModal() {
+            currentNotificationId = null;
+            document.getElementById('modalTitle').textContent = 'ارسال نوتیفیکیشن جدید';
+            document.getElementById('notificationForm').reset();
+            selectedUsers.clear();
+            updateSelectedUsersDisplay();
+            document.getElementById('userSelectionSection').classList.add('hidden');
+            document.getElementById('notificationModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('notificationModal').classList.add('hidden');
+            selectedUsers.clear();
+        }
+
+        function toggleUserSelection() {
+            const isBroadcast = document.querySelector('input[name="isBroadcast"]:checked').value === 'true';
+            const userSection = document.getElementById('userSelectionSection');
+            
+            if (isBroadcast) {
+                userSection.classList.add('hidden');
+                selectedUsers.clear();
+                updateSelectedUsersDisplay();
+            } else {
+                userSection.classList.remove('hidden');
+                searchUsers(); // بارگذاری اولیه کاربران
+            }
+        }
+
+        // مدیریت کاربران
+        async function searchUsers() {
+            const searchTerm = document.getElementById('userSearch').value;
+            const resultsContainer = document.getElementById('userSearchResults');
+            
+            try {
+                const response = await fetch(`/Admin/Notification/SearchUsers?search=${encodeURIComponent(searchTerm)}`);
+                const users = await response.json();
+                
+                resultsContainer.innerHTML = '';
+                users.forEach(user => {
+                    if (!selectedUsers.has(user.id)) {
+                        const userElement = document.createElement('div');
+                        userElement.className = 'flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer border-b';
+                        userElement.innerHTML = `
+                            <div>
+                                <div class="font-medium">${user.fullName}</div>
+                                <div class="text-sm text-gray-500">${user.phoneNumber} ${user.email ? '• ' + user.email : ''}</div>
+                            </div>
+                            <button type="button" onclick="selectUser('${user.id}', '${user.fullName}', '${user.phoneNumber}')" 
+                                    class="btn btn-outline btn-sm">
+                                انتخاب
+                            </button>
+                        `;
+                        resultsContainer.appendChild(userElement);
+                    }
+                });
+                
+                resultsContainer.classList.remove('hidden');
+            } catch (error) {
+                console.error('Error searching users:', error);
+            }
+        }
+
+        function selectUser(userId, fullName, phoneNumber) {
+            if (!selectedUsers.has(userId)) {
+                selectedUsers.set(userId, { fullName, phoneNumber });
+                updateSelectedUsersDisplay();
+                document.getElementById('userSearchResults').classList.add('hidden');
+                document.getElementById('userSearch').value = '';
+            }
+        }
+
+        function removeUser(userId) {
+            selectedUsers.delete(userId);
+            updateSelectedUsersDisplay();
+        }
+
+        function updateSelectedUsersDisplay() {
+            const container = document.getElementById('selectedUsers');
+            container.innerHTML = '';
+            
+            selectedUsers.forEach((user, userId) => {
+                const userElement = document.createElement('div');
+                userElement.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg';
+                userElement.innerHTML = `
+                    <div>
+                        <div class="font-medium">${user.fullName}</div>
+                        <div class="text-sm text-gray-500">${user.phoneNumber}</div>
+                    </div>
+                    <button type="button" onclick="removeUser('${userId}')" 
+                            class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                container.appendChild(userElement);
+            });
+        }
+
+        // ارسال فرم
+        document.getElementById('notificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('title').value,
+                message: document.getElementById('message').value,
+                type: parseInt(document.getElementById('type').value),
+                priority: parseInt(document.getElementById('priority').value),
+                isBroadcast: document.querySelector('input[name="isBroadcast"]:checked').value === 'true',
+                targetUserIds: Array.from(selectedUsers.keys())
+            };
+
+            try {
+                const submitButton = document.getElementById('submitButton');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> در حال ارسال...';
+
+                const response = await fetch('/Admin/Notification/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    Alert.success('نوتیفیکیشن با موفقیت ایجاد شد');
+                    closeModal();
+                    location.reload();
+                } else {
+                    const error = await response.json();
+                    Alert.error(error.message || 'خطا در ایجاد نوتیفیکیشن');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Alert.error('خطا در ارتباط با سرور');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane ml-2"></i> ارسال نوتیفیکیشن';
+            }
+        });
+
+        // مدیریت کاراکترهای پیام
+        document.getElementById('message').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        // توابع عملیات
+        async function sendNotification(notificationId) {
+            const result = await Alert.confirm('ارسال نوتیفیکیشن', 'آیا از ارسال این نوتیفیکیشن اطمینان دارید؟');
+            if (result.isConfirmed) {
+                try {
+                    Alert.loading('در حال ارسال...');
+                    
+                    const response = await fetch(`/Admin/Notification/Send/${notificationId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    Alert.close();
+                    
+                    if (response.ok) {
+                        Alert.success('نوتیفیکیشن با موفقیت ارسال شد');
+                        location.reload();
+                    } else {
+                        Alert.error('خطا در ارسال نوتیفیکیشن');
+                    }
+                } catch (error) {
+                    Alert.close();
+                    Alert.error('خطا در ارتباط با سرور');
+                }
+            }
+        }
+
+        async function deleteNotification(notificationId) {
+            const result = await Alert.confirmDelete('این نوتیفیکیشن');
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/Admin/Notification/Delete/${notificationId}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        Alert.success('نوتیفیکیشن با موفقیت حذف شد');
+                        location.reload();
+                    } else {
+                        Alert.error('خطا در حذف نوتیفیکیشن');
+                    }
+                } catch (error) {
+                    Alert.error('خطا در ارتباط با سرور');
+                }
+            }
+        }
+
+        function viewNotification(notificationId) {
+            window.open(`/Admin/Notification/Detail/${notificationId}`, '_blank');
+        }
+
+        // بستن مدال با کلیک خارج
+        document.getElementById('notificationModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+}
+
+@functions {
+    private string GetNotificationTypeBadge(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Info => "badge badge-info",
+            NotificationType.Success => "badge badge-success",
+            NotificationType.Warning => "badge badge-warning",
+            NotificationType.Error => "badge badge-danger",
+            NotificationType.Promotion => "badge badge-primary",
+            NotificationType.System => "badge badge-secondary",
+            _ => "badge badge-secondary"
+        };
+    }
+
+    private string GetNotificationTypeText(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Info => "اطلاعات",
+            NotificationType.Success => "موفقیت",
+            NotificationType.Warning => "هشدار",
+            NotificationType.Error => "خطا",
+            NotificationType.Promotion => "تبلیغاتی",
+            NotificationType.System => "سیستمی",
+            _ => "نامشخص"
+        };
+    }
+
+    private string GetPriorityBadge(NotificationPriority priority)
+    {
+        return priority switch
+        {
+            NotificationPriority.Low => "badge badge-secondary",
+            NotificationPriority.Medium => "badge badge-info",
+            NotificationPriority.High => "badge badge-warning",
+            NotificationPriority.Urgent => "badge badge-danger",
+            _ => "badge badge-secondary"
+        };
+    }
+
+    private string GetPriorityText(NotificationPriority priority)
+    {
+        return priority switch
+        {
+            NotificationPriority.Low => "کم",
+            NotificationPriority.Medium => "متوسط",
+            NotificationPriority.High => "بالا",
+            NotificationPriority.Urgent => "فوری",
+            _ => "نامشخص"
+        };
+    }
+
+    private string GetFilterQueryString()
+    {
+        var query = "";
+        if (Model.FilterParams.Type.HasValue)
+            query += $"&type={Model.FilterParams.Type.Value}";
+        if (Model.FilterParams.IsSent.HasValue)
+            query += $"&issent={Model.FilterParams.IsSent.Value}";
+        if (Model.FilterParams.StartDate.HasValue)
+            query += $"&startdate={Model.FilterParams.StartDate.Value:yyyy-MM-dd}";
+        if (Model.FilterParams.EndDate.HasValue)
+            query += $"&enddate={Model.FilterParams.EndDate.Value:yyyy-MM-dd}";
+        if (!string.IsNullOrEmpty(Model.FilterParams.Search))
+            query += $"&search={Model.FilterParams.Search}";
+        return query;
+    }
+}
