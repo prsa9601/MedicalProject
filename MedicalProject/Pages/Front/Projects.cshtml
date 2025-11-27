@@ -512,10 +512,10 @@
 
                                     <div class="progress-bar">
                                         <div class="progress-fill" style="width:
-                                            @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)))%"></div>
+                                        @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%"></div>
                                     </div>
                                     <div class="progress-info">
-                                        <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)))%</span>
+                                        <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%</span>
                                         <span class="progress-text">پیشرفت تأمین مالی</span>
                                     </div>
 

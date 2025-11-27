@@ -539,7 +539,7 @@
                                             <input type="text"
                                                    id="searchInput"
                                                    asp-for="@Model.FilterParams.PhoneNumber"
-                                                   placeholder="جستجو بر اساس نام، شماره تلفن..."
+                                                   placeholder="جستجو بر اساس شماره تلفن..."
                                                    class="input pl-10">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <i class="fas fa-search text-gray-400"></i>
@@ -553,12 +553,13 @@
                                             <option value="false">غیرفعال</option>
                                         </select>
 
-                                        <select id="userStatusFilter" class="input w-full sm:w-auto">
+                                 @*        <select id="userStatusFilter" asp-for="@Model.FilterParams." class="input w-full sm:w-auto">
                                             <option value="">همه کاربران</option>
-                                            <option value="verified">تایید شده</option>
-                                            <option value="pending">در انتظار تایید</option>
-                                            <option value="blocked">مسدود شده</option>
-                                        </select>
+                                            <option value="IsConfirmed">تایید شده</option>
+                                            <option value="AwaitingConfirmation">در انتظار تایید</option>
+                                            <option value="NotConfirmed">تایید نشده</option>
+                                            <option value="WrongInformation">اطلاعات اشتباه</option>
+                                        </select> *@
 
                                         <button @* onclick="applyFilters()" *@ class="btn btn-primary w-full sm:w-auto">
                                             <i class="fas fa-filter ml-2"></i>
@@ -662,8 +663,10 @@
                                                                  alt="@item.FirstName @item.LastName"
                                                                  class="user-avatar">
                                                             <div>
-                                                                <div class="font-medium text-gray-900">@item.FirstName @item.LastName</div>
-                                                                <div class="text-sm text-gray-500">شناسه: USR-001</div>
+                                                                    <div class="font-medium text-gray-900">
+                                                                        @(item.FirstName + " " + item.LastName ?? "کاربر ثبت نام انجام نداده است")
+                                                                    </div>
+                                                                @*<div class="text-sm text-gray-500">شناسه: USR-001</div>*@
                                                             </div>
                                                         </div>
                                                     </td>

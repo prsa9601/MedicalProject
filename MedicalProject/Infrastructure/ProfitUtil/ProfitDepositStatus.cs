@@ -188,7 +188,99 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                 UnpaidPeriods = unpaidPeriods.OrderBy(u => u.DueDate).ToList()
             };
         }
+        public static List<ProfitStatusResult> GetUsersProfitStatus(List<UserPurchaseReportDto> userPurchases)
+        {
+            var results = new List<ProfitStatusResult>();
 
+            if (userPurchases == null || !userPurchases.Any())
+                return results;
+
+            foreach (var userPurchase in userPurchases)
+            {
+                var paidProfits = new List<ProfitPurchaseReportDto>();
+                var unpaidPeriods = new List<UnpaidPeriodInfo>();
+
+                if (userPurchase?.PurchaseReport == null || userPurchase.ProductPurchase == null)
+                {
+                    results.Add(new ProfitStatusResult { PaidProfits = paidProfits, UnpaidPeriods = unpaidPeriods });
+                    continue;
+                }
+
+                // استفاده از Dictionary برای جلوگیری از محاسبات تکراری
+                var processedProducts = new HashSet<Guid>();
+
+                foreach (var purchaseItem in userPurchase.PurchaseReport)
+                {
+                    // اگر این محصول قبلاً پردازش شده، ردش کن
+                    if (processedProducts.Contains(purchaseItem.ProductId))
+                        continue;
+
+                    var products = userPurchase.ProductPurchase.Where(p => p.Id.Equals(purchaseItem.ProductId)).ToList();
+
+                    foreach (var product in products)
+                    {
+                        if (product.InventoryDto?.ProfitableTime == null)
+                            continue;
+
+                        var productStatus = GetProfitStatusForProduct(userPurchase, product, purchaseItem);
+
+                        // اضافه کردن به لیست‌ها با بررسی تکراری نبودن
+                        AddUniqueProfits(paidProfits, productStatus.PaidProfits);
+                        AddUniqueUnpaidPeriods(unpaidPeriods, productStatus.UnpaidPeriods);
+
+                        // علامت گذاری محصول به عنوان پردازش شده
+                        processedProducts.Add(product.Id);
+                    }
+                }
+
+                results.Add(new ProfitStatusResult
+                {
+                    PaidProfits = paidProfits.OrderByDescending(p => p.CreationDate).ToList(),
+                    UnpaidPeriods = unpaidPeriods.OrderBy(u => u.DueDate).ToList()
+                });
+            }
+
+            return results;
+        }
+
+        // متدهای کمکی برای اضافه کردن مقادیر منحصر به فرد
+        private static void AddUniqueProfits(List<ProfitPurchaseReportDto> target, IEnumerable<ProfitPurchaseReportDto> source)
+        {
+            if (source == null) return;
+
+            foreach (var profit in source)
+            {
+                if (profit == null) continue;
+
+                // بررسی وجود داشتن بر اساس ID یا ترکیبی از فیلدها
+                if (!target.Any(p =>
+                    p.Id == profit.Id ||
+                    (p.ProductId == profit.ProductId && p.CreationDate == profit.CreationDate && p.AmountPaid == profit.AmountPaid)))
+                {
+                    target.Add(profit);
+                }
+            }
+        }
+
+        private static void AddUniqueUnpaidPeriods(List<UnpaidPeriodInfo> target, IEnumerable<UnpaidPeriodInfo> source)
+        {
+            if (source == null) return;
+
+            foreach (var period in source)
+            {
+                if (period == null) continue;
+
+                // بررسی وجود داشتن بر اساس ترکیبی از فیلدها
+                if (!target.Any(u =>
+                    u.ProductId == period.ProductId &&
+                    u.PeriodNumber == period.PeriodNumber &&
+                    u.ExpectedAmount == period.ExpectedAmount &&
+                    u.DueDate == period.DueDate))
+                {
+                    target.Add(period);
+                }
+            }
+        }
         private static ProductProfitStatus GetProfitStatusForProduct(
             UserPurchaseReportDto userPurchase,
             ProductPurchaseReportDto product,
@@ -249,7 +341,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
         {
             // اینجا منطق محاسبه مبلغ سود بر اساس محصول و دوره را قرار دهید
             // به عنوان مثال:
-            return decimal.Parse(product.InventoryDto.Profit) * period; // 10% سود
+            return decimal.Parse(product.InventoryDto.Profit)/* * period*/; // 10% سود
         }
     }
 

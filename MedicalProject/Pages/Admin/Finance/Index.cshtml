@@ -565,14 +565,21 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <div class="relative z-10">
-                                <p class="text-sm opacity-90">سود کاربران</p>
+                                <p class="text-sm opacity-90">سود واریز شده برای کاربران</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0")
+                                   @*  @(Model.UserPurchaseReportResult.Data.Where(i => i.ProfitPurchases.
+                                    Where(i=>i.Status==Models.PurchaseReport.ProfitStatus.Success)
+                                                                        .Sum(p => p.AmountPaid)).ToString("N0")) *@
+                                   @(Model.UserPurchaseReportResult.Data
+                                   .SelectMany(i => i.ProfitPurchases) // همه ProfitPurchases ها رو یکی می‌کنه
+                                   .Where(p => p.Status == Models.PurchaseReport.ProfitStatus.Success) // فقط موفق‌ها
+                                   .Sum(p => p.AmountPaid) // مجموع مبلغ پرداختی
+                                   .ToString("N0"))
                                     <span class="text-sm">ریال</span>
                                 </p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">۸٪ رشد</span>
+                                    @* <span class="text-green-300 text-sm">۸٪ رشد</span> *@
                                 </div>
                             </div>
                         </div>
@@ -580,10 +587,14 @@
                         <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
-                                <p class="text-2xl font-bold mt-2">@Model.Result.EntityCount.ToString("N0")</p>
+                                <p class="text-2xl font-bold mt-2">
+                                    @(Model.UserPurchaseReportResult.Data
+                                    .Sum(i => i.ProductPurchase.Count())
+                                    .ToString("N0"))
+                                </p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">۱۵٪ رشد</span>
+                                    @* <span class="text-green-300 text-sm">۱۵٪ رشد</span> *@
                                 </div>
                             </div>
                         </div>
@@ -591,14 +602,13 @@
                         <!-- اضافه کردن کارت‌های آماری دیگر -->
                         <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                             <div class="relative z-10">
-                                <p class="text-sm opacity-90">میانگین سود</p>
+                                <p class="text-sm opacity-90">سود واریز نشده برای کاربران</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @(Model.Result.EntityCount > 0 ? (Model.Result.Data.SafeSum(i => i.TotalPrice) / Model.Result.EntityCount).ToString("N0") : "0")
-                                    <span class="text-sm">ریال</span>
+                                    @(ProfitDepositStatus.GetUsersProfitStatus(Model.UserPurchaseReportResult.Data).SelectMany(i=>i.UnpaidPeriods).Sum(i=>i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
                                 </p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-chart-line ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">پایدار</span>
+                                    @* <span class="text-green-300 text-sm">پایدار</span> *@
                                 </div>
                             </div>
                         </div>
@@ -609,7 +619,7 @@
                                 <p class="text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-users ml-1 text-green-300"></i>
-                                    <span class="text-green-300 text-sm">۱۰٪ رشد</span>
+                                    @* <span class="text-green-300 text-sm">۱۰٪ رشد</span> *@
                                 </div>
                             </div>
                         </div>
