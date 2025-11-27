@@ -17,7 +17,7 @@ namespace MedicalProject.Pages.Account
         }
 
         [BindProperty(SupportsGet = true)]
-        public UserPurchaseReportDto Result { get; set; }
+        public UserPurchaseReportDto Result { get; set; } = new();
         public async Task<IActionResult> OnGet()
         {
             Result = await _service.GetForCurrentUser();

@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model MedicalProject.Pages.Admin.Notification.IndexModel
 @{
     ViewData["Title"] = "مدیریت نوتیفیکیشن";
@@ -27,7 +27,7 @@
                     </div>
                     <div>
                         <p class="text-sm text-gray-600">کل نوتیفیکیشن‌ها</p>
-                        <p class="text-2xl font-bold text-gray-900">@Model.TotalNotifications</p>
+                        <p class="text-2xl font-bold text-gray-900">@Model.User.TotalNotifications</p>
                     </div>
                 </div>
             </div>
@@ -634,4 +634,4 @@
             query += $"&search={Model.FilterParams.Search}";
         return query;
     }
-}
+} *@

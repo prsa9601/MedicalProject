@@ -2,6 +2,7 @@
 using MedicalProject.Models.Order;
 using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Models.PurchaseReport;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MedicalProject.Services.PurchaseReport
 {
@@ -66,6 +67,7 @@ namespace MedicalProject.Services.PurchaseReport
             return result?.Data;
         }
 
+        [Authorize]
         public async Task<UserPurchaseReportDto> GetForCurrentUser()
         {
             var result = await _client.GetFromJsonAsync<ApiResult<UserPurchaseReportDto?>>($"{ModuleName}/GetForCurrentUser");

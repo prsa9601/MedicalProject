@@ -3,6 +3,7 @@ using MedicalProject.Infrastructure.FileUtil.Interfaces;
 using MedicalProject.Infrastructure.FileUtil.Services;
 using MedicalProject.Infrastructure.RazorUtils;
 using MedicalProject.Services.Auth;
+using MedicalProject.Services.Notification;
 using MedicalProject.Services.Order;
 using MedicalProject.Services.Product;
 using MedicalProject.Services.PurchaseReport;
@@ -35,6 +36,11 @@ public static class RegisterDependencyServices
         //services.AddCookieManager();
 
         services.AddHttpClient<IAuthService, AuthService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+        services.AddHttpClient<INotificationService, NotificationService>(httpClient =>
         {
             httpClient.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();

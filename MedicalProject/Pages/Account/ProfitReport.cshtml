@@ -1,298 +1,617 @@
 ﻿@page
 @model MedicalProject.Pages.Account.ProfitReportModel
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.Product.DTOs
+@using MedicalProject.Models.PurchaseReport
+@using MedicalProject.Infrastructure.ProfitUtil
 @{
     ViewData["Title"] = "گزارش سودهای واریز شده";
+
+    // داده‌های نمونه - در حالت واقعی از Model.Result استفاده می‌شود
+    
+
+    // محاسبات آماری
+    var totalProfitReceived = (Model.Result?.ProfitPurchases?
+        .Where(p => p.Status == ProfitStatus.Success)
+        .Sum(p => p.AmountPaid)) ?? 0;
+
+    var totalPendingProfit = (Model.Result?.ProfitPurchases?
+        .Where(p => p.Status == ProfitStatus.UnSuccessful)
+        .Sum(p => p.AmountPaid)) ?? 0;
+
+
+    // تابع نمایش وضعیت پرداخت
+    string GetStatusBadge(ProfitStatus status)
+    {
+        return status switch
+        {
+            ProfitStatus.Success => "badge-success",
+            ProfitStatus.UnSuccessful => "badge-danger",
+            _ => "badge-warning"
+        };
+    }
+
+    string GetStatusText(ProfitStatus status)
+    {
+        return status switch
+        {
+            ProfitStatus.Success => "پرداخت شده",
+            ProfitStatus.UnSuccessful => "پرداخت نشده",
+            _ => "در انتظار"
+        };
+    }
+
+    string GetStatusIcon(ProfitStatus status)
+    {
+        return status switch
+        {
+            ProfitStatus.Success => "fa-check",
+            ProfitStatus.UnSuccessful => "fa-times",
+            _ => "fa-clock"
+        };
+    }
 }
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- هدر صفحه -->
-    <div class="mb-8">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">گزارش سودهای واریز شده</h1>
-        <p class="text-gray-600 mt-2">مشاهده تاریخچه سودهای دریافت شده و وضعیت پرداخت‌ها</p>
-    </div>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    <!-- کارت‌های آماری -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-wallet text-green-600 text-xl"></i>
+        :root {
+            --primary: #3B82F6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            padding-top: 2rem;
+        }
+
+            .page-header h1 {
+                font-size: 2rem;
+                font-weight: 700;
+                margin-bottom: 0.5rem;
+            }
+
+            .page-header p {
+                color: var(--gray-600);
+                font-size: 1.1rem;
+            }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+        }
+
+            .stat-card .card-content {
+                display: flex;
+                align-items: center;
+            }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+        }
+
+            .stat-icon.green {
+                background-color: #D1FAE5;
+                color: var(--success);
+            }
+
+            .stat-icon.blue {
+                background-color: #DBEAFE;
+                color: var(--primary);
+            }
+
+            .stat-icon.purple {
+                background-color: #EDE9FE;
+                color: #8B5CF6;
+            }
+
+        .stat-info .label {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+            .card-header h2 {
+                font-size: 1.25rem;
+                font-weight: 600;
+            }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+            .form-input:focus, .form-select:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #2563EB;
+            }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th {
+                background-color: var(--gray-100);
+                padding: 0.75rem 1rem;
+                text-align: right;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--gray-700);
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .table td {
+                padding: 1rem;
+                border-bottom: 1px solid var(--gray-200);
+                font-size: 0.875rem;
+            }
+
+            .table tr:last-child td {
+                border-bottom: none;
+            }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-danger {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .badge-warning {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .product-image {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-600);
+        }
+
+            .empty-state i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+
+        .investments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .investment-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+            .investment-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+
+        .investment-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .investment-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .investment-footer {
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--gray-100);
+            border-radius: 8px;
+            color: var(--gray-600);
+        }
+
+            .no-data i {
+                font-size: 2rem;
+                margin-bottom: 1rem;
+                opacity: 0.5;
+            }
+
+        @@media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .investments-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- هدر صفحه -->
+        <div class="page-header">
+            <h1>گزارش سودهای واریز شده</h1>
+            <p>مشاهده تاریخچه سودهای دریافت شده و وضعیت پرداخت‌ها</p>
+        </div>
+
+        <!-- کارت‌های آماری -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="card-content">
+                    <div class="stat-icon green">
+                        <i class="fas fa-wallet fa-lg"></i>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-600">سود دریافت شده</p>
-                        <p class="text-2xl font-bold text-gray-900">
-                            @Model.Result.TotalProfitReceived.ToString("N0") ریال
-                        </p>
+                    <div class="stat-info">
+                        <div class="label">سود دریافت شده</div>
+                        <div class="value">@totalProfitReceived.ToString("N0") ریال</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card-content">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-clock fa-lg"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="label">سود در انتظار پرداخت</div>
+                        <div class="value">@totalPendingProfit.ToString("N0") ریال</div>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="card-content">
+                    <div class="stat-icon purple">
+                        <i class="fas fa-chart-line fa-lg"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="label">تعداد سرمایه‌گذاری</div>
+                        <div class="value">@Model.Result.InvestmentCount</div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- فیلترها -->
         <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-clock text-blue-600 text-xl"></i>
+            <div class="card-header">
+                <h2>فیلترها</h2>
+            </div>
+            <div class="card-body">
+                <form method="get" class="filter-form">
+                    <div class="form-group">
+                        <label class="form-label">وضعیت پرداخت</label>
+                        <select name="status" class="form-select">
+                            <option value="">همه وضعیت‌ها</option>
+                            <option value="2">پرداخت شده</option>
+                            <option value="1">پرداخت نشده</option>
+                        </select>
                     </div>
-                    <div>
-                        <p class="text-sm text-gray-600">سود در انتظار</p>
-                        <p class="text-2xl font-bold text-gray-900">
-                            @Model.Result.TotalPendingProfit.ToString("N0") ریال
-                        </p>
+                    <div class="form-group">
+                        <label class="form-label">از تاریخ</label>
+                        <input type="date" name="startDate" class="form-input">
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label class="form-label">تا تاریخ</label>
+                        <input type="date" name="endDate" class="form-input">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-filter" style="margin-left: 0.5rem;"></i>
+                            اعمال فیلتر
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 
+        <!-- تاریخچه پرداخت سود -->
         <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">تعداد سرمایه‌گذاری</p>
-                        <p class="text-2xl font-bold text-gray-900">
-                            @Model.Result.InvestmentCount
-                        </p>
-                    </div>
-                </div>
+            <div class="card-header">
+                <h2>تاریخچه پرداخت سود</h2>
             </div>
-        </div>
-    </div>
-
-    <!-- فیلترها -->
-    <div class="card mb-8">
-        <div class="p-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label class="form-label">وضعیت پرداخت</label>
-                    <select asp-for="FilterParams.Status" class="input">
-                        <option value="">همه وضعیت‌ها</option>
-                        <option value="2">پرداخت شده</option>
-                        <option value="1">پرداخت نشده</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">از تاریخ</label>
-                    <input type="date" asp-for="FilterParams.StartDate" class="input" />
-                </div>
-                <div>
-                    <label class="form-label">تا تاریخ</label>
-                    <input type="date" asp-for="FilterParams.EndDate" class="input" />
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" class="btn btn-primary w-full">
-                        <i class="fas fa-filter ml-2"></i>
-                        اعمال فیلتر
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- تاریخچه پرداخت سود -->
-    <div class="card mb-8">
-        <div class="p-6 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">تاریخچه پرداخت سود</h2>
-        </div>
-        <div class="p-6">
-            @if (!Model.Result.ProfitPurchases.Any())
-            {
-                <div class="text-center py-8">
-                    <i class="fas fa-receipt text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-500">هیچ پرداخت سودی یافت نشد</p>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>محصول</th>
-                                <th>دوره</th>
-                                <th>تاریخ سررسید</th>
-                                <th>مبلغ سود</th>
-                                <th>روش پرداخت</th>
-                                <th>وضعیت</th>
-                                <th>تاریخ پرداخت</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var payment in Model.Result.ProfitPurchases.OrderByDescending(p => p.ForWhatTime))
-                            {
-                                <tr>
-                                    <td>@payment.ForWhatPeriod</td>
-                                    <td>
-                                        <div class="flex items-center space-x-3 space-x-reverse">
-                                            <img src="@Directories.GetProductImage(payment.ProductImage)" 
-                                                 alt="@payment.ProductName"
-                                                 class="w-10 h-10 rounded-lg object-cover"
-                                                 onerror="this.src='https://ui-avatars.com/api/?name=@payment.ProductName&background=3B82F6&color=fff&size=128'">
-                                            <span class="font-medium">@payment.ProductName</span>
-                                        </div>
-                                    </td>
-                                    <td>دوره @payment.ForWhatPeriod</td>
-                                    <td>@payment.ForWhatTime.ToPersianDate()</td>
-                                    <td class="font-semibold text-green-600">
-                                        @payment.AmountPaid.ToString("N0") ریال
-                                    </td>
-                                    <td>@payment.PaymentMethod</td>
-                                    <td>
-                                        @if (payment.Status == ProfitStatus.Success)
-                                        {
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-check ml-1"></i>
-                                                پرداخت شده
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-danger">
-                                                <i class="fas fa-times ml-1"></i>
-                                                پرداخت نشده
-                                            </span>
-                                        }
-                                    </td>
-                                    <td>@payment.CreationDate.ToPersianDate()</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
-    </div>
-
-    <!-- سرمایه‌گذاری‌های فعال -->
-    <div class="card">
-        <div class="p-6 border-b border-gray-200">
-            <h2 class="text-lg font-semibold text-gray-900">سرمایه‌گذاری‌های فعال</h2>
-        </div>
-        <div class="p-6">
-            @if (!Model.Result.Investments.Any())
-            {
-                <div class="text-center py-8">
-                    <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
-                    <p class="text-gray-500">هیچ سرمایه‌گذاری فعالی وجود ندارد</p>
-                </div>
-            }
-            else
-            {
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @foreach (var investment in Model.Result.Investments)
+            <div class="card-body">
+                @if (Model.Result != null)
+                {
+                    @if (Model.Result.ProfitPurchases?.Any() == true)
                     {
-                        <div class="card card-hover">
-                            <div class="p-4">
-                                <div class="flex items-center space-x-3 space-x-reverse mb-4">
-                                    <img src="@Directories.GetProductImage(investment.ProductImage)" 
-                                         alt="@investment.ProductName"
-                                         class="w-12 h-12 rounded-lg object-cover"
-                                         onerror="this.src='https://ui-avatars.com/api/?name=@investment.ProductName&background=3B82F6&color=fff&size=128'">
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900">@investment.ProductName</h3>
-                                        <p class="text-sm text-gray-500">@investment.InvestmentDate.ToPersianDate()</p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>محصول</th>
+                                        <th>دوره</th>
+                                        <th>تاریخ سررسید</th>
+                                        <th>مبلغ سود</th>
+                                        <th>وضعیت</th>
+                                        <th>تاریخ پرداخت</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int profitIndex = 1;
+                                        foreach (var payment in Model.Result.ProfitPurchases.OrderByDescending(p => p.ForWhatTime))
+                                        {
+                                            <tr>
+                                                <td>@profitIndex</td>
+                                                <td>
+                                                    <div class="product-info">
+                                                        <img src="https://ui-avatars.com/api/?name=@Uri.EscapeDataString(payment.ProductName)&background=3B82F6&color=fff&size=128"
+                                                             alt="@payment.ProductName"
+                                                             class="product-image">
+                                                        <span>@payment.ProductName</span>
+                                                    </div>
+                                                </td>
+                                                <td>دوره @payment.ForWhatPeriod</td>
+                                                <td>@payment.ForWhatTime.ToPersianDate()</td>
+                                                <td style="font-weight: 600; color: #10B981;">@payment.AmountPaid.ToString("N0") ریال</td>
+                                                <td>
+                                                    <span class="badge @GetStatusBadge(payment.Status)">
+                                                        <i class="fas @GetStatusIcon(payment.Status)" style="margin-left: 0.25rem;"></i>
+                                                        @GetStatusText(payment.Status)
+                                                    </span>
+                                                </td>
+                                                <td>@payment.CreationDate.ToPersianDate()</td>
+                                            </tr>
+                                            profitIndex++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="no-data">
+                        <i class="fas fa-receipt"></i>
+                        <p>هیچ پرداخت سودی یافت نشد</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- سرمایه‌گذاری‌های فعال -->
+        <div class="card">
+            <div class="card-header">
+                <h2>سرمایه‌گذاری‌ های کاربر </h2>
+            </div>
+            <div class="card-body">
+                @if (Model.Result != null)
+                {
+                    @if (Model.Result.ProfitPurchases?.Any() == true)
+                    {
+                        <div class="investments-grid">
+                            @foreach (var investment in Model.Result.ProductPurchase)
+                            {
+                                var report = Model.Result.PurchaseReport?.FirstOrDefault(r => r.ProductId == investment.Id);
+                                <div class="investment-card">
+                                    <div class="investment-header">
+                                        <img src="https://ui-avatars.com/api/?name=@Uri.EscapeDataString(investment.Title)&background=3B82F6&color=fff&size=128"
+                                             alt="@investment.Title"
+                                             class="product-image">
+                                        <div>
+                                            <h3 style="font-weight: 600; margin-bottom: 0.25rem;">@investment.Title</h3>
+                                            <p style="font-size: 0.875rem; color: #6B7280;">@DateTime.Now.ToPersianDate()</p>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">مبلغ سرمایه‌گذاری:</span>
-                                        <span class="font-medium">@investment.InvestedAmount.ToString("N0") ریال</span>
+                                    <div class="investment-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">مبلغ سرمایه‌گذاری:</span>
+                                            <span class="detail-value">@(report != null ? decimal.Parse(report.PurchasePrice) : "۰") ریال</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">تعداد دنگ:</span>
+                                            <span class="detail-value">@(report != null ? report.PurchaseDang : "۰")</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">سود تولید شده:</span>
+                                            <span class="detail-value text-success">@(report != null ? decimal.Parse(report.Profit) : "۰") ریال</span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">تعداد دنگ:</span>
-                                        <span class="font-medium">@investment.PurchaseDang.ToString("N0")</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span class="text-gray-600">سود تولید شده:</span>
-                                        <span class="font-medium text-green-600">@investment.TotalProfitGenerated.ToString("N0") ریال</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4 pt-4 border-t border-gray-200">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm text-gray-500">وضعیت</span>
+                                    <div class="investment-footer">
+                                        <span style="font-size: 0.875rem; color: #6B7280;">وضعیت</span>
                                         <span class="badge badge-success">
-                                            <i class="fas fa-circle ml-1 text-xs"></i>
+                                            <i class="fas fa-circle" style="margin-left: 0.25rem; font-size: 0.5rem;"></i>
                                             فعال
                                         </span>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     }
-                </div>
-            }
+                }
+                else
+                {
+                    <div class="no-data">
+                        <i class="fas fa-inbox"></i>
+                        <p>هیچ سرمایه‌گذاری وجود ندارد</p>
+                    </div>
+                }
+            </div>
         </div>
     </div>
-
-    <!-- دوره‌های پرداخت نشده -->
-    @if (Model.Result.UnpaidProfits.Any())
-    {
-        <div class="card mt-8">
-            <div class="p-6 border-b border-gray-200">
-                <h2 class="text-lg font-semibold text-gray-900">دوره‌های پرداخت نشده</h2>
-            </div>
-            <div class="p-6">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>محصول</th>
-                                <th>دوره</th>
-                                <th>تاریخ سررسید</th>
-                                <th>مبلغ预计</th>
-                                <th>وضعیت</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var unpaid in Model.Result.UnpaidProfits)
-                            {
-                                <tr>
-                                    <td>@unpaid.ProductName</td>
-                                    <td>دوره @unpaid.PeriodNumber</td>
-                                    <td>@unpaid.DueDate.ToPersianDate()</td>
-                                    <td class="font-semibold text-orange-600">
-                                        @unpaid.ExpectedAmount.ToString("N0") ریال
-                                    </td>
-                                    <td>
-                                        @if (unpaid.IsOverdue)
-                                        {
-                                            <span class="badge badge-danger">
-                                                <i class="fas fa-exclamation-triangle ml-1"></i>
-                                                معوقه
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-warning">
-                                                <i class="fas fa-clock ml-1"></i>
-                                                در انتظار
-                                            </span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-@section Scripts {
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('صفحه گزارش سود کاربر بارگذاری شد');
-            
-            // مدیریت تاریخ‌ها
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelector('input[type="date"]').max = today;
-        });
-    </script>
-}
+</body>
+</html>
