@@ -1,4 +1,4 @@
-using MedicalProject.Models.Notification;
+﻿using MedicalProject.Models.Notification;
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.Notification;
 using MedicalProject.Services.User;
@@ -22,24 +22,48 @@ namespace MedicalProject.Pages.Admin.Notification
         [BindProperty(SupportsGet = true)]
         public NotificationDto? Notification { get; set; }
 
-        [BindProperty]
-        public string? Link { get; set; }
+
 
         [BindProperty]
         public string Title { get; set; }
 
         [BindProperty]
-        public string Description { get; set; }
+        public string? Link { get; set; }
 
-        public Guid UserIds { get; set; }
+        [BindProperty]
+        public List<Guid> UserIds { get; set; }
 
+        [BindProperty]
+        public string NotificationType { get; set; }
 
-        public async Task OnGet(Guid id)
+        [BindProperty(SupportsGet = true)]
+        public UserFilterResult Users { get; set; }
+
+        public async Task<IActionResult> OnGet(Guid id)
         {
             Notification = await _service.GetByIdForAdmin(id);
+            return Page();
         }
-        public async Task OnPost()
+        public async Task<IActionResult> OnPost()
         {
+            var result = await _service.Edit(new EditNotificationCommand
+            {
+                NotificationId = Notification.Id,
+                Title = Title,
+                Description = Notification.Description,
+                Link = Link,
+                SendToAll = NotificationType == "broadcast" ? true : false,
+                UserId = UserIds,
+            });
+            if (result.IsSuccess)
+            {
+                TempData["Success"] = "نوتیفیکیشن با موفقیت ویرایش شد";
+                return Redirect($"/Admin/Notification/Detail/{Notification.Id}");
+            }
+            else
+            {
+                return Page();
+            }
         }
 
 

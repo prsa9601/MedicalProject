@@ -208,34 +208,19 @@
             color: #6b7280;
         }
 
-        .badge-info {
-            background-color: #d1f5f9;
-            color: #0e7490;
-        }
-
         /* استایل‌های مخصوص پنل ادمین */
         .admin-sidebar {
             width: 260px;
             background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
             color: white;
-            transition: all 0.3s;
         }
 
         .admin-main {
             margin-right: 260px;
-            transition: all 0.3s;
         }
 
         .admin-content {
             min-height: calc(100vh - 64px);
-        }
-
-        .sidebar-collapsed .admin-sidebar {
-            width: 70px;
-        }
-
-        .sidebar-collapsed .admin-main {
-            margin-right: 70px;
         }
 
         .sidebar-link {
@@ -260,14 +245,7 @@
 
             .sidebar-link span {
                 margin-right: 0.75rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
             }
-
-        .sidebar-collapsed .sidebar-link span {
-            display: none;
-        }
 
         .form-group {
             margin-bottom: 1.5rem;
@@ -303,17 +281,74 @@
             color: #6b7280;
         }
 
-        .field-validation-error {
-            color: #dc2626;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-            display: block;
+        /* استایل‌های جدید برای بخش نوع ارسال */
+        .notification-type-option {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .input-validation-error {
-            border-color: #dc2626;
-            box-shadow: 0 0 0 2px #fecaca;
+            .notification-type-option:hover {
+                border-color: #3b82f6;
+                background-color: #f8fafc;
+            }
+
+            .notification-type-option.selected {
+                border-color: #3b82f6;
+                background-color: #eff6ff;
+            }
+
+        .notification-type-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
         }
+
+        .notification-type-broadcast {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .notification-type-specific {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .notification-type-info {
+            flex: 1;
+        }
+
+        .notification-type-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-type-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .notification-type-radio {
+            margin-left: 1rem;
+        }
+
+        .user-selection-section {
+            transition: all 0.3s;
+        }
+
+            .user-selection-section.hidden {
+                display: none;
+            }
 
         /* استایل‌های سفارشی برای صفحه ویرایش نوتیفیکیشن */
         .notification-preview {
@@ -578,7 +613,26 @@
                 </div>
 
                 <!-- Sidebar Menu -->
-                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+                <nav class="flex-1 p-4">
+                    <div class="space-y-1">
+                        <a href="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+                        <a href="/Admin/Users" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>مدیریت کاربران</span>
+                        </a>
+                        <a href="/Admin/Notification" class="sidebar-link active">
+                            <i class="fas fa-bell"></i>
+                            <span>نوتیفیکیشن‌ها</span>
+                        </a>
+                        <a href="/Admin/Settings" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </div>
+                </nav>
             </div>
         </div>
 
@@ -590,24 +644,14 @@
                     <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
                         <div class="flex justify-between items-center">
                             <div class="flex items-center space-x-4 space-x-reverse">
-                                <a href="/Admin/Notification/Detail?id=@Model.Notification.Id" class="btn btn-outline">
+                                <a href="/Admin/Notification" class="btn btn-outline">
                                     <i class="fas fa-arrow-right ml-2"></i>
-                                    بازگشت به جزئیات
+                                    بازگشت به لیست
                                 </a>
                                 <div>
                                     <h1 class="text-2xl font-bold text-gray-900">ویرایش نوتیفیکیشن</h1>
-                                    <p class="mt-1 text-sm text-gray-600">ویرایش اطلاعات و تنظیمات نوتیفیکیشن</p>
+                                    <p class="mt-1 text-sm text-gray-600">ویرایش پیام و تنظیمات ارسال</p>
                                 </div>
-                            </div>
-                            <div class="flex items-center space-x-3 space-x-reverse">
-                                <a href="/Admin/Notification/Detail?id=@Model.Notification.Id" class="btn btn-outline">
-                                    <i class="fas fa-times ml-2"></i>
-                                    انصراف
-                                </a>
-                                <button type="submit" form="editNotificationForm" class="btn btn-primary">
-                                    <i class="fas fa-save ml-2"></i>
-                                    ذخیره تغییرات
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -620,31 +664,62 @@
                         <div class="p-6">
                             <form id="editNotificationForm" method="post">
                                 @Html.AntiForgeryToken()
-                                <input type="hidden" asp-for="@Model.Notification.Id" />
+                                <input type="hidden" asp-for="Notification.Id" />
 
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                                     <!-- ستون سمت چپ -->
                                     <div class="space-y-6">
                                         <!-- عنوان -->
                                         <div class="form-group">
-                                            <label for="title" class="form-label">
+                                            <label for="Title" class="form-label">
                                                 عنوان نوتیفیکیشن
                                                 <span class="text-red-500">*</span>
                                             </label>
                                             <input type="text" asp-for="Title" class="input"
-                                                   value="@Model.Notification.Title"
+                                            value="@Model.Notification.Title"
                                                    placeholder="عنوان پیام را وارد کنید" required maxlength="200">
-                                            <span asp-validation-for="Title" class="field-validation-error"></span>
                                             <div class="form-text">حداکثر 200 کاراکتر</div>
+                                        </div>
+
+                                        <!-- نوع ارسال -->
+                                        <div class="form-group">
+                                            <label class="form-label">نوع ارسال</label>
+                                            <div class="space-y-3">
+                                                <!-- گزینه ارسال همگانی -->
+                                                <label class="notification-type-option @(Model.NotificationType == "broadcast" ? "selected" : "")"
+                                                       onclick="selectNotificationType('broadcast')">
+                                                    <div class="notification-type-icon notification-type-broadcast">
+                                                        <i class="fas fa-bullhorn text-xl"></i>
+                                                    </div>
+                                                    <div class="notification-type-info">
+                                                        <div class="notification-type-title">ارسال همگانی</div>
+                                                        <div class="notification-type-description">ارسال به همه کاربران سیستم</div>
+                                                    </div>
+                                                    <input type="radio" asp-for="NotificationType" value="broadcast"
+                                                           class="notification-type-radio" />
+                                                </label>
+
+                                                <!-- گزینه ارسال به کاربران خاص -->
+                                                <label class="notification-type-option @(Model.NotificationType == "specific" ? "selected" : "")"
+                                                       onclick="selectNotificationType('specific')">
+                                                    <div class="notification-type-icon notification-type-specific">
+                                                        <i class="fas fa-users text-xl"></i>
+                                                    </div>
+                                                    <div class="notification-type-info">
+                                                        <div class="notification-type-title">ارسال به کاربران خاص</div>
+                                                        <div class="notification-type-description">انتخاب دستی کاربران</div>
+                                                    </div>
+                                                    <input type="radio" asp-for="NotificationType" value="specific"
+                                                           class="notification-type-radio" />
+                                                </label>
+                                            </div>
                                         </div>
 
                                         <!-- لینک -->
                                         <div class="form-group">
-                                            <label for="link" class="form-label">لینک مرتبط (اختیاری)</label>
+                                            <label for="Link" class="form-label">لینک مرتبط (اختیاری)</label>
                                             <input type="url" asp-for="Link" class="input"
-                                                   value="@Model.Notification.Link"
                                                    placeholder="https://example.com">
-                                            <span asp-validation-for="Link" class="field-validation-error"></span>
                                             <div class="form-text">لینک مقصد هنگام کلیک روی نوتیفیکیشن</div>
                                         </div>
 
@@ -674,14 +749,12 @@
                                     <div class="space-y-6">
                                         <!-- توضیحات -->
                                         <div class="form-group">
-                                            <label for="description" class="form-label">
+                                            <label for="Notification_Description" class="form-label">
                                                 متن پیام
                                                 <span class="text-red-500">*</span>
                                             </label>
-                                            <textarea asp-for="Description" class="input"
-                                                      rows="10" placeholder="متن کامل پیام را وارد کنید..."
-                                                      required maxlength="1000">@Model.Notification.Description</textarea>
-                                            <span asp-validation-for="Description" class="field-validation-error"></span>
+                                            <textarea asp-for="Notification.Description" class="input" rows="10"
+                                                      placeholder="متن کامل پیام را وارد کنید..." required maxlength="1000"></textarea>
                                             <div class="flex justify-between items-center mt-1">
                                                 <div class="form-text">حداکثر 1000 کاراکتر</div>
                                                 <div id="charCount" class="char-counter">@(Model.Notification.Description?.Length ?? 0)/1000</div>
@@ -689,59 +762,81 @@
                                         </div>
 
                                         <!-- بخش انتخاب کاربران -->
-                                        <div class="form-group">
-                                            <label class="form-label">کاربران هدف</label>
-                                            <div class="space-y-4">
-                                                <!-- جستجوی کاربران -->
-                                                <div class="flex space-x-2 space-x-reverse">
-                                                    <input type="text" id="userSearch" class="input flex-1"
-                                                           placeholder="جستجو بر اساس نام، ایمیل یا شماره تلفن...">
-                                                    <button type="button" onclick="searchUsers()" class="btn btn-outline" id="searchBtn">
-                                                        <i class="fas fa-search"></i>
-                                                    </button>
-                                                </div>
+                                        <div id="userSelectionSection" class="user-selection-section @(Model.NotificationType == "broadcast" ? "hidden" : "")">
+                                            <div class="form-group">
+                                                <label class="form-label">کاربران هدف</label>
+                                                <div class="space-y-4">
+                                                    <!-- جستجوی کاربران -->
+                                                    <div class="flex space-x-2 space-x-reverse">
+                                                        <input type="text" id="userSearch" class="input flex-1"
+                                                               placeholder="جستجو بر اساس نام، ایمیل یا شماره تلفن...">
+                                                        <button type="button" onclick="searchUsers()" class="btn btn-outline" id="searchBtn">
+                                                            <i class="fas fa-search"></i>
+                                                        </button>
+                                                    </div>
 
-                                                <!-- لیست کاربران -->
-                                                <div>
-                                                    <div class="flex justify-between items-center mb-3">
-                                                        <span class="text-sm font-medium text-gray-900">لیست کاربران</span>
-                                                        <span id="allUsersCount" class="badge badge-primary">@Model.Notification.Users.Count نفر</span>
+                                                    <!-- لیست کاربران -->
+                                                    <div>
+                                                        <div class="flex justify-between items-center mb-3">
+                                                            <span class="text-sm font-medium text-gray-900">لیست کاربران</span>
+                                                            <span id="allUsersCount" class="badge badge-primary">0 نفر</span>
+                                                        </div>
+                                                        <div id="allUsersList" class="users-list-container">
+                                                            <!-- کاربران از طریق JavaScript لود می‌شوند -->
+                                                        </div>
                                                     </div>
-                                                    <div id="allUsersList" class="users-list-container">
-                                                        <!-- کاربران از طریق JavaScript لود می‌شوند -->
-                                                    </div>
-                                                </div>
 
-                                                <!-- کاربران انتخاب شده -->
-                                                <div>
-                                                    <div class="flex justify-between items-center mb-3">
-                                                        <span class="text-sm font-medium text-gray-900">کاربران انتخاب شده</span>
-                                                        <span id="selectedUsersCount" class="badge badge-success">@Model.Notification.Users.Count نفر</span>
-                                                    </div>
-                                                    <div id="selectedUsers" class="users-list-container">
-                                                        @if (Model.Notification.Users.Any())
-                                                        {
-                                                            foreach (var user in Model.Notification.Users)
+                                                    <!-- کاربران انتخاب شده -->
+                                                    <div>
+                                                        <div class="flex justify-between items-center mb-3">
+                                                            <span class="text-sm font-medium text-gray-900">کاربران انتخاب شده</span>
+                                                            <span id="selectedUsersCount" class="badge badge-success">0 نفر</span>
+                                                        </div>
+                                                        <div id="selectedUsers" class="users-list-container">
+                                                            @if (Model.Notification.Users != null && Model.Notification.Users.Any())
                                                             {
-                                                                <div class="user-selection-item bg-green-50 border-green-200">
-                                                                    <div class="user-info">
-                                                                        <div class="user-name text-green-800">@user.FirstName @user.LastName</div>
-                                                                        <div class="user-contact text-green-600">@user.PhoneNumber</div>
+                                                                foreach (var user in Model.Notification.Users)
+                                                                {
+                                                                    <div class="user-selection-item bg-green-50 border-green-200" data-user-id="@user.Id">
+                                                                        <div class="user-info">
+                                                                            <div class="user-name text-green-800">@user.FirstName @user.LastName</div>
+                                                                            <div class="user-contact text-green-600">@user.PhoneNumber</div>
+                                                                        </div>
+                                                                        <button type="button" onclick="removeUser('@user.Id')"
+                                                                                class="remove-user-btn text-red-600 hover:bg-red-100">
+                                                                            <i class="fas fa-times"></i>
+                                                                        </button>
                                                                     </div>
-                                                                    <button type="button" onclick="removeUser('@user.Id')"
-                                                                            class="remove-user-btn text-red-600 hover:bg-red-100">
-                                                                        <i class="fas fa-times"></i>
-                                                                    </button>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="text-center text-gray-500 py-8">
+                                                                    <i class="fas fa-users text-2xl mb-2"></i>
+                                                                    <p>هیچ کاربری انتخاب نشده است</p>
                                                                 </div>
                                                             }
-                                                        }
-                                                        else
-                                                        {
-                                                            <div class="text-center text-gray-500 py-8">
-                                                                <i class="fas fa-users text-2xl mb-2"></i>
-                                                                <p>هیچ کاربری انتخاب نشده است</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- نمایش وضعیت ارسال همگانی -->
+                                        <div id="broadcastInfo" class="user-selection-section @(Model.NotificationType == "specific" ? "hidden" : "")">
+                                            <div class="form-group">
+                                                <label class="form-label">وضعیت ارسال همگانی</label>
+                                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                                    <div class="flex items-center">
+                                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                                            <i class="fas fa-bullhorn text-blue-600"></i>
+                                                        </div>
+                                                        <div>
+                                                            <div class="font-medium text-blue-900">ارسال به همه کاربران</div>
+                                                            <div class="text-sm text-blue-700 mt-1">
+                                                                این نوتیفیکیشن به تمام کاربران فعال سیستم ارسال خواهد شد.
                                                             </div>
-                                                        }
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -749,12 +844,20 @@
                                     </div>
                                 </div>
 
-                                <!-- فیلد مخفی برای کاربران انتخاب شده -->
-                                <input type="hidden" id="selectedUsersInput" asp-for="@Model.Notification.Users" />
+                                <!-- فیلدهای مخفی برای کاربران انتخاب شده -->
+                                <div id="userIdsContainer">
+                                    @if (Model.UserIds != null)
+                                    {
+                                        foreach (var userId in Model.UserIds)
+                                        {
+                                            <input type="hidden" name="UserIds" value="@userId" />
+                                        }
+                                    }
+                                </div>
 
                                 <!-- دکمه‌های اقدام -->
                                 <div class="flex justify-end space-x-3 space-x-reverse mt-8 pt-6 border-t">
-                                    <a href="/Admin/Notification/Detail?id=@Model.Notification.Id" class="btn btn-outline">
+                                    <a href="/Admin/Notification/Detail/@Model.Notification.Id" class="btn btn-outline">
                                         <i class="fas fa-times ml-2"></i>
                                         انصراف
                                     </a>
@@ -772,304 +875,419 @@
     </div>
 
     <script>
-        // توابع مدیریت پنل ادمین
-        function toggleSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
-        }
-
-        function toggleMobileSidebar() {
-            document.body.classList.toggle('sidebar-mobile-open');
-        }
-
-        function toggleProfileDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        // متغیرهای مدیریت نوتیفیکیشن
-        let selectedUsers = new Map();
-        let searchTimeout = null;
-        let allUsers = [];
-
-        // بارگذاری اولیه صفحه
-        document.addEventListener('DOMContentLoaded', function() {
-            // مقداردهی اولیه selectedUsers از داده‌های سرور
-            @foreach (var user in Model.Notification.Users)
-            {
-                    <text>
-                        selectedUsers.set('@user.Id', {
-                            fullName: '@Html.Raw((user.FirstName + " " + user.LastName).Replace("'", "\\'"))',
-                            phoneNumber: '@user.PhoneNumber'
-                        });
-                    </text>
-            }
-
-            // مقداردهی اولیه allUsers از داده‌های سرور
-            @foreach (var user in Model.Notification.Users)
-            {
-                    <text>
-                        allUsers.push({
-                            id: '@user.Id',
-                            firstName: '@Html.Raw(user.FirstName?.Replace("'", "\\'") ?? "")',
-                            lastName: '@Html.Raw(user.LastName?.Replace("'", "\\'") ?? "")',
-                            phoneNumber: '@user.PhoneNumber',
-                       
-                        });
-                    </text>
-            }
-
-            updatePreview();
-            displayAllUsers(); // نمایش تمام کاربران از اول
-
-            // مدیریت رویدادهای input
-            document.getElementById('Title').addEventListener('input', updatePreview);
-            document.getElementById('Description').addEventListener('input', updatePreview);
-            document.getElementById('Link').addEventListener('input', updatePreview);
-        });
-
-        // نمایش تمام کاربران
-        function displayAllUsers() {
-            const container = document.getElementById('allUsersList');
-            const countElement = document.getElementById('allUsersCount');
-
-            container.innerHTML = '';
-            countElement.textContent = `${allUsers.length} نفر`;
-
-            if (allUsers.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-user-slash text-2xl mb-2"></i>
-                        <p>هیچ کاربری یافت نشد</p>
-                    </div>
-                `;
-            } else {
-                allUsers.forEach(user => {
-                    const isSelected = selectedUsers.has(user.id);
-                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-                    const userElement = document.createElement('div');
-                    userElement.className = `user-selection-item ${isSelected ? 'selected' : ''}`;
-                    userElement.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-name">${fullName || 'کاربر بدون نام'}</div>
-                            <div class="user-contact">
-                                ${user.phoneNumber || 'بدون شماره'}
-                                ${user.email ? ' • ' + user.email : ''}
-                            </div>
-                        </div>
-                        <button type="button" onclick="${isSelected ? `removeUser('${user.id}')` : `selectUser('${user.id}', '${(fullName || 'کاربر بدون نام').replace(/'/g, "\\'")}', '${user.phoneNumber || ''}')`}"
-                                class="${isSelected ? 'remove-user-btn' : 'btn btn-primary btn-sm'}">
-                            ${isSelected ? '<i class="fas fa-times"></i>' : 'انتخاب'}
-                        </button>
-                    `;
-                    container.appendChild(userElement);
-                });
-            }
-        }
-
-        // جستجوی کاربران
-        function searchUsers() {
-            const searchTerm = document.getElementById('userSearch').value.toLowerCase().trim();
-
-            if (!searchTerm) {
-                displayAllUsers();
-                return;
-            }
-
-            const filteredUsers = allUsers.filter(user =>
-                (user.firstName && user.firstName.toLowerCase().includes(searchTerm)) ||
-                (user.lastName && user.lastName.toLowerCase().includes(searchTerm)) ||
-                (user.phoneNumber && user.phoneNumber.includes(searchTerm)) ||
-                (user.email && user.email.toLowerCase().includes(searchTerm))
-            );
-
-            displayFilteredUsers(filteredUsers);
-        }
-
-        // نمایش کاربران فیلتر شده
-        function displayFilteredUsers(users) {
-            const container = document.getElementById('allUsersList');
-            const countElement = document.getElementById('allUsersCount');
-
-            container.innerHTML = '';
-            countElement.textContent = `${users.length} نفر`;
-
-            if (users.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-user-slash text-2xl mb-2"></i>
-                        <p>کاربری با مشخصات وارد شده یافت نشد</p>
-                    </div>
-                `;
-            } else {
-                users.forEach(user => {
-                    const isSelected = selectedUsers.has(user.id);
-                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
-                    const userElement = document.createElement('div');
-                    userElement.className = `user-selection-item ${isSelected ? 'selected' : ''}`;
-                    userElement.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-name">${fullName || 'کاربر بدون نام'}</div>
-                            <div class="user-contact">
-                                ${user.phoneNumber || 'بدون شماره'}
-                                ${user.email ? ' • ' + user.email : ''}
-                            </div>
-                        </div>
-                        <button type="button" onclick="${isSelected ? `removeUser('${user.id}')` : `selectUser('${user.id}', '${(fullName || 'کاربر بدون نام').replace(/'/g, "\\'")}', '${user.phoneNumber || ''}')`}"
-                                class="${isSelected ? 'remove-user-btn' : 'btn btn-primary btn-sm'}">
-                            ${isSelected ? '<i class="fas fa-times"></i>' : 'انتخاب'}
-                        </button>
-                    `;
-                    container.appendChild(userElement);
-                });
-            }
-        }
-
-        // انتخاب کاربر
-        function selectUser(userId, fullName, phoneNumber) {
-            if (!selectedUsers.has(userId)) {
-                selectedUsers.set(userId, {
-                    fullName: fullName || 'کاربر بدون نام',
-                    phoneNumber: phoneNumber || 'بدون شماره'
-                });
-                updateSelectedUsersDisplay();
-                searchUsers(); // بروزرسانی لیست
-            }
-        }
-
-        // حذف کاربر
-        function removeUser(userId) {
-            selectedUsers.delete(userId);
-            updateSelectedUsersDisplay();
-            searchUsers(); // بروزرسانی لیست
-        }
-
-        // بروزرسانی نمایش کاربران انتخاب شده
-        function updateSelectedUsersDisplay() {
-            const container = document.getElementById('selectedUsers');
-            const countElement = document.getElementById('selectedUsersCount');
-            const selectedUsersInput = document.getElementById('selectedUsersInput');
-
-            container.innerHTML = '';
-            countElement.textContent = `${selectedUsers.size} نفر`;
-
-            // آپدیت فیلد مخفی
-            selectedUsersInput.value = Array.from(selectedUsers.keys()).join(',');
-
-            if (selectedUsers.size === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-gray-500 py-8">
-                        <i class="fas fa-users text-2xl mb-2"></i>
-                        <p>هیچ کاربری انتخاب نشده است</p>
-                    </div>
-                `;
-            } else {
-                selectedUsers.forEach((user, userId) => {
-                    const userElement = document.createElement('div');
-                    userElement.className = 'user-selection-item bg-green-50 border-green-200';
-                    userElement.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-name text-green-800">${user.fullName}</div>
-                            <div class="user-contact text-green-600">${user.phoneNumber}</div>
-                        </div>
-                        <button type="button" onclick="removeUser('${userId}')"
-                                class="remove-user-btn text-red-600 hover:bg-red-100">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    container.appendChild(userElement);
-                });
-            }
-        }
-
-        // پیش‌نمایش نوتیفیکیشن
-        function updatePreview() {
-            const title = document.getElementById('Title').value || 'عنوان نوتیفیکیشن';
-            const message = document.getElementById('Description').value || 'متن پیام اینجا نمایش داده می‌شود...';
-            const link = document.getElementById('Link').value;
-
-            document.getElementById('previewTitle').textContent = title;
-            document.getElementById('previewMessage').textContent = message;
-
-            // بروزرسانی شمارش کاراکترها
-            const descLength = document.getElementById('Description').value.length;
-            const counter = document.getElementById('charCount');
-            counter.textContent = `${descLength}/1000`;
-
-            if (descLength > 900) {
-                counter.classList.add('warning');
-                counter.classList.remove('danger');
-            } else if (descLength > 950) {
-                counter.classList.remove('warning');
-                counter.classList.add('danger');
-            } else {
-                counter.classList.remove('warning', 'danger');
-            }
-        }
-
-        // مدیریت ارسال فرم
-        document.getElementById('editNotificationForm').addEventListener('submit', function(e) {
-            const submitButton = document.getElementById('submitButton');
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<div class="loading-spinner ml-2"></div> در حال ذخیره...';
-
-            // فرم به صورت عادی ارسال می‌شود
-        });
-
-        // توابع نمایش پیام
-        function showSuccess(message) {
-            Swal.fire({
-                icon: 'success',
-                title: 'موفق',
-                text: message,
-                confirmButtonText: 'باشه',
-                customClass: {
-                    confirmButton: 'btn btn-primary'
+                // توابع مدیریت پنل ادمین
+                function toggleSidebar() {
+                    document.body.classList.toggle('sidebar-collapsed');
                 }
-            });
-        }
 
-        function showError(message) {
-            Swal.fire({
-                icon: 'error',
-                title: 'خطا',
-                text: message,
-                confirmButtonText: 'باشه',
-                customClass: {
-                    confirmButton: 'btn btn-primary'
+                function toggleMobileSidebar() {
+                    document.body.classList.toggle('sidebar-mobile-open');
                 }
-            });
-        }
 
-        // مدیریت منوی سایدبار
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            } else {
-                toggleSidebar();
-            }
-        });
+                function toggleProfileDropdown() {
+                    const dropdown = document.getElementById('profileDropdown');
+                    dropdown.classList.toggle('hidden');
+                }
 
-        // بستن منوها هنگام کلیک خارج
-        document.addEventListener('click', function(event) {
-            const profileDropdown = document.getElementById('profileDropdown');
-            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+                // متغیرهای مدیریت نوتیفیکیشن
+                let selectedUsers = new Map();
+                let allUsers = [];
+                let searchTimeout = null;
 
-            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
-                profileDropdown.classList.add('hidden');
-            }
-        });
+                // بارگذاری اولیه صفحه
+                document.addEventListener('DOMContentLoaded', function () {
+                    console.log('=== PAGE LOADED ===');
 
-        // جستجوی خودکار با تاخیر
-        document.getElementById('userSearch').addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                searchUsers();
-            }, 300);
-        });
+                    // مقداردهی اولیه selectedUsers از داده‌های سرور
+                    @if (Model.Notification.Users != null)
+                    {
+                            foreach (var user in Model.Notification.Users)
+                            {
+                                    <text>
+                                    selectedUsers.set('@user.Id', {
+                                        fullName: '@Html.Raw((user.FirstName + " " + user.LastName).Replace("'", "\\'"))',
+                                        phoneNumber: '@user.PhoneNumber'
+                                    });
+                                    </text>
+                            }
+                    }
+
+                    // آپدیت اولیه نمایش
+                    updateSelectedUsersDisplay();
+                    updatePreview();
+
+                    // بارگذاری کاربران
+                    loadAllUsers();
+
+                    // مدیریت رویدادهای input برای پیش‌نمایش
+                    document.getElementById('Title').addEventListener('input', updatePreview);
+                    document.getElementById('Notification_Description').addEventListener('input', updatePreview);
+                    document.getElementById('Link').addEventListener('input', updatePreview);
+
+                    // تنظیم اولیه نوع ارسال
+                    const initialType = '@Model.NotificationType';
+                    if (initialType === 'broadcast') {
+                        selectNotificationType('broadcast');
+                    } else {
+                        selectNotificationType('specific');
+                    }
+
+                    console.log('Initial selected users:', Array.from(selectedUsers.keys()));
+                });
+
+                // انتخاب نوع ارسال
+                function selectNotificationType(type) {
+                    console.log('Selecting notification type:', type);
+
+                    const userSection = document.getElementById('userSelectionSection');
+                    const broadcastInfo = document.getElementById('broadcastInfo');
+                    const options = document.querySelectorAll('.notification-type-option');
+
+                    // حذف کلاس selected از همه گزینه‌ها
+                    options.forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+
+                    // اضافه کردن کلاس selected به گزینه انتخاب شده
+                    event.currentTarget.classList.add('selected');
+
+                    // آپدیت radio button
+                    document.querySelector(`input[value="${type}"]`).checked = true;
+
+                    if (type === 'specific') {
+                        userSection.classList.remove('hidden');
+                        broadcastInfo.classList.add('hidden');
+
+                        // اگر کاربران نداریم، بارگذاری کن
+                        if (allUsers.length === 0) {
+                            loadAllUsers();
+                        }
+                    } else {
+                        userSection.classList.add('hidden');
+                        broadcastInfo.classList.remove('hidden');
+
+                        // در حالت ارسال همگانی، تمام کاربران را انتخاب می‌کنیم
+                        selectAllUsers();
+                    }
+                }
+
+                // انتخاب تمام کاربران برای ارسال همگانی
+                async function selectAllUsers() {
+                    if (allUsers.length === 0) {
+                        await loadAllUsers();
+                    }
+
+                    selectedUsers.clear();
+                    allUsers.forEach(user => {
+                        const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                        selectedUsers.set(user.id, {
+                            fullName: fullName || 'کاربر بدون نام',
+                            phoneNumber: user.phoneNumber || 'بدون شماره'
+                        });
+                    });
+                    updateSelectedUsersDisplay();
+                    console.log('All users selected for broadcast:', selectedUsers.size);
+                }
+
+                // بارگذاری تمام کاربران از سرور
+                async function loadAllUsers() {
+                    try {
+                        const searchBtn = document.getElementById('searchBtn');
+                        searchBtn.innerHTML = '<div class="loading-spinner"></div>';
+                        searchBtn.disabled = true;
+
+                        const response = await fetch('?handler=SearchUsers', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({ searchTerm: '' })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            allUsers = result.data;
+                            displayAllUsers();
+                            console.log('Loaded users:', allUsers.length);
+                        } else {
+                            showError('خطا در بارگذاری کاربران: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error loading users:', error);
+                        showError('خطا در بارگذاری کاربران');
+                    } finally {
+                        const searchBtn = document.getElementById('searchBtn');
+                        searchBtn.innerHTML = '<i class="fas fa-search"></i>';
+                        searchBtn.disabled = false;
+                    }
+                }
+
+                // جستجوی کاربران
+                async function searchUsers() {
+                    const searchTerm = document.getElementById('userSearch').value.trim();
+                    await performSearch(searchTerm);
+                }
+
+                // انجام جستجو
+                async function performSearch(searchTerm) {
+                    try {
+                        const searchBtn = document.getElementById('searchBtn');
+                        searchBtn.innerHTML = '<div class="loading-spinner"></div>';
+                        searchBtn.disabled = true;
+
+                        const response = await fetch('?handler=SearchUsers', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                            },
+                            body: JSON.stringify({ searchTerm: searchTerm })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            allUsers = result.data;
+                            displayAllUsers();
+                        } else {
+                            showError('خطا در جستجوی کاربران: ' + result.error);
+                        }
+                    } catch (error) {
+                        console.error('Error searching users:', error);
+                        showError('خطا در جستجوی کاربران');
+                    } finally {
+                        const searchBtn = document.getElementById('searchBtn');
+                        searchBtn.innerHTML = '<i class="fas fa-search"></i>';
+                        searchBtn.disabled = false;
+                    }
+                }
+
+                // نمایش تمام کاربران
+                function displayAllUsers() {
+                    const container = document.getElementById('allUsersList');
+                    const countElement = document.getElementById('allUsersCount');
+
+                    container.innerHTML = '';
+                    countElement.textContent = `${allUsers.length} نفر`;
+
+                    if (allUsers.length === 0) {
+                        container.innerHTML = `
+                            <div class="text-center text-gray-500 py-8">
+                                <i class="fas fa-user-slash text-2xl mb-2"></i>
+                                <p>هیچ کاربری یافت نشد</p>
+                            </div>
+                        `;
+                    } else {
+                        allUsers.forEach(user => {
+                            const isSelected = selectedUsers.has(user.id);
+                            const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                            const userElement = document.createElement('div');
+                            userElement.className = `user-selection-item ${isSelected ? 'selected' : ''}`;
+                            userElement.innerHTML = `
+                                <div class="user-info">
+                                    <div class="user-name">${fullName || 'کاربر بدون نام'}</div>
+                                    <div class="user-contact">
+                                        ${user.phoneNumber || 'بدون شماره'}
+                                        ${user.email ? ' • ' + user.email : ''}
+                                    </div>
+                                </div>
+                                <button type="button" onclick="${isSelected ? `removeUser('${user.id}')` : `selectUser('${user.id}', '${(fullName || 'کاربر بدون نام').replace(/'/g, "\\'")}', '${user.phoneNumber || ''}')`}"
+                                        class="${isSelected ? 'remove-user-btn' : 'btn btn-primary btn-sm'}">
+                                    ${isSelected ? '<i class="fas fa-times"></i>' : 'انتخاب'}
+                                </button>
+                            `;
+                            container.appendChild(userElement);
+                        });
+                    }
+                }
+
+                // انتخاب کاربر
+                function selectUser(userId, fullName, phoneNumber) {
+                    if (!selectedUsers.has(userId)) {
+                        selectedUsers.set(userId, {
+                            fullName: fullName || 'کاربر بدون نام',
+                            phoneNumber: phoneNumber || 'بدون شماره'
+                        });
+                        updateSelectedUsersDisplay();
+                        displayAllUsers();
+                        console.log('User selected:', userId);
+                    }
+                }
+
+                // حذف کاربر
+                function removeUser(userId) {
+                    selectedUsers.delete(userId);
+                    updateSelectedUsersDisplay();
+                    displayAllUsers();
+                    console.log('User removed:', userId);
+                }
+
+                // بروزرسانی نمایش کاربران انتخاب شده
+                function updateSelectedUsersDisplay() {
+                    const container = document.getElementById('selectedUsers');
+                    const countElement = document.getElementById('selectedUsersCount');
+
+                    container.innerHTML = '';
+                    countElement.textContent = `${selectedUsers.size} نفر`;
+
+                    // آپدیت فیلدهای مخفی
+                    updateSelectedUsersInput();
+
+                    if (selectedUsers.size === 0) {
+                        container.innerHTML = `
+                            <div class="text-center text-gray-500 py-8">
+                                <i class="fas fa-users text-2xl mb-2"></i>
+                                <p>هیچ کاربری انتخاب نشده است</p>
+                            </div>
+                        `;
+                    } else {
+                        selectedUsers.forEach((user, userId) => {
+                            const userElement = document.createElement('div');
+                            userElement.className = 'user-selection-item bg-green-50 border-green-200';
+                            userElement.innerHTML = `
+                                <div class="user-info">
+                                    <div class="user-name text-green-800">${user.fullName}</div>
+                                    <div class="user-contact text-green-600">${user.phoneNumber}</div>
+                                </div>
+                                <button type="button" onclick="removeUser('${userId}')"
+                                        class="remove-user-btn text-red-600 hover:bg-red-100">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            `;
+                            container.appendChild(userElement);
+                        });
+                    }
+                }
+
+                // آپدیت فیلدهای مخفی برای UserIds
+                function updateSelectedUsersInput() {
+                    const container = document.getElementById('userIdsContainer');
+                    container.innerHTML = '';
+
+                    selectedUsers.forEach((user, userId) => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'UserIds';
+                        input.value = userId;
+                        container.appendChild(input);
+                    });
+
+                    console.log('Updated hidden inputs:', container.children.length);
+                }
+
+                // پیش‌نمایش نوتیفیکیشن
+                function updatePreview() {
+                    const title = document.getElementById('Title').value || 'عنوان نوتیفیکیشن';
+                    const message = document.getElementById('Notification_Description').value || 'متن پیام اینجا نمایش داده می‌شود...';
+                    const link = document.getElementById('Link').value;
+
+                    document.getElementById('previewTitle').textContent = title;
+                    document.getElementById('previewMessage').textContent = message;
+
+                    // بروزرسانی شمارش کاراکترها
+                    const descLength = document.getElementById('Notification_Description').value.length;
+                    const counter = document.getElementById('charCount');
+                    counter.textContent = `${descLength}/1000`;
+
+                    if (descLength > 900) {
+                        counter.classList.add('warning');
+                        counter.classList.remove('danger');
+                    } else if (descLength > 950) {
+                        counter.classList.remove('warning');
+                        counter.classList.add('danger');
+                    } else {
+                        counter.classList.remove('warning', 'danger');
+                    }
+                }
+
+
+                // مدیریت ارسال فرم
+                document.getElementById('editNotificationForm').addEventListener('submit', function (e) {
+                    const notificationType = document.querySelector('input[name="NotificationType"]:checked');
+
+                    console.log('=== FORM SUBMIT ===');
+                    console.log('NotificationType:', notificationType ? notificationType.value : 'none');
+                    console.log('Selected Users:', selectedUsers.size);
+
+                    // اعتبارسنجی
+                    if (!notificationType) {
+                        e.preventDefault();
+                        showError('لطفاً نوع ارسال را انتخاب کنید');
+                        return;
+                    }
+
+                    if (notificationType.value === 'specific' && selectedUsers.size === 0) {
+                        e.preventDefault();
+                        showError('لطفاً حداقل یک کاربر انتخاب کنید');
+                        return;
+                    }
+
+                    // مطمئن شویم فیلدهای مخفی آپدیت شده‌اند
+                    updateSelectedUsersInput();
+
+                    const submitButton = document.getElementById('submitButton');
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<div class="loading-spinner ml-2"></div> در حال ذخیره...';
+                });
+
+                // توابع نمایش پیام
+                function showSuccess(message) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'موفق',
+                        text: message,
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+
+                function showError(message) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا',
+                        text: message,
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            confirmButton: 'btn btn-primary'
+                        }
+                    });
+                }
+
+                // مدیریت منوی سایدبار
+                document.getElementById('sidebarToggle').addEventListener('click', function () {
+                    if (window.innerWidth < 768) {
+                        toggleMobileSidebar();
+                    } else {
+                        toggleSidebar();
+                    }
+                });
+
+                // بستن منوها هنگام کلیک خارج
+                document.addEventListener('click', function (event) {
+                    const profileDropdown = document.getElementById('profileDropdown');
+                    const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+                    if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                        profileDropdown.classList.add('hidden');
+                    }
+                });
+
+                // جستجوی خودکار با تاخیر
+                document.getElementById('userSearch').addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        const searchTerm = this.value.trim();
+                        if (searchTerm) {
+                            performSearch(searchTerm);
+                        } else {
+                            loadAllUsers();
+                        }
+                    }, 500);
+                });
     </script>
-
-    <!-- Validation Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

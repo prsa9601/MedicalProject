@@ -21,7 +21,8 @@
         public string Title { get; set; }
         public List<Guid> UserId { get; set; } = new List<Guid>();
         public string Description { get; set; }
-        public string Link { get; set; }
+        public string? Link { get; set; }
+        public bool SendToAll { get; set; }
     }
 
 
