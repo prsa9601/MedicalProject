@@ -1,4 +1,3 @@
-using MedicalProject.Infrastructure.RazorUtils;
 using MedicalProject.Models.Notification;
 using MedicalProject.Services.Notification;
 using Microsoft.AspNetCore.Mvc;
@@ -7,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace MedicalProject.Pages.Admin.Notification
 {
-    public class IndexModel : BaseRazorFilter<NotificationFilterParam>
+    public class DetailModel : PageModel
     {
         private readonly INotificationService _service;
 
-        public IndexModel(INotificationService service)
+        public DetailModel(INotificationService service)
         {
             _service = service;
         }
 
         [BindProperty(SupportsGet = true)]
-        public NotificationFilterResult Result { get; set; }
-        public async Task OnGet()
+        public NotificationDto? Notification { get; set; }
+        public async Task OnGet(Guid id)
         {
-            Result = await _service.GetFilterForAdmin(FilterParams);
+            Notification = await _service.GetByIdForAdmin(id);
         }
     }
 }

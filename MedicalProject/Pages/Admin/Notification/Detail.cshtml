@@ -1,0 +1,949 @@
+﻿@page "{id:Guid}"
+@using MedicalProject.Infrastructure.Utils
+@model MedicalProject.Pages.Admin.Notification.DetailModel
+@{
+    Layout = null;
+    ViewData["Title"] = "جزئیات نوتیفیکیشن - پلتفرم دنگ";
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>جزئیات نوتیفیکیشن - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: #ef4444;
+        }
+
+        .status-pending {
+            background-color: #f59e0b;
+        }
+
+        /* استایل‌های سفارشی برای صفحه جزئیات نوتیفیکیشن */
+        .notification-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+            .notification-preview::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(45deg);
+            }
+
+        .notification-icon {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .notification-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .notification-message {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .stats-card {
+            transition: all 0.3s;
+        }
+
+            .stats-card:hover {
+                transform: translateY(-0.25rem);
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .user-list-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            background-color: #f9fafb;
+            transition: all 0.2s;
+        }
+
+            .user-list-item:hover {
+                background-color: #f3f4f6;
+            }
+
+        .user-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-left: 0.75rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-contact {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-status {
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+
+            .notification-preview {
+                padding: 1.5rem;
+            }
+
+            .notification-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <a href="/Admin/Notification" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">جزئیات نوتیفیکیشن</h1>
+                                    <p class="mt-1 text-sm text-gray-600">مشاهده اطلاعات کامل و آمار ارسال</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <button onclick="resendNotification()" class="btn btn-warning">
+                                    <i class="fas fa-redo ml-2"></i>
+                                    ارسال مجدد
+                                </button>
+                                <a asp-page="/Admin/Notification/Edit" asp-route-id="@Model.Notification.Id" class="btn btn-primary">
+                                    <i class="fas fa-edit ml-2"></i>
+                                    ویرایش
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- ستون سمت چپ - اطلاعات اصلی -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- پیش‌نمایش نوتیفیکیشن -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">پیش‌نمایش نوتیفیکیشن</h2>
+                                    <div class="notification-preview">
+                                        <div class="notification-icon">
+                                            <i class="fas fa-bell"></i>
+                                        </div>
+                                        <div class="notification-title">@Model.Notification.Title</div>
+                                        <div class="notification-message">@Model.Notification.Description</div>
+                                        @if (!string.IsNullOrEmpty(Model.Notification.Link))
+                                        {
+                                            <div class="mt-4">
+                                                <a href="@Model.Notification.Link" target="_blank" class="text-white opacity-90 hover:opacity-100 underline">
+                                                    <i class="fas fa-link ml-1"></i>
+                                                    @Model.Notification.Link
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اطلاعات جزئی -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات نوتیفیکیشن</h2>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="form-label">عنوان</label>
+                                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                                @Model.Notification.Title
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label class="form-label">تاریخ ایجاد</label>
+                                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                                @Model.Notification.CreationDate.ToPersianDate()
+                                            </div>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="form-label">متن پیام</label>
+                                            <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 min-h-[100px]">
+                                                @Model.Notification.Description
+                                            </div>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(Model.Notification.Link))
+                                        {
+                                            <div class="md:col-span-2">
+                                                <label class="form-label">لینک مرتبط</label>
+                                                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                                    <a href="@Model.Notification.Link" target="_blank" class="text-blue-600 hover:text-blue-800 break-all">
+                                                        @Model.Notification.Link
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- لیست کاربران هدف -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h2 class="text-lg font-semibold text-gray-900">کاربران هدف</h2>
+                                        <span class="badge badge-primary">
+                                            <i class="fas fa-users ml-1"></i>
+                                            @Model.Notification.Users.Count نفر
+                                        </span>
+                                    </div>
+
+                                    @if (Model.Notification.Users.Any())
+                                    {
+                                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                                            @foreach (var user in Model.Notification.Users)
+                                            {
+                                                <div class="user-list-item">
+                                                    <div class="user-avatar-small">
+                                                        @(user.FirstName?.FirstOrDefault().ToString() ?? "U")
+                                                    </div>
+                                                    <div class="user-info">
+                                                        <div class="user-name">
+                                                            @user.FirstName @user.LastName
+
+                                                            <span class="status-dot status-active"></span>
+
+                                                        </div>
+                                                        <div class="user-contact">
+                                                            @user.PhoneNumber
+                                                            @if (!string.IsNullOrEmpty(user.PhoneNumber))
+                                                            {
+                                                                <span> • @user.PhoneNumber</span>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="user-status">
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-check ml-1"></i>
+                                                            تحویل شده
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center text-gray-500 py-8">
+                                            <i class="fas fa-users text-2xl mb-2"></i>
+                                            <p>هیچ کاربری برای این نوتیفیکیشن تعریف نشده است</p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ستون سمت راست - آمار و اقدامات -->
+                        <div class="space-y-6">
+                            <!-- آمار ارسال -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">آمار ارسال</h2>
+                                    <div class="space-y-4">
+                                        <div class="stats-card p-4 bg-blue-50 rounded-lg border border-blue-200">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-sm font-medium text-blue-900">کل گیرندگان</span>
+                                                <span class="text-lg font-bold text-blue-900">@Model.Notification.Users.Count</span>
+                                            </div>
+                                        </div>
+
+
+
+                                        <div class="stats-card p-4 bg-purple-50 rounded-lg border border-purple-200">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm font-medium text-purple-900">وضعیت</span>
+                                                <span class="badge badge-success">
+                                                    <i class="fas fa-check ml-1"></i>
+                                                    ارسال شده
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اقدامات سریع -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">اقدامات سریع</h2>
+                                    <div class="space-y-3">
+                                        <a asp-page="/Admin/Notification/Edit" asp-route-id="@Model.Notification.Id" class="btn btn-primary w-full justify-center">
+                                            <i class="fas fa-edit ml-2"></i>
+                                            ویرایش نوتیفیکیشن
+                                        </a>
+                                        <a asp-page="/Admin/Notification/Add" class="btn btn-success w-full justify-center">
+                                            <i class="fas fa-plus ml-2"></i>
+                                            ایجاد مشابه
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اطلاعات فنی -->
+                            <div class="card">
+                                <div class="p-6">
+                                    <h2 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات فنی</h2>
+                                    <div class="space-y-3 text-sm">
+                                    
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">تاریخ ایجاد:</span>
+                                            <span class="text-gray-900">@Model.Notification.CreationDate.ToPersianDateTime()</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">آخرین بروزرسانی:</span>
+                                            <span class="text-gray-900">@Model.Notification.CreationDate.ToPersianDateTime()</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // ارسال مجدد نوتیفیکیشن
+        async function resendNotification() {
+            const result = await Swal.fire({
+                title: 'ارسال مجدد',
+                text: 'آیا از ارسال مجدد این نوتیفیکیشن اطمینان دارید؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، ارسال کن',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    confirmButton: 'btn btn-warning',
+                    cancelButton: 'btn btn-outline'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch('?handler=ResendNotification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        },
+                        body: JSON.stringify({
+                            NotificationId: '@Model.Notification.Id'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'موفق',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                confirmButton: 'btn btn-success'
+                            }
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'خطا',
+                            text: data.error,
+                            icon: 'error',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                confirmButton: 'btn btn-danger'
+                            }
+                        });
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'خطا',
+                        text: 'خطا در ارتباط با سرور',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        }
+                    });
+                }
+            }
+        }
+
+        // اشتراک‌گذاری نوتیفیکیشن
+
+        // کپی به کلیپ‌بورد
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                Swal.fire({
+                    title: 'کپی شد',
+                    text: 'لینک با موفقیت کپی شد',
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            });
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+    </script>
+</body>
+</html>

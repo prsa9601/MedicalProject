@@ -4,6 +4,7 @@
     {
         public string Title { get; set; }
         public List<Guid> UserIds { get; set; } = new List<Guid>();
+        public bool SendToAll { get; set; } 
         public string Description { get; set; }
         public string Link { get; set; }
     }
@@ -23,12 +24,20 @@
         public string Link { get; set; }
     }
 
+
     public class NotificationDto : BaseDto
     {
         public string Title { get; set; }
-        public List<Guid> UserIds { get; set; } = new List<Guid>();
+        public List<UserNotificationDto> Users { get; set; } = new List<UserNotificationDto>();
         public string Description { get; set; }
         public string? Link { get; set; }
+    }
+    public class UserNotificationDto : BaseDto
+    {
+        public Guid UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string PhoneNumber { get; set; }
     }
     public class NotificationDtoForUser : BaseDto
     {
@@ -39,8 +48,8 @@
     }
     public class NotificationFilterParam : BaseFilterParam
     {
-        public string? Title { get; set; }
-        public string? Description { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
     public class NotificationFilterParamForUser : BaseFilterParam
     {

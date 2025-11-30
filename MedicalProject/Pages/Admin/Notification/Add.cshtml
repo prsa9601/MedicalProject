@@ -1,0 +1,1102 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Notification.AddModel
+@{
+    Layout = null;
+    ViewData["Title"] = "ارسال نوتیفیکیشن جدید";
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ارسال نوتیفیکیشن جدید - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .btn-sm {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* استایل‌های سفارشی برای صفحه نوتیفیکیشن */
+        .notification-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+            .notification-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(45deg);
+            }
+
+        .notification-icon {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .notification-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .notification-message {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .user-selection-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            background-color: #f9fafb;
+            transition: all 0.2s;
+        }
+
+            .user-selection-item:hover {
+                background-color: #f3f4f6;
+            }
+
+            .user-selection-item.selected {
+                background-color: #d1fae5;
+                border-color: #a7f3d0;
+            }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-contact {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .remove-user-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+            .remove-user-btn:hover {
+                background-color: #fee2e2;
+            }
+
+        .users-list-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: white;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: left;
+        }
+
+            .char-counter.warning {
+                color: #d97706;
+            }
+
+            .char-counter.danger {
+                color: #dc2626;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="flex-1 p-4">
+                    <div class="space-y-1">
+                        <a href="/Admin/Dashboard" class="sidebar-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>داشبورد</span>
+                        </a>
+                        <a href="/Admin/Users" class="sidebar-link">
+                            <i class="fas fa-users"></i>
+                            <span>مدیریت کاربران</span>
+                        </a>
+                        <a href="/Admin/Notification" class="sidebar-link active">
+                            <i class="fas fa-bell"></i>
+                            <span>نوتیفیکیشن‌ها</span>
+                        </a>
+                        <a href="/Admin/Settings" class="sidebar-link">
+                            <i class="fas fa-cog"></i>
+                            <span>تنظیمات</span>
+                        </a>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <a href="/Admin/Notification" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت به لیست
+                                </a>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">ارسال نوتیفیکیشن جدید</h1>
+                                    <p class="mt-1 text-sm text-gray-600">ارسال پیام به کاربران خاص یا ارسال همگانی</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- فرم ایجاد نوتیفیکیشن -->
+                    <div class="card mb-8">
+                        <div class="p-6">
+                            <form id="createNotificationForm" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                                    <!-- ستون سمت چپ -->
+                                    <div class="space-y-6">
+                                        <!-- عنوان -->
+                                        <div class="form-group">
+                                            <label for="title" class="form-label">
+                                                عنوان نوتیفیکیشن
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" id="title" name="Title" class="input"
+                                                   placeholder="عنوان پیام را وارد کنید" required maxlength="200"
+                                                   value="@Model.Title">
+                                            <div class="form-text">حداکثر 200 کاراکتر</div>
+                                        </div>
+
+                                        <!-- نوع ارسال -->
+                                        <div class="form-group">
+                                            <label class="form-label">نوع ارسال</label>
+                                            <div class="space-y-3">
+                                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                    <input type="radio" name="NotificationType" value="broadcast" checked
+                                                           onchange="toggleUserSelection()" class="ml-3">
+                                                    <div class="flex-1">
+                                                        <div class="font-medium text-gray-900">ارسال همگانی</div>
+                                                        <div class="text-sm text-gray-500 mt-1">ارسال به همه کاربران سیستم</div>
+                                                    </div>
+                                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-bullhorn text-blue-600"></i>
+                                                    </div>
+                                                </label>
+
+                                                <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                                    <input type="radio" name="NotificationType" value="specific"
+                                                           onchange="toggleUserSelection()" class="ml-3">
+                                                    <div class="flex-1">
+                                                        <div class="font-medium text-gray-900">ارسال به کاربران خاص</div>
+                                                        <div class="text-sm text-gray-500 mt-1">انتخاب دستی کاربران</div>
+                                                    </div>
+                                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-users text-green-600"></i>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <!-- لینک -->
+                                        <div class="form-group">
+                                            <label for="link" class="form-label">لینک مرتبط (اختیاری)</label>
+                                            <input type="url" id="link" name="Link" class="input"
+                                                   placeholder="https://example.com" value="@Model.Link">
+                                            <div class="form-text">لینک مقصد هنگام کلیک روی نوتیفیکیشن</div>
+                                        </div>
+
+                                        <!-- پیش‌نمایش نوتیفیکیشن -->
+                                        <div class="form-group">
+                                            <label class="form-label">پیش‌نمایش</label>
+                                            <div class="notification-card">
+                                                <div class="notification-icon">
+                                                    <i class="fas fa-bell"></i>
+                                                </div>
+                                                <div class="notification-title" id="previewTitle">عنوان نوتیفیکیشن</div>
+                                                <div class="notification-message" id="previewMessage">متن پیام اینجا نمایش داده می‌شود...</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- ستون سمت راست -->
+                                    <div class="space-y-6">
+                                        <!-- توضیحات -->
+                                        <div class="form-group">
+                                            <label for="description" class="form-label">
+                                                متن پیام
+                                                <span class="text-red-500">*</span>
+                                            </label>
+                                            <textarea id="description" name="Description" class="input" rows="10"
+                                                      placeholder="متن کامل پیام را وارد کنید..." required
+                                                      maxlength="1000">@Model.Description</textarea>
+                                            <div class="flex justify-between items-center mt-1">
+                                                <div class="form-text">حداکثر 1000 کاراکتر</div>
+                                                <div id="charCount" class="char-counter">0/1000</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- بخش انتخاب کاربران -->
+                                        <div id="userSelectionSection" class="hidden">
+                                            <div class="form-group">
+                                                <label class="form-label">انتخاب کاربران</label>
+                                                <div class="space-y-4">
+                                                    <!-- جستجوی کاربران -->
+                                                    <div class="flex space-x-2 space-x-reverse">
+                                                        <input type="text" id="userSearch" class="input flex-1"
+                                                               placeholder="جستجو بر اساس نام، ایمیل یا شماره تلفن..."
+                                                               onkeyup="filterUsers()">
+                                                        <button type="button" onclick="filterUsers()" class="btn btn-outline">
+                                                            <i class="fas fa-search"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- لیست کاربران -->
+                                                    <div>
+                                                        <div class="flex justify-between items-center mb-3">
+                                                            <span class="text-sm font-medium text-gray-900">لیست کاربران</span>
+                                                            <span id="allUsersCount" class="badge badge-primary">0 نفر</span>
+                                                        </div>
+                                                        <div id="allUsersList" class="users-list-container">
+                                                            <!-- کاربران اینجا نمایش داده می‌شوند -->
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- کاربران انتخاب شده -->
+                                                    <div>
+                                                        <div class="flex justify-between items-center mb-3">
+                                                            <span class="text-sm font-medium text-gray-900">کاربران انتخاب شده</span>
+                                                            <span id="selectedUsersCount" class="badge badge-success">0 نفر</span>
+                                                        </div>
+                                                        <div id="selectedUsers" class="users-list-container">
+                                                            <div class="text-center text-gray-500 py-8">
+                                                                <i class="fas fa-users text-2xl mb-2"></i>
+                                                                <p>هیچ کاربری انتخاب نشده است</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- فیلد مخفی برای کاربران انتخاب شده -->
+                                <input type="hidden" id="selectedUsersInput" name="SelectedUsers" />
+
+                                <!-- دکمه‌های اقدام -->
+                                <div class="flex justify-end space-x-3 space-x-reverse mt-8 pt-6 border-t">
+                                    <a href="/Admin/Notification" class="btn btn-outline">
+                                        <i class="fas fa-times ml-2"></i>
+                                        لغو
+                                    </a>
+                                    <button type="submit" id="submitButton" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane ml-2"></i>
+                                        ارسال نوتیفیکیشن
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // متغیرهای مدیریت نوتیفیکیشن
+        let selectedUsers = new Map();
+        let allUsers = [];
+
+        // بارگذاری اولیه صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAllUsers();
+            updatePreview();
+
+            // مدیریت رویدادهای input
+            document.getElementById('title').addEventListener('input', updatePreview);
+            document.getElementById('description').addEventListener('input', updatePreview);
+        });
+
+        // مدیریت تغییر نوع ارسال
+        function toggleUserSelection() {
+            const notificationType = document.querySelector('input[name="NotificationType"]:checked').value;
+            const userSection = document.getElementById('userSelectionSection');
+
+            if (notificationType === 'specific') {
+                userSection.classList.remove('hidden');
+                if (allUsers.length === 0) {
+                    loadAllUsers();
+                }
+            } else {
+                userSection.classList.add('hidden');
+                selectedUsers.clear();
+                updateSelectedUsersDisplay();
+            }
+        }
+
+        // بارگذاری تمام کاربران از سرور
+        async function loadAllUsers() {
+            try {
+                const response = await fetch('?handler=SearchUsers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ searchTerm: '' })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    allUsers = result.data;
+                    displayAllUsers();
+                } else {
+                    showError('خطا در بارگذاری کاربران: ' + result.error);
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showError('خطا در بارگذاری کاربران');
+            }
+        }
+
+        // جستجوی کاربران از سرور
+        async function searchUsers(searchTerm) {
+            try {
+                const response = await fetch('?handler=SearchUsers', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ searchTerm: searchTerm })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    return result.data;
+                } else {
+                    showError('خطا در جستجوی کاربران: ' + result.error);
+                    return [];
+                }
+            } catch (error) {
+                console.error('Error searching users:', error);
+                showError('خطا در جستجوی کاربران');
+                return [];
+            }
+        }
+
+        // نمایش تمام کاربران
+        function displayAllUsers() {
+            const container = document.getElementById('allUsersList');
+            const countElement = document.getElementById('allUsersCount');
+
+            container.innerHTML = '';
+            countElement.textContent = `${allUsers.length} نفر`;
+
+            if (allUsers.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-user-slash text-2xl mb-2"></i>
+                        <p>هیچ کاربری یافت نشد</p>
+                    </div>
+                `;
+            } else {
+                allUsers.forEach(user => {
+                    const isSelected = selectedUsers.has(user.id);
+                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                    const userElement = document.createElement('div');
+                    userElement.className = `user-selection-item ${isSelected ? 'selected' : ''}`;
+                    userElement.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-name">${fullName}</div>
+                            <div class="user-contact">
+                                ${user.phoneNumber || 'بدون شماره'}
+                                ${user.email ? ' • ' + user.email : ''}
+                            </div>
+                        </div>
+                        <button type="button" onclick="${isSelected ? `removeUser('${user.id}')` : `selectUser('${user.id}', '${fullName.replace(/'/g, "\\'")}', '${user.phoneNumber || ''}')`}"
+                                class="${isSelected ? 'remove-user-btn' : 'btn btn-primary btn-sm'}">
+                            ${isSelected ? '<i class="fas fa-times"></i>' : 'انتخاب'}
+                        </button>
+                    `;
+                    container.appendChild(userElement);
+                });
+            }
+        }
+
+        // فیلتر کردن کاربران
+        async function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.trim();
+
+            if (!searchTerm) {
+                loadAllUsers();
+                return;
+            }
+
+            const filteredUsers = await searchUsers(searchTerm);
+            displayFilteredUsers(filteredUsers);
+        }
+
+        // نمایش کاربران فیلتر شده
+        function displayFilteredUsers(users) {
+            const container = document.getElementById('allUsersList');
+            const countElement = document.getElementById('allUsersCount');
+
+            container.innerHTML = '';
+            countElement.textContent = `${users.length} نفر`;
+
+            if (users.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-user-slash text-2xl mb-2"></i>
+                        <p>کاربری با مشخصات وارد شده یافت نشد</p>
+                    </div>
+                `;
+            } else {
+                users.forEach(user => {
+                    const isSelected = selectedUsers.has(user.id);
+                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                    const userElement = document.createElement('div');
+                    userElement.className = `user-selection-item ${isSelected ? 'selected' : ''}`;
+                    userElement.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-name">${fullName}</div>
+                            <div class="user-contact">
+                                ${user.phoneNumber || 'بدون شماره'}
+                                ${user.email ? ' • ' + user.email : ''}
+                            </div>
+                        </div>
+                        <button type="button" onclick="${isSelected ? `removeUser('${user.id}')` : `selectUser('${user.id}', '${fullName.replace(/'/g, "\\'")}', '${user.phoneNumber || ''}')`}"
+                                class="${isSelected ? 'remove-user-btn' : 'btn btn-primary btn-sm'}">
+                            ${isSelected ? '<i class="fas fa-times"></i>' : 'انتخاب'}
+                        </button>
+                    `;
+                    container.appendChild(userElement);
+                });
+            }
+        }
+
+        // انتخاب کاربر
+        function selectUser(userId, fullName, phoneNumber) {
+            if (!selectedUsers.has(userId)) {
+                selectedUsers.set(userId, { fullName, phoneNumber });
+                updateSelectedUsersDisplay();
+                filterUsers(); // بروزرسانی لیست
+            }
+        }
+
+        // حذف کاربر
+        function removeUser(userId) {
+            selectedUsers.delete(userId);
+            updateSelectedUsersDisplay();
+            filterUsers(); // بروزرسانی لیست
+        }
+
+        // بروزرسانی نمایش کاربران انتخاب شده
+        function updateSelectedUsersDisplay() {
+            const container = document.getElementById('selectedUsers');
+            const countElement = document.getElementById('selectedUsersCount');
+            const selectedUsersInput = document.getElementById('selectedUsersInput');
+
+            container.innerHTML = '';
+            countElement.textContent = `${selectedUsers.size} نفر`;
+
+            // آپدیت فیلد مخفی
+            selectedUsersInput.value = Array.from(selectedUsers.keys()).join(',');
+
+            if (selectedUsers.size === 0) {
+                container.innerHTML = `
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-users text-2xl mb-2"></i>
+                        <p>هیچ کاربری انتخاب نشده است</p>
+                    </div>
+                `;
+            } else {
+                selectedUsers.forEach((user, userId) => {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'user-selection-item bg-green-50 border-green-200';
+                    userElement.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-name text-green-800">${user.fullName}</div>
+                            <div class="user-contact text-green-600">${user.phoneNumber}</div>
+                        </div>
+                        <button type="button" onclick="removeUser('${userId}')"
+                                class="remove-user-btn text-red-600 hover:bg-red-100">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    container.appendChild(userElement);
+                });
+            }
+        }
+
+        // پیش‌نمایش نوتیفیکیشن
+        function updatePreview() {
+            const title = document.getElementById('title').value || 'عنوان نوتیفیکیشن';
+            const message = document.getElementById('description').value || 'متن پیام اینجا نمایش داده می‌شود...';
+
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewMessage').textContent = message;
+
+            // بروزرسانی شمارش کاراکترها
+            const descLength = document.getElementById('description').value.length;
+            const counter = document.getElementById('charCount');
+            counter.textContent = `${descLength}/1000`;
+
+            if (descLength > 900) {
+                counter.classList.add('warning');
+                counter.classList.remove('danger');
+            } else if (descLength > 950) {
+                counter.classList.remove('warning');
+                counter.classList.add('danger');
+            } else {
+                counter.classList.remove('warning', 'danger');
+            }
+        }
+
+        // مدیریت ارسال فرم
+        document.getElementById('createNotificationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const notificationType = document.querySelector('input[name="NotificationType"]:checked').value;
+
+            // اعتبارسنجی
+            if (!formData.get('Title') || !formData.get('Description')) {
+                showError('لطفاً عنوان و متن پیام را وارد کنید');
+                return;
+            }
+
+            if (notificationType === 'specific' && selectedUsers.size === 0) {
+                showError('لطفاً حداقل یک کاربر انتخاب کنید');
+                return;
+            }
+
+            try {
+                const submitButton = document.getElementById('submitButton');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> در حال ارسال...';
+
+                // آماده‌سازی داده‌ها برای ارسال به سرور
+                const notificationData = {
+                    Title: formData.get('Title'),
+                    Description: formData.get('Description'),
+                    Link: formData.get('Link'),
+                    NotificationType: notificationType,
+                    SelectedUsers: notificationType === 'specific' ? Array.from(selectedUsers.keys()) : []
+                };
+
+                // ارسال به سرور
+                const response = await fetch('?handler=CreateNotification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(notificationData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess(result.message || 'نوتیفیکیشن با موفقیت ارسال شد');
+
+                    setTimeout(() => {
+                        window.location.href = '/Admin/Notification';
+                    }, 1500);
+                } else {
+                    showError(result.error || 'خطا در ارسال نوتیفیکیشن');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError('خطا در ارسال نوتیفیکیشن');
+            } finally {
+                const submitButton = document.getElementById('submitButton');
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-paper-plane ml-2"></i> ارسال نوتیفیکیشن';
+            }
+        });
+
+        // توابع نمایش پیام
+        function showSuccess(message) {
+            Swal.fire({
+                icon: 'success',
+                title: 'موفق',
+                text: message,
+                confirmButtonText: 'باشه',
+                customClass: {
+                    confirmButton: 'btn btn-primary'
+                }
+            });
+        }
+
+        function showError(message) {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطا',
+                text: message,
+                confirmButtonText: 'باشه',
+                customClass: {
+                    confirmButton: 'btn btn-primary'
+                }
+            });
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+
+        // جستجوی خودکار با تاخیر
+        let searchTimeout;
+        document.getElementById('userSearch').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterUsers();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

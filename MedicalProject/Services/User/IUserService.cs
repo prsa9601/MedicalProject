@@ -87,8 +87,11 @@ namespace MedicalProject.Services.User
         public async Task<UserFilterResult> GetUserByFilter(UserFilterParam param)
         {
             string url = $"User/GetUserByFilter?take={param.Take}&pageId={param.PageId}";
-            if (param.PhoneNumber is not null)
-                url += $"&phoneNumber={param.PhoneNumber}";
+          
+            if (param.Search is not null)
+                url += $"&search={param.Search}";
+         
+          
             if (param.IsActive is not null)
                 url += $"&isActive={param.IsActive}";
 

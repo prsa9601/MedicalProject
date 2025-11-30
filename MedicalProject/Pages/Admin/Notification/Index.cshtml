@@ -1,533 +1,921 @@
-﻿@* @page
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Infrastructure.Utils
 @model MedicalProject.Pages.Admin.Notification.IndexModel
 @{
-    ViewData["Title"] = "مدیریت نوتیفیکیشن";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت نوتیفیکیشن - پلتفرم دنگ</title>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- هدر صفحه -->
-    <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">مدیریت نوتیفیکیشن</h1>
-            <p class="text-gray-600 mt-2">ارسال پیام به کاربران خاص یا ارسال همگانی</p>
-        </div>
-        <button onclick="openCreateModal()" class="btn btn-primary mt-4 lg:mt-0">
-            <i class="fas fa-plus ml-2"></i>
-            ارسال نوتیفیکیشن جدید
-        </button>
-    </div>
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- آمار سریع -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="card">
-            <div class="p-6">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: #ef4444;
+        }
+
+        .status-pending {
+            background-color: #f59e0b;
+        }
+
+        /* استایل‌های سفارشی برای صفحه نوتیفیکیشن */
+        .notification-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+            .notification-card::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                right: -50%;
+                width: 200%;
+                height: 200%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: rotate(45deg);
+            }
+
+        .notification-icon {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .notification-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .notification-message {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .user-selection-item {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            background-color: #f9fafb;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .user-contact {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .remove-user-btn {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+        }
+
+            .remove-user-btn:hover {
+                background-color: #fee2e2;
+            }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-result-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .search-result-item:hover {
+                background-color: #f9fafb;
+            }
+
+            .search-result-item:last-child {
+                border-bottom: none;
+            }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-align: left;
+        }
+
+            .char-counter.warning {
+                color: #d97706;
+            }
+
+            .char-counter.danger {
+                color: #dc2626;
+            }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+
+            .notification-card {
+                padding: 1.5rem;
+            }
+
+            .notification-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-paper-plane text-blue-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">کل نوتیفیکیشن‌ها</p>
-                        <p class="text-2xl font-bold text-gray-900">@Model.User.TotalNotifications</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-check text-green-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">ارسال شده</p>
-                        <p class="text-2xl font-bold text-gray-900">@Model.SentNotifications</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-clock text-orange-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">در انتظار</p>
-                        <p class="text-2xl font-bold text-gray-900">@Model.PendingNotifications</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="p-6">
-                <div class="flex items-center">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                        <i class="fas fa-users text-purple-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-600">کاربران فعال</p>
-                        <p class="text-2xl font-bold text-gray-900">@Model.ActiveUsers</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- فیلترها -->
-    <div class="card mb-8">
-        <div class="p-6">
-            <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                <div>
-                    <label class="form-label">نوع نوتیفیکیشن</label>
-                    <select asp-for="FilterParams.Type" class="input">
-                        <option value="">همه انواع</option>
-                        <option value="1">اطلاعات</option>
-                        <option value="2">موفقیت</option>
-                        <option value="3">هشدار</option>
-                        <option value="4">خطا</option>
-                        <option value="5">تبلیغاتی</option>
-                        <option value="6">سیستمی</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">وضعیت ارسال</label>
-                    <select asp-for="FilterParams.IsSent" class="input">
-                        <option value="">همه وضعیت‌ها</option>
-                        <option value="true">ارسال شده</option>
-                        <option value="false">در انتظار</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="form-label">از تاریخ</label>
-                    <input type="date" asp-for="FilterParams.StartDate" class="input" />
-                </div>
-                <div>
-                    <label class="form-label">تا تاریخ</label>
-                    <input type="date" asp-for="FilterParams.EndDate" class="input" />
-                </div>
-                <div class="flex items-end space-x-3 space-x-reverse">
-                    <button type="submit" class="btn btn-primary flex-1">
-                        <i class="fas fa-filter ml-2"></i>
-                        اعمال فیلتر
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
                     </button>
-                    <a href="?pageid=1&take=10" class="btn btn-outline">
-                        <i class="fas fa-refresh ml-2"></i>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                        </div>
                     </a>
                 </div>
-            </form>
-        </div>
-    </div>
 
-    <!-- جدول نوتیفیکیشن‌ها -->
-    <div class="card">
-        <div class="p-6">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>عنوان</th>
-                            <th>نوع</th>
-                            <th>اولویت</th>
-                            <th>گیرندگان</th>
-                            <th>وضعیت</th>
-                            <th>تاریخ ایجاد</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (!Model.FilterResult.Data.Any())
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center py-8 text-gray-500">
-                                    <i class="fas fa-bell text-4xl mb-2"></i>
-                                    <p>هیچ نوتیفیکیشنی یافت نشد</p>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var notification in Model.FilterResult.Data)
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="max-w-xs">
-                                            <div class="font-medium text-gray-900 truncate">@notification.Title</div>
-                                            <div class="text-sm text-gray-500 truncate">@notification.Message</div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge @GetNotificationTypeBadge(notification.Type)">
-                                            @GetNotificationTypeText(notification.Type)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <span class="badge @GetPriorityBadge(notification.Priority)">
-                                            @GetPriorityText(notification.Priority)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @if (notification.IsBroadcast)
-                                        {
-                                            <span class="badge badge-primary">
-                                                <i class="fas fa-globe ml-1"></i>
-                                                همگانی
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-secondary">
-                                                <i class="fas fa-user ml-1"></i>
-                                                @notification.TargetUsers.Count نفر
-                                            </span>
-                                        }
-                                    </td>
-                                    <td>
-                                        @if (notification.IsSent)
-                                        {
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-check ml-1"></i>
-                                                ارسال شده
-                                            </span>
-                                            <div class="text-xs text-gray-500 mt-1">
-                                                @notification.ReadCount/@notification.SentCount مطالعه
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-warning">
-                                                <i class="fas fa-clock ml-1"></i>
-                                                در انتظار
-                                            </span>
-                                        }
-                                    </td>
-                                    <td>@notification.CreationDate.ToPersianDate()</td>
-                                    <td>
-                                        <div class="flex items-center space-x-2 space-x-reverse">
-                                            <button onclick="viewNotification('@notification.Id')" 
-                                                    class="btn btn-outline btn-sm" title="مشاهده">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            @if (!notification.IsSent)
-                                            {
-                                                <button onclick="editNotification('@notification.Id')" 
-                                                        class="btn btn-outline btn-sm" title="ویرایش">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <button onclick="sendNotification('@notification.Id')" 
-                                                        class="btn btn-success btn-sm" title="ارسال">
-                                                    <i class="fas fa-paper-plane"></i>
-                                                </button>
-                                                <button onclick="deleteNotification('@notification.Id')" 
-                                                        class="btn btn-danger btn-sm" title="حذف">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                    </tbody>
-                </table>
-            </div>
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
 
-            <!-- صفحه‌بندی -->
-            @if (Model.FilterResult.PageCount > 1)
-            {
-                <div class="flex justify-center mt-6">
-                    <nav class="flex items-center space-x-2 space-x-reverse">
-                        @for (int i = 1; i <= Model.FilterResult.PageCount; i++)
-                        {
-                            <a href="?pageid=@i&take=@Model.FilterResult.FilterParams.Take@GetFilterQueryString()" 
-                               class="px-3 py-1 rounded-lg @(i == Model.FilterResult.FilterParams.PageId ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
-                                @i
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
                             </a>
-                        }
-                    </nav>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<!-- مدال ایجاد/ویرایش نوتیفیکیشن -->
-<div id="notificationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-    <div class="relative top-20 mx-auto p-5 border w-full max-w-4xl shadow-lg rounded-lg bg-white">
-        <div class="flex justify-between items-center pb-3 border-b">
-            <h3 id="modalTitle" class="text-xl font-semibold text-gray-900">ارسال نوتیفیکیشن جدید</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-
-        <form id="notificationForm" class="mt-4">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="form-label">عنوان <span class="text-red-500">*</span></label>
-                        <input type="text" id="title" class="input" placeholder="عنوان پیام" required maxlength="200">
-                    </div>
-
-                    <div>
-                        <label class="form-label">نوع پیام</label>
-                        <select id="type" class="input">
-                            <option value="1">اطلاعات</option>
-                            <option value="2">موفقیت</option>
-                            <option value="3">هشدار</option>
-                            <option value="4">خطا</option>
-                            <option value="5">تبلیغاتی</option>
-                            <option value="6">سیستمی</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="form-label">اولویت</label>
-                        <select id="priority" class="input">
-                            <option value="1">کم</option>
-                            <option value="2" selected>متوسط</option>
-                            <option value="3">بالا</option>
-                            <option value="4">فوری</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="form-label">نوع ارسال</label>
-                        <div class="space-y-2">
-                            <label class="flex items-center">
-                                <input type="radio" name="isBroadcast" value="true" checked 
-                                       onchange="toggleUserSelection()" class="ml-2">
-                                <span>ارسال همگانی (به همه کاربران)</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="radio" name="isBroadcast" value="false" 
-                                       onchange="toggleUserSelection()" class="ml-2">
-                                <span>ارسال به کاربران خاص</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="form-label">متن پیام <span class="text-red-500">*</span></label>
-                        <textarea id="message" class="input" rows="6" placeholder="متن کامل پیام..." required maxlength="1000"></textarea>
-                        <div class="text-xs text-gray-500 mt-1">
-                            <span id="charCount">0</span> / 1000 کاراکتر
-                        </div>
-                    </div>
-
-                    <div id="userSelectionSection" class="hidden">
-                        <label class="form-label">انتخاب کاربران</label>
-                        <div class="space-y-2">
-                            <div class="flex space-x-2 space-x-reverse">
-                                <input type="text" id="userSearch" class="input flex-1" placeholder="جستجو بر اساس نام، شماره تلفن یا ایمیل...">
-                                <button type="button" onclick="searchUsers()" class="btn btn-outline">
-                                    <i class="fas fa-search"></i>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
                                 </button>
-                            </div>
-                            <div id="userSearchResults" class="max-h-40 overflow-y-auto border rounded-lg hidden"></div>
-                            <div id="selectedUsers" class="space-y-2 max-h-32 overflow-y-auto"></div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </header>
 
-            <div class="flex justify-end space-x-3 space-x-reverse mt-6 pt-4 border-t">
-                <button type="button" onclick="closeModal()" class="btn btn-outline">
-                    لغو
-                </button>
-                <button type="submit" id="submitButton" class="btn btn-primary">
-                    <i class="fas fa-paper-plane ml-2"></i>
-                    ارسال نوتیفیکیشن
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        let currentNotificationId = null;
-        let selectedUsers = new Map();
-
-        // توابع مدال
-        function openCreateModal() {
-            currentNotificationId = null;
-            document.getElementById('modalTitle').textContent = 'ارسال نوتیفیکیشن جدید';
-            document.getElementById('notificationForm').reset();
-            selectedUsers.clear();
-            updateSelectedUsersDisplay();
-            document.getElementById('userSelectionSection').classList.add('hidden');
-            document.getElementById('notificationModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('notificationModal').classList.add('hidden');
-            selectedUsers.clear();
-        }
-
-        function toggleUserSelection() {
-            const isBroadcast = document.querySelector('input[name="isBroadcast"]:checked').value === 'true';
-            const userSection = document.getElementById('userSelectionSection');
-            
-            if (isBroadcast) {
-                userSection.classList.add('hidden');
-                selectedUsers.clear();
-                updateSelectedUsersDisplay();
-            } else {
-                userSection.classList.remove('hidden');
-                searchUsers(); // بارگذاری اولیه کاربران
-            }
-        }
-
-        // مدیریت کاربران
-        async function searchUsers() {
-            const searchTerm = document.getElementById('userSearch').value;
-            const resultsContainer = document.getElementById('userSearchResults');
-            
-            try {
-                const response = await fetch(`/Admin/Notification/SearchUsers?search=${encodeURIComponent(searchTerm)}`);
-                const users = await response.json();
-                
-                resultsContainer.innerHTML = '';
-                users.forEach(user => {
-                    if (!selectedUsers.has(user.id)) {
-                        const userElement = document.createElement('div');
-                        userElement.className = 'flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer border-b';
-                        userElement.innerHTML = `
-                            <div>
-                                <div class="font-medium">${user.fullName}</div>
-                                <div class="text-sm text-gray-500">${user.phoneNumber} ${user.email ? '• ' + user.email : ''}</div>
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
                             </div>
-                            <button type="button" onclick="selectUser('${user.id}', '${user.fullName}', '${user.phoneNumber}')" 
-                                    class="btn btn-outline btn-sm">
-                                انتخاب
-                            </button>
-                        `;
-                        resultsContainer.appendChild(userElement);
-                    }
-                });
-                
-                resultsContainer.classList.remove('hidden');
-            } catch (error) {
-                console.error('Error searching users:', error);
-            }
-        }
-
-        function selectUser(userId, fullName, phoneNumber) {
-            if (!selectedUsers.has(userId)) {
-                selectedUsers.set(userId, { fullName, phoneNumber });
-                updateSelectedUsersDisplay();
-                document.getElementById('userSearchResults').classList.add('hidden');
-                document.getElementById('userSearch').value = '';
-            }
-        }
-
-        function removeUser(userId) {
-            selectedUsers.delete(userId);
-            updateSelectedUsersDisplay();
-        }
-
-        function updateSelectedUsersDisplay() {
-            const container = document.getElementById('selectedUsers');
-            container.innerHTML = '';
-            
-            selectedUsers.forEach((user, userId) => {
-                const userElement = document.createElement('div');
-                userElement.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg';
-                userElement.innerHTML = `
-                    <div>
-                        <div class="font-medium">${user.fullName}</div>
-                        <div class="text-sm text-gray-500">${user.phoneNumber}</div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
                     </div>
-                    <button type="button" onclick="removeUser('${userId}')" 
-                            class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                container.appendChild(userElement);
-            });
+                </div>
+
+                <!-- Sidebar Menu -->
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-4 space-x-reverse">
+                                <a href="/Admin/Dashboard" class="btn btn-outline">
+                                    <i class="fas fa-arrow-right ml-2"></i>
+                                    بازگشت
+                                </a>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">مدیریت نوتیفیکیشن</h1>
+                                    <p class="mt-1 text-sm text-gray-600">ارسال پیام به کاربران خاص یا ارسال همگانی</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3 space-x-reverse">
+                                <button onclick="exportNotifications()" class="btn btn-outline">
+                                    <i class="fas fa-download ml-2"></i>
+                                    خروجی Excel
+                                </button>
+                                <a asp-page="/Admin/Notification/Add" class="btn btn-primary">
+                                    <i class="fas fa-plus ml-2"></i>
+                                    ارسال نوتیفیکیشن جدید
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <!-- آمار سریع -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-paper-plane text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">کل نوتیفیکیشن‌ها</p>
+                                        <p class="text-2xl font-bold text-gray-900">@Model.Result.EntityCount</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-check text-green-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">ارسال شده</p>
+                                        <p class="text-2xl font-bold text-gray-900">@Model.Result.EntityCount</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-users text-orange-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">کاربران هدف</p>
+                                        <p class="text-2xl font-bold text-gray-900">@(Model.Result.Data.Sum(n => n.Users.Count))</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="p-6">
+                                <div class="flex items-center">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                        <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-600">میانگین بازدید</p>
+                                        <p class="text-2xl font-bold text-gray-900">78%</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- فیلترها -->
+                    <div class="card mb-8">
+                        <div class="p-6">
+                            <form method="get" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                                <div>
+                                    <label class="form-label">عنوان</label>
+                                    <input type="text" asp-for="FilterParams.Title" class="input" />
+                                </div>
+                                <div>
+                                    <label class="form-label">توضیحات</label>
+                                    <input type="text" asp-for="FilterParams.Description" class="input" />
+                                </div>
+                                <div class="flex items-end space-x-3 space-x-reverse">
+                                    <button type="submit" class="btn btn-primary flex-1">
+                                        <i class="fas fa-filter ml-2"></i>
+                                        اعمال فیلتر
+                                    </button>
+                                    <a href="?pageid=1&take=@Model.Result.Take" class="btn btn-outline">
+                                        <i class="fas fa-refresh ml-2"></i>
+                                        بازنشانی
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- جدول نوتیفیکیشن‌ها -->
+                    <div class="card">
+                        <div class="p-6">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>عنوان</th>
+                                            <th>توضیحات</th>
+                                            <th>گیرندگان</th>
+                                            <th>وضعیت</th>
+                                            <th>تاریخ ایجاد</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (Model.Result.EntityCount == 0)
+                                        {
+                                            <tr>
+                                                <td colspan="6" class="text-center py-8 text-gray-500">
+                                                    <i class="fas fa-bell text-4xl mb-2"></i>
+                                                    <p>هیچ نوتیفیکیشنی یافت نشد</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            foreach (var notification in Model.Result.Data)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        <div class="max-w-xs">
+                                                            <div class="font-medium text-gray-900 truncate">@notification.Title</div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="text-sm text-gray-500 truncate">@notification.Description</div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-secondary">
+                                                            <i class="fas fa-user ml-1"></i>
+                                                            @notification.Users.Count نفر
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-check ml-1"></i>
+                                                            ارسال شده
+                                                        </span>
+                                                    </td>
+                                                    <td>@notification.CreationDate.ToPersianDate()</td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                                            <button onclick="viewNotification('@notification.Id')"
+                                                                    class="btn btn-outline btn-sm" title="مشاهده">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <a asp-page="/Admin/Notification/Edit" asp-route-id="@notification.Id"
+                                                               class="btn btn-outline btn-sm" title="ویرایش">
+                                                                <i class="fas fa-edit"></i>
+                                                            </a>
+                                                            <button onclick="deleteNotification('@notification.Id')"
+                                                                    class="btn btn-danger btn-sm" title="حذف">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- صفحه‌بندی -->
+                            @if (Model.Result.PageCount > 1)
+                            {
+                                <div class="flex justify-center mt-6">
+                                    <nav class="flex items-center space-x-2 space-x-reverse">
+                                        <!-- دکمه قبلی -->
+                                        @if (Model.Result.CurrentPage > 1)
+                                        {
+                                            <a href="?pageid=@(Model.Result.CurrentPage - 1)&take=@Model.Result.Take@GetFilterQueryString()"
+                                               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                        }
+
+                                        <!-- صفحات اولیه -->
+                                        @if (Model.Result.StartPage > 1)
+                                        {
+                                            <a href="?pageid=1&take=@Model.Result.Take@GetFilterQueryString()"
+                                               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                1
+                                            </a>
+                                            @if (Model.Result.StartPage > 2)
+                                            {
+                                                <span class="px-2 text-gray-500">...</span>
+                                            }
+                                        }
+
+                                        <!-- صفحات میانی -->
+                                        @for (int i = Model.Result.StartPage; i <= Model.Result.EndPage; i++)
+                                        {
+                                            <a href="?pageid=@i&take=@Model.Result.Take@GetFilterQueryString()"
+                                               class="px-3 py-1 rounded-lg @(i == Model.Result.CurrentPage ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200")">
+                                                @i
+                                            </a>
+                                        }
+
+                                        <!-- صفحات انتهایی -->
+                                        @if (Model.Result.EndPage < Model.Result.PageCount)
+                                        {
+                                            @if (Model.Result.EndPage < Model.Result.PageCount - 1)
+                                            {
+                                                <span class="px-2 text-gray-500">...</span>
+                                            }
+                                            <a href="?pageid=@Model.Result.PageCount&take=@Model.Result.Take@GetFilterQueryString()"
+                                               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                @Model.Result.PageCount
+                                            </a>
+                                        }
+
+                                        <!-- دکمه بعدی -->
+                                        @if (Model.Result.CurrentPage < Model.Result.PageCount)
+                                        {
+                                            <a href="?pageid=@(Model.Result.CurrentPage + 1)&take=@Model.Result.Take@GetFilterQueryString()"
+                                               class="px-3 py-1 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200">
+                                                <i class="fas fa-chevron-left"></i>
+                                            </a>
+                                        }
+                                    </nav>
+                                </div>
+
+                                <!-- اطلاعات صفحه -->
+                                <div class="flex justify-center mt-4 text-sm text-gray-600">
+                                    نمایش
+                                    <span class="font-medium mx-1">@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1)</span>
+                                    تا
+                                    <span class="font-medium mx-1">@Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
+                                    از
+                                    <span class="font-medium mx-1">@Model.Result.EntityCount</span>
+                                    نوتیفیکیشن
+                                </div>
+
+                                <!-- انتخاب تعداد آیتم در صفحه -->
+                                <div class="flex justify-center mt-4">
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <span class="text-sm text-gray-600">تعداد در صفحه:</span>
+                                        <select onchange="changeTake(this.value)" class="input input-sm">
+                                            <option value="5" selected="@(Model.Result.Take == 5)">5</option>
+                                            <option value="10" selected="@(Model.Result.Take == 10)">10</option>
+                                            <option value="20" selected="@(Model.Result.Take == 20)">20</option>
+                                            <option value="50" selected="@(Model.Result.Take == 50)">50</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
         }
 
-        // ارسال فرم
-        document.getElementById('notificationForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = {
-                title: document.getElementById('title').value,
-                message: document.getElementById('message').value,
-                type: parseInt(document.getElementById('type').value),
-                priority: parseInt(document.getElementById('priority').value),
-                isBroadcast: document.querySelector('input[name="isBroadcast"]:checked').value === 'true',
-                targetUserIds: Array.from(selectedUsers.keys())
-            };
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
 
-            try {
-                const submitButton = document.getElementById('submitButton');
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> در حال ارسال...';
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
 
-                const response = await fetch('/Admin/Notification/Create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify(formData)
-                });
-
-                if (response.ok) {
-                    Alert.success('نوتیفیکیشن با موفقیت ایجاد شد');
-                    closeModal();
-                    location.reload();
-                } else {
-                    const error = await response.json();
-                    Alert.error(error.message || 'خطا در ایجاد نوتیفیکیشن');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                Alert.error('خطا در ارتباط با سرور');
-            } finally {
-                submitButton.disabled = false;
-                submitButton.innerHTML = '<i class="fas fa-paper-plane ml-2"></i> ارسال نوتیفیکیشن';
-            }
-        });
-
-        // مدیریت کاراکترهای پیام
-        document.getElementById('message').addEventListener('input', function() {
-            document.getElementById('charCount').textContent = this.value.length;
-        });
-
-        // توابع عملیات
-        async function sendNotification(notificationId) {
-            const result = await Alert.confirm('ارسال نوتیفیکیشن', 'آیا از ارسال این نوتیفیکیشن اطمینان دارید؟');
-            if (result.isConfirmed) {
-                try {
-                    Alert.loading('در حال ارسال...');
-                    
-                    const response = await fetch(`/Admin/Notification/Send/${notificationId}`, {
-                        method: 'POST',
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        }
-                    });
-
-                    Alert.close();
-                    
-                    if (response.ok) {
-                        Alert.success('نوتیفیکیشن با موفقیت ارسال شد');
-                        location.reload();
-                    } else {
-                        Alert.error('خطا در ارسال نوتیفیکیشن');
-                    }
-                } catch (error) {
-                    Alert.close();
-                    Alert.error('خطا در ارتباط با سرور');
-                }
-            }
+        // توابع مدیریت نوتیفیکیشن
+        function changeTake(take) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('take', take);
+            url.searchParams.set('pageid', '1');
+            window.location.href = url.toString();
         }
 
         async function deleteNotification(notificationId) {
@@ -557,81 +945,121 @@
             window.open(`/Admin/Notification/Detail/${notificationId}`, '_blank');
         }
 
-        // بستن مدال با کلیک خارج
-        document.getElementById('notificationModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
+        function exportNotifications() {
+            Alert.success('در حال آماده‌سازی فایل خروجی...');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
             }
         });
     </script>
-}
+
+    <script src="~/Alert.js"></script>
+
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+        // موفقیت
+        @if (TempData["Success"] != null)
+        {
+                <text>
+                    Alert.success(decodePersianText('@TempData["Success"]'));
+                </text>
+        }
+
+        // خطا
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                    const errorMsg = decodePersianText('@TempData["Error"]');
+                    if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                    Alert.notFound(errorMsg);
+                    } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                    Alert.serverError(errorMsg);
+                    } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                    Alert.badRequest(errorMsg);
+                    } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                    Alert.unauthorized(errorMsg);
+                    } else {
+                    Alert.error(errorMsg);
+                    }
+                </text>
+        }
+
+        // هشدار
+        @if (TempData["Warning"] != null)
+        {
+                <text>
+                    const warningMsg = decodePersianText('@TempData["Warning"]');
+                    if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                    Alert.validationWarning(warningMsg);
+                    } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                    Alert.financialWarning(warningMsg);
+                    } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                    Alert.securityWarning(warningMsg);
+                    } else {
+                    Alert.warning(warningMsg);
+                    }
+                </text>
+        }
+
+        // اطلاعیه
+        @if (TempData["Info"] != null)
+        {
+                <text>
+                    const infoMsg = decodePersianText('@TempData["Info"]');
+                    if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                    Alert.systemInfo(infoMsg);
+                    } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                    Alert.financialInfo(infoMsg);
+                    } else {
+                    Alert.info(infoMsg);
+                    }
+                </text>
+        }
+        }
+
+        // نمایش پیام‌ها پس از لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
+        });
+    </script>
+</body>
+</html>
 
 @functions {
-    private string GetNotificationTypeBadge(NotificationType type)
+    protected string GetFilterQueryString()
     {
-        return type switch
-        {
-            NotificationType.Info => "badge badge-info",
-            NotificationType.Success => "badge badge-success",
-            NotificationType.Warning => "badge badge-warning",
-            NotificationType.Error => "badge badge-danger",
-            NotificationType.Promotion => "badge badge-primary",
-            NotificationType.System => "badge badge-secondary",
-            _ => "badge badge-secondary"
-        };
-    }
+        var queryParams = new List<string>();
 
-    private string GetNotificationTypeText(NotificationType type)
-    {
-        return type switch
-        {
-            NotificationType.Info => "اطلاعات",
-            NotificationType.Success => "موفقیت",
-            NotificationType.Warning => "هشدار",
-            NotificationType.Error => "خطا",
-            NotificationType.Promotion => "تبلیغاتی",
-            NotificationType.System => "سیستمی",
-            _ => "نامشخص"
-        };
-    }
+        if (!string.IsNullOrEmpty(Model.FilterParams.Title))
+            queryParams.Add($"Title={Uri.EscapeDataString(Model.FilterParams.Title)}");
 
-    private string GetPriorityBadge(NotificationPriority priority)
-    {
-        return priority switch
-        {
-            NotificationPriority.Low => "badge badge-secondary",
-            NotificationPriority.Medium => "badge badge-info",
-            NotificationPriority.High => "badge badge-warning",
-            NotificationPriority.Urgent => "badge badge-danger",
-            _ => "badge badge-secondary"
-        };
-    }
+        if (!string.IsNullOrEmpty(Model.FilterParams.Description))
+            queryParams.Add($"Description={Uri.EscapeDataString(Model.FilterParams.Description)}");
 
-    private string GetPriorityText(NotificationPriority priority)
-    {
-        return priority switch
-        {
-            NotificationPriority.Low => "کم",
-            NotificationPriority.Medium => "متوسط",
-            NotificationPriority.High => "بالا",
-            NotificationPriority.Urgent => "فوری",
-            _ => "نامشخص"
-        };
+        return queryParams.Any() ? "&" + string.Join("&", queryParams) : "";
     }
-
-    private string GetFilterQueryString()
-    {
-        var query = "";
-        if (Model.FilterParams.Type.HasValue)
-            query += $"&type={Model.FilterParams.Type.Value}";
-        if (Model.FilterParams.IsSent.HasValue)
-            query += $"&issent={Model.FilterParams.IsSent.Value}";
-        if (Model.FilterParams.StartDate.HasValue)
-            query += $"&startdate={Model.FilterParams.StartDate.Value:yyyy-MM-dd}";
-        if (Model.FilterParams.EndDate.HasValue)
-            query += $"&enddate={Model.FilterParams.EndDate.Value:yyyy-MM-dd}";
-        if (!string.IsNullOrEmpty(Model.FilterParams.Search))
-            query += $"&search={Model.FilterParams.Search}";
-        return query;
-    }
-} *@
+}

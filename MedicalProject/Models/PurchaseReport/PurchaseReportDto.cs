@@ -1,4 +1,5 @@
-﻿using MedicalProject.Models.Product.DTOs;
+﻿using MedicalProject.Models.Order;
+using MedicalProject.Models.Product.DTOs;
 
 namespace MedicalProject.Models.PurchaseReport
 {
@@ -38,6 +39,7 @@ namespace MedicalProject.Models.PurchaseReport
         public string? Lastame { get; set; }
         public string? ImageName { get; set; }
         public int InvestmentCount { get; set; }
+        public List<OrderDto>? OrderDtos{ get; set; }
         public List<ProductPurchaseReportDto>? ProductPurchase { get; set; } = new();
         public List<PurchaseReportDto>? PurchaseReport { get; set; } = new();
         public List<ProfitPurchaseReportDto>? ProfitPurchases { get; set; } = new();

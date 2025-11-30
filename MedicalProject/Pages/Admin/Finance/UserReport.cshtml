@@ -918,10 +918,12 @@
                                                     <td>
                                                         @{
                                                             var statusResult = ProfitDepositStatus.CheckStatus(result);
-                                                            var statusClass = statusResult == true ? "badge-success" : "badge-primary";
-                                                            var statusText = statusResult == false ? "بدهکار" : "بی حساب";
+                                                            // var debugInfo = ProfitDepositStatus.GetUserProfitDebugInfo(result);
+                                                            var statusClass = statusResult ? "badge-success" : "badge-danger";
+                                                            var statusText = statusResult ? "بی‌حساب" : "بدهکار";
                                                         }
-                                                        <span class="badge @statusClass">@statusText</span>
+                                                        <span class="badge @statusClass" title="کلیک کنید برای اطلاعات بیشتر"
+                                                              onclick="showDebugInfo('@result.UserId')">@statusText</span>
                                                     </td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
@@ -1383,17 +1385,3 @@
         <script src="~/Alert.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

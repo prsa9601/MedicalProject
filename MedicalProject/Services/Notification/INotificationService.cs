@@ -82,13 +82,13 @@ namespace MedicalProject.Services.Notification
 
         public async Task<NotificationDtoForUser?> GetById(Guid id, Guid userId)
         {
-            var result = await _client.GetFromJsonAsync<ApiResult<NotificationDtoForUser>>($"GetById?id={id}&userId={userId}");
+            var result = await _client.GetFromJsonAsync<ApiResult<NotificationDtoForUser>>($"{ModuleName}/GetById?id={id}&userId={userId}");
             return result?.Data;
         }
 
         public async Task<NotificationDto?> GetByIdForAdmin(Guid id)
         {
-            var result = await _client.GetFromJsonAsync<ApiResult<NotificationDto>>($"GetByIdForAdmin?id={id}");
+            var result = await _client.GetFromJsonAsync<ApiResult<NotificationDto?>>($"{ModuleName}/GetByIdForAdmin/{id}");
             return result?.Data;
         }
     }
