@@ -1,4 +1,4 @@
-using MedicalProject.Infrastructure.RazorUtils;
+﻿using MedicalProject.Infrastructure.RazorUtils;
 using MedicalProject.Models.Notification;
 using MedicalProject.Services.Notification;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +21,22 @@ namespace MedicalProject.Pages.Admin.Notification
         public async Task OnGet()
         {
             Result = await _service.GetFilterForAdmin(FilterParams);
+        }
+        public async Task<IActionResult> OnPostDelete(Guid id)
+        {
+            var result = await _service.Delete(id);
+            if (result.IsSuccess)
+            {
+                Result = await _service.GetFilterForAdmin(FilterParams);
+                TempData["Success"] = "حذف با موفقیت انجام شد.";
+                return Page();
+            }
+            else
+            {
+                Result = await _service.GetFilterForAdmin(FilterParams);
+                TempData["Error"] = result.MetaData.Message;
+                return Page();
+            }
         }
     }
 }

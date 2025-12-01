@@ -19,9 +19,38 @@ namespace MedicalProject.Infrastructure.ProfitUtil
             {
                 if (order?.OrderItems == null) continue;
 
-                foreach (var orderItem in order.OrderItems)
-                {
-                    var product = userPurchase.ProductPurchase?.Where(p => p.Id == orderItem.ProductId);
+                //foreach (var orderItem in order.OrderItems)
+                //{
+                //    var product = userPurchase.ProductPurchase?.Where(p => p.Id == orderItem.ProductId);
+                //    foreach (var item in product)
+                //    {
+                //        if (item?.InventoryDto?.ProfitableTime == null) continue;
+
+                //        var daysPerPeriod = GetDaysByPaymentTime(item.InventoryDto.ProfitableTime);
+                //        if (daysPerPeriod == 0) continue;
+
+                //        // محاسبه تعداد دوره‌های گذشته از تاریخ خرید
+                //        var timeSincePurchase = DateTime.Now - order.CreationDate;
+                //        var totalDaysPassed = timeSincePurchase.TotalDays;
+                //        var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
+
+                //        if (expectedPeriods == 0) continue;
+
+                //        // سودهای پرداخت شده برای این محصول در این سفارش
+                //        var paidProfits = userPurchase.ProfitPurchases?
+                //            .Where(p => p.ProductId == item.Id &&
+                //                       p.OrderId == order.Id &&
+                //                       p.Status == ProfitStatus.Success)
+                //            .ToList() ?? new List<ProfitPurchaseReportDto>();
+
+                //        // اگر تعداد سودهای پرداخت شده کمتر از دوره‌های مورد انتظار باشد، کاربر بدهکار است
+                //        if (paidProfits.Count < expectedPeriods)
+                //        {
+                //            return false; // بدهکار
+                //        }
+                //    }
+              
+                    var product = userPurchase.ProductPurchase?.Where(p => p.Id == order.OrderItems.ProductId);
                     foreach (var item in product)
                     {
                         if (item?.InventoryDto?.ProfitableTime == null) continue;
@@ -51,7 +80,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                     }
 
 
-                }
+                
             }
 
             return true; // بی‌حساب
@@ -71,9 +100,56 @@ namespace MedicalProject.Infrastructure.ProfitUtil
             {
                 if (order?.OrderItems == null) continue;
 
-                foreach (var orderItem in order.OrderItems)
-                {
-                    var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                //foreach (var orderItem in order.OrderItems)
+                //{
+                //    var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                //    if (product?.InventoryDto?.ProfitableTime == null) continue;
+
+                //    var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto.ProfitableTime);
+                //    if (daysPerPeriod == 0) continue;
+
+                //    // محاسبه دوره‌های مورد انتظار
+                //    var timeSincePurchase = DateTime.Now - order.CreationDate;
+                //    var totalDaysPassed = timeSincePurchase.TotalDays;
+                //    var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
+
+                //    if (expectedPeriods == 0) continue;
+
+                //    // سودهای پرداخت شده برای این محصول
+                //    var paidProfits = userPurchase.ProfitPurchases?
+                //        .Where(p => p.ProductId == product.Id &&
+                //                   p.OrderId == order.Id &&
+                //                   p.Status == ProfitStatus.Success)
+                //        .OrderBy(p => p.ForWhatPeriod)
+                //        .ToList() ?? new List<ProfitPurchaseReportDto>();
+
+                //    // اضافه کردن سودهای پرداخت شده
+                //    result.PaidProfits.AddRange(paidProfits);
+
+                //    // محاسبه دوره‌های پرداخت نشده
+                //    for (int period = 1; period <= expectedPeriods; period++)
+                //    {
+                //        // اگر این دوره پرداخت نشده است
+                //        if (!paidProfits.Any(p => p.ForWhatPeriod == period))
+                //        {
+                //            var dueDate = order.CreationDate.AddDays(period * daysPerPeriod);
+                //            var expectedAmount = CalculateExpectedAmount(product, orderItem);
+
+                //            result.UnpaidPeriods.Add(new UnpaidPeriodInfo
+                //            {
+                //                PeriodNumber = period,
+                //                DueDate = dueDate,
+                //                ProductName = product.Title,
+                //                ExpectedAmount = expectedAmount,
+                //                ProductId = product.Id,
+                //                OrderId = order.Id,
+                //                OrderItemId = orderItem.Id
+                //            });
+                //        }
+                //    }
+                //}
+
+                    var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == order.OrderItems.ProductId);
                     if (product?.InventoryDto?.ProfitableTime == null) continue;
 
                     var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto.ProfitableTime);
@@ -104,7 +180,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                         if (!paidProfits.Any(p => p.ForWhatPeriod == period))
                         {
                             var dueDate = order.CreationDate.AddDays(period * daysPerPeriod);
-                            var expectedAmount = CalculateExpectedAmount(product, orderItem);
+                            var expectedAmount = CalculateExpectedAmount(product, order.OrderItems);
 
                             result.UnpaidPeriods.Add(new UnpaidPeriodInfo
                             {
@@ -114,11 +190,11 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                                 ExpectedAmount = expectedAmount,
                                 ProductId = product.Id,
                                 OrderId = order.Id,
-                                OrderItemId = orderItem.Id
+                                OrderItemId = order.OrderItems.Id
                             });
                         }
                     }
-                }
+                
             }
 
             // حذف موارد تکراری
@@ -190,9 +266,13 @@ namespace MedicalProject.Infrastructure.ProfitUtil
             if (userPurchase?.OrderDtos != null)
             {
                 // کل سرمایه‌گذاری
+                //summary.TotalInvestment = userPurchase.OrderDtos
+                //    .Where(o => o.status == OrderStatus.paid)
+                //    .Sum(o => o.OrderItems.FirstOrDefault().TotalPrice);
+
                 summary.TotalInvestment = userPurchase.OrderDtos
                     .Where(o => o.status == OrderStatus.paid)
-                    .Sum(o => o.OrderItems.FirstOrDefault().TotalPrice);
+                    .Sum(o => o.OrderItems.TotalPrice);
 
                 // کل سود پرداخت شده
                 summary.TotalPaidProfit = userPurchase.ProfitPurchases?
@@ -213,22 +293,61 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                     {
                         OrderId = order.Id,
                         OrderDate = order.CreationDate,
-                        TotalAmount = order.OrderItems.FirstOrDefault().TotalPrice
+                        TotalAmount = order.OrderItems.TotalPrice
+                        //TotalAmount = order.OrderItems.FirstOrDefault().TotalPrice
                     };
 
                     if (order.OrderItems != null)
                     {
-                        foreach (var orderItem in order.OrderItems)
-                        {
-                            var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                        //foreach (var orderItem in order.OrderItems)
+                        //{
+                        //    var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                        //    if (product == null) continue;
+
+                        //    var productSummary = new ProductProfitSummary
+                        //    {
+                        //        ProductName = product.Title,
+                        //        ProductId = product.Id,
+                        //        DongAmount = orderItem.DongAmount,
+                        //        TotalInvestment = orderItem.TotalPrice
+                        //    };
+
+                        //    // سودهای پرداخت شده برای این محصول
+                        //    var paidProfits = userPurchase.ProfitPurchases?
+                        //        .Where(p => p.ProductId == product.Id &&
+                        //                   p.OrderId == order.Id &&
+                        //                   p.Status == ProfitStatus.Success)
+                        //        .ToList() ?? new List<ProfitPurchaseReportDto>();
+
+                        //    productSummary.PaidProfit = paidProfits.Sum(p => p.AmountPaid);
+                        //    productSummary.PaidPeriods = paidProfits.Count;
+
+                        //    // محاسبه سود مورد انتظار
+                        //    if (product.InventoryDto?.ProfitableTime != null)
+                        //    {
+                        //        var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto.ProfitableTime);
+                        //        var timeSincePurchase = DateTime.Now - order.CreationDate;
+                        //        var totalDaysPassed = timeSincePurchase.TotalDays;
+                        //        var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
+
+                        //        var expectedAmountPerPeriod = CalculateExpectedAmount(product, orderItem);
+                        //        productSummary.ExpectedProfit = expectedAmountPerPeriod * expectedPeriods;
+                        //        productSummary.UnpaidProfit = Math.Max(0, productSummary.ExpectedProfit - productSummary.PaidProfit);
+                        //        productSummary.ExpectedPeriods = expectedPeriods;
+                        //    }
+
+                        //    orderSummary.Products.Add(productSummary);
+                        //}
+                      
+                            var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == order.OrderItems.ProductId);
                             if (product == null) continue;
 
                             var productSummary = new ProductProfitSummary
                             {
                                 ProductName = product.Title,
                                 ProductId = product.Id,
-                                DongAmount = orderItem.DongAmount,
-                                TotalInvestment = orderItem.TotalPrice
+                                DongAmount = order.OrderItems.DongAmount,
+                                TotalInvestment = order.OrderItems.TotalPrice
                             };
 
                             // سودهای پرداخت شده برای این محصول
@@ -249,14 +368,14 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                                 var totalDaysPassed = timeSincePurchase.TotalDays;
                                 var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
 
-                                var expectedAmountPerPeriod = CalculateExpectedAmount(product, orderItem);
+                                var expectedAmountPerPeriod = CalculateExpectedAmount(product, order.OrderItems);
                                 productSummary.ExpectedProfit = expectedAmountPerPeriod * expectedPeriods;
                                 productSummary.UnpaidProfit = Math.Max(0, productSummary.ExpectedProfit - productSummary.PaidProfit);
                                 productSummary.ExpectedPeriods = expectedPeriods;
                             }
 
                             orderSummary.Products.Add(productSummary);
-                        }
+                        
                     }
 
                     orderSummary.TotalPaidProfit = orderSummary.Products.Sum(p => p.PaidProfit);
@@ -302,13 +421,32 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                 foreach (var order in paidOrders)
                 {
                     debugInfo.Add($"");
-                    debugInfo.Add($"سفارش: {order.Id} - تاریخ: {order.CreationDate.ToPersianDate()} - مبلغ: {order.OrderItems.FirstOrDefault().TotalPrice.ToString("N0")} ریال");
+                    debugInfo.Add($"سفارش: {order.Id} - تاریخ: {order.CreationDate.ToPersianDate()} - مبلغ: {order.OrderItems.TotalPrice.ToString("N0")} ریال");
+                    //debugInfo.Add($"سفارش: {order.Id} - تاریخ: {order.CreationDate.ToPersianDate()} - مبلغ: {order.OrderItems.FirstOrDefault().TotalPrice.ToString("N0")} ریال");
 
                     if (order.OrderItems != null)
                     {
-                        foreach (var orderItem in order.OrderItems)
-                        {
-                            var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                        //foreach (var orderItem in order.OrderItems)
+                        //{
+                        //    var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == orderItem.ProductId);
+                        //    if (product == null) continue;
+
+                        //    var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto?.ProfitableTime ?? PaymentTime.ماهانه);
+                        //    var timeSincePurchase = DateTime.Now - order.CreationDate;
+                        //    var expectedPeriods = (int)(timeSincePurchase.TotalDays / daysPerPeriod);
+
+                        //    var paidProfits = userPurchase.ProfitPurchases?
+                        //        .Where(p => p.ProductId == product.Id && p.OrderId == order.Id && p.Status == ProfitStatus.Success)
+                        //        .ToList() ?? new List<ProfitPurchaseReportDto>();
+
+                        //    debugInfo.Add($"  محصول: {product.Title}");
+                        //    debugInfo.Add($"    دنگ: {orderItem.DongAmount} - قیمت کل: {orderItem.TotalPrice.ToString("N0")} ریال");
+                        //    debugInfo.Add($"    دوره‌های مورد انتظار: {expectedPeriods}");
+                        //    debugInfo.Add($"    دوره‌های پرداخت شده: {paidProfits.Count}");
+                        //    debugInfo.Add($"    وضعیت: {(paidProfits.Count >= expectedPeriods ? "تسویه شده" : "بدهکار")}");
+                        //}
+                   
+                            var product = userPurchase.ProductPurchase?.FirstOrDefault(p => p.Id == order.OrderItems.ProductId);
                             if (product == null) continue;
 
                             var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto?.ProfitableTime ?? PaymentTime.ماهانه);
@@ -320,11 +458,11 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                                 .ToList() ?? new List<ProfitPurchaseReportDto>();
 
                             debugInfo.Add($"  محصول: {product.Title}");
-                            debugInfo.Add($"    دنگ: {orderItem.DongAmount} - قیمت کل: {orderItem.TotalPrice.ToString("N0")} ریال");
+                            debugInfo.Add($"    دنگ: {order.OrderItems.DongAmount} - قیمت کل: {order.OrderItems.TotalPrice.ToString("N0")} ریال");
                             debugInfo.Add($"    دوره‌های مورد انتظار: {expectedPeriods}");
                             debugInfo.Add($"    دوره‌های پرداخت شده: {paidProfits.Count}");
                             debugInfo.Add($"    وضعیت: {(paidProfits.Count >= expectedPeriods ? "تسویه شده" : "بدهکار")}");
-                        }
+                        
                     }
                 }
             }

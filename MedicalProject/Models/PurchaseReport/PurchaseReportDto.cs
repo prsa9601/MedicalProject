@@ -85,6 +85,15 @@ namespace MedicalProject.Models.PurchaseReport
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }
+ 
+    public class UserPurchaseReportForCurrentUserFilterParam : BaseFilterParam
+    {
+        public PurchaseReportFilter? PurchaseReportFilter { get; set; }
+        public Guid? ProductId { get; set; }
+        public string? PhoneNumber { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
     public enum PurchaseReportFilter
     {
         None,

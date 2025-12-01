@@ -10,6 +10,7 @@ namespace MedicalProject.Services.PurchaseReport
     {
         Task<PurchaseReportFilterResult> GetFilterForAdmin(PurchaseReportFilterParam param, CancellationToken cancellationToken);
         Task<PurchaseReportUserInvestmentFilterResult> GetFilterUserForAdmin(UserPurchaseReportFilterParam param, CancellationToken cancellationToken);
+        Task<PurchaseReportUserInvestmentFilterResult> GetFilterUserForCurrentUser(UserPurchaseReportForCurrentUserFilterParam param);
         Task<UserPurchaseReportDto> GetById(Guid userId);
         Task<UserPurchaseReportDto> GetForCurrentUser();
     }
@@ -55,9 +56,27 @@ namespace MedicalProject.Services.PurchaseReport
             if (param.PhoneNumber is not null)
                 url += $"&PhoneNumber={param.PhoneNumber}";
             if (param.UserId != null && param.UserId != default)
-                url += $"&PhoneNumber={param.PhoneNumber}";
+                url += $"&userId={param.UserId}";
 
             var result = await _client.GetFromJsonAsync<ApiResult<PurchaseReportUserInvestmentFilterResult>>(url, CancellationToken.None);
+            return result?.Data;
+        }
+
+        public async Task<PurchaseReportUserInvestmentFilterResult> GetFilterUserForCurrentUser(UserPurchaseReportForCurrentUserFilterParam param)
+        {
+            string url = $"{ModuleName}/GetPurchaseUserReportFilterForCurrentUser?take={param.Take}&pageId={param.PageId}";
+            if (param.EndDate != DateTime.MaxValue && param.EndDate != DateTime.MinValue)
+                url += $"&EndDate={param.EndDate}";
+            if (param.StartDate != DateTime.MaxValue && param.StartDate != DateTime.MinValue)
+                url += $"&StartDate={param.StartDate}";
+            if (param.PurchaseReportFilter is not null && param.PurchaseReportFilter != PurchaseReportFilter.None)
+                url += $"&PurchaseReportFilter={param.PurchaseReportFilter}";
+            if (param.ProductId is not null)
+                url += $"&ProductId={param.ProductId}";
+            if (param.PhoneNumber is not null)
+                url += $"&PhoneNumber={param.PhoneNumber}";
+
+            var result = await _client.GetFromJsonAsync<ApiResult<PurchaseReportUserInvestmentFilterResult>>(url);
             return result?.Data;
         }
 

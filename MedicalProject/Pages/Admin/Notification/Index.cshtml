@@ -803,7 +803,7 @@
                                     </tbody>
                                 </table>
                             </div>
-
+                            @Html.AntiForgeryToken()
                             <!-- صفحه‌بندی -->
                             @if (Model.Result.PageCount > 1)
                             {
@@ -922,7 +922,7 @@
             const result = await Alert.confirmDelete('این نوتیفیکیشن');
             if (result.isConfirmed) {
                 try {
-                    const response = await fetch(`/Admin/Notification/Delete/${notificationId}`, {
+                    const response = await fetch(`/Admin/Notification/Index?handler=Delete&id=${notificationId}`, {
                         method: 'POST',
                         headers: {
                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value

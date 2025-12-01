@@ -995,7 +995,75 @@
             // اگر همه چیز درست بود، فرم ارسال می‌شود
         });
     </script>
-    <script src="~/global.js"></script>
+    <script src="~/Alert.js"></script>
 
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+        // موفقیت
+        @if (TempData["Success"] != null)
+        {
+                    <text>
+                        Alert.success(decodePersianText('@TempData["Success"]'));
+                    </text>
+        }
+
+        // خطا
+        @if (TempData["Error"] != null)
+        {
+                    <text>
+                        const errorMsg = decodePersianText('@TempData["Error"]');
+                        if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                        Alert.notFound(errorMsg);
+                        } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                        Alert.serverError(errorMsg);
+                        } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                        Alert.badRequest(errorMsg);
+                        } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                        Alert.unauthorized(errorMsg);
+                        } else {
+                        Alert.error(errorMsg);
+                        }
+                    </text>
+        }
+
+        // هشدار
+        @if (TempData["Warning"] != null)
+        {
+                    <text>
+                        const warningMsg = decodePersianText('@TempData["Warning"]');
+                        if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                        Alert.validationWarning(warningMsg);
+                        } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                        Alert.financialWarning(warningMsg);
+                        } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                        Alert.securityWarning(warningMsg);
+                        } else {
+                        Alert.warning(warningMsg);
+                        }
+                    </text>
+        }
+
+        // اطلاعیه
+        @if (TempData["Info"] != null)
+        {
+                    <text>
+                        const infoMsg = decodePersianText('@TempData["Info"]');
+                        if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                        Alert.systemInfo(infoMsg);
+                        } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                        Alert.financialInfo(infoMsg);
+                        } else {
+                        Alert.info(infoMsg);
+                        }
+                    </text>
+        }
+        }
+
+        // نمایش پیام‌ها پس از لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
+        });
+    </script>
 </body>
 </html>
