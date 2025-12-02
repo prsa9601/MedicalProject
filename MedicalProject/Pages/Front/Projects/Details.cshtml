@@ -188,6 +188,16 @@
                                     <span class="font-medium text-green-600">@Model.Product.InventoryDto.PricePerDong ریال</span>
                                 </div>
                             </div>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">دوره واریزی سود</span>
+                                    <span class="font-medium text-gray-900">@Model.Product.InventoryDto.ProfitableTime.ToString().Replace("-", " ")</span>
+                                </div>
+                                @* <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                                    <span class="text-gray-600">قیمت هر دانگ</span>
+                                    <span class="font-medium text-green-600">@Model.Product.InventoryDto.PricePerDong ریال</span>
+                                </div> *@
+                            </div>
                         </div>
                     </div>
                 }
@@ -298,9 +308,37 @@
                             <div class="space-y-3">
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <button onclick="window.location.href='/Front/Payment/Payment?slug=@Model.Product.Slug'" class="btn btn-primary w-full py-3 text-lg font-semibold">
-                                        سرمایه‌گذاری می‌کنم
-                                    </button>
+
+                                    if (Model.UserDto.UserDocument == null)
+                                    {
+                                        <button onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                            برای سرمایه گزاری ابتدا باید اطلاعات خود را وارد کنید
+                                        </button>
+                                    }
+                                    else if (!(Model.UserDto.UserDocument.Status == Models.User.Enum.UserDocumentStatus.IsConfirmed))
+                                    {
+                                        <button onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                            برای سرمایه گزاری ابتدا باید اطلاعات توسط کارشناسان مربوطه تایید شود
+                                        </button>
+                                    }
+                                    else if (Model.UserDto.BankAccount.IsConfirmed == false)
+                                    {
+                                        <button onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                            برای سرمایه گزاری ابتدا باید اطلاعات بانکی شما توسط کارشناسان مربوطه تایید شود
+                                        </button>
+                                    }
+                                    else if (Model.UserDto.BankAccount == null)
+                                    {
+                                        <button onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                            برای سرمایه گزاری ابتدا باید اطلاعات بانکی خود را وارد کنید
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button onclick="window.location.href='/Front/Payment/Payment?slug=@Model.Product.Slug'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                            سرمایه‌گذاری می‌کنم
+                                        </button>
+                                    }
                                 }
                                 else
                                 {

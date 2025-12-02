@@ -1,5 +1,6 @@
 ﻿@page
 @using MedicalProject.Infrastructure
+@using MedicalProject.Models.Product.DTOs
 @model MedicalProject.Pages.Front.ProjectsModel
 @{
     ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
@@ -436,26 +437,6 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <!-- جستجو -->
-                    <div class="relative">
-                        <input type="text"
-                               id="searchInput"
-                               placeholder="جستجو در پروژه‌ها..."
-                               class="pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64">
-                        <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                            <i class="fas fa-search"></i>
-                        </div>
-                    </div>
-
-                    <!-- تغییر حالت نمایش -->
-                    <div class="view-toggle">
-                        <button class="view-btn active" data-view="grid">
-                            <i class="fas fa-th"></i>
-                        </button>
-                        <button class="view-btn" data-view="list">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -468,24 +449,62 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">48</div>
+                        <div class="text-2xl font-bold text-blue-600">@(ProductNumber(Model.Result))</div>
                         <div class="text-sm text-gray-600">پروژه فعال</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">3.2M</div>
+                        <div class="text-2xl font-bold text-green-600">@(InvestmentPrice(Model.Result))M </div>
                         <div class="text-sm text-gray-600">تومان سرمایه‌گذاری</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-purple-600">1,240</div>
+                        <div class="text-2xl font-bold text-purple-600">@(InvestmentNumber(Model.Result).ToString("N0"))</div>
                         <div class="text-sm text-gray-600">سرمایه‌گذار</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-orange-600">24.5%</div>
+                        <div class="text-2xl font-bold text-orange-600">@AverageProfit(Model.Result)%</div>
                         <div class="text-sm text-gray-600">میانگین سود</div>
                     </div>
                 </div>
             </div>
+            @functions
+            {
+                private decimal InvestmentNumber(ProductFilterForIndexPageResult model)
+                {
 
+                    int res = 0;
+                    foreach (var item in model.Data)
+                    {
+                        res += item.PurchaseReportDto.Count();
+                    }
+                    return res;
+
+                }
+                private string InvestmentPrice(ProductFilterForIndexPageResult model)
+                {
+                    decimal res = 0;
+                    foreach (var item in model.Data)
+                    {
+                        var sum = item.PurchaseReportDto.Sum(i => decimal.Parse(i.TotalPrice));
+                        res += sum;
+                    }
+                    return (res / 1000000).ToString("F2");
+                }
+
+                private int ProductNumber(ProductFilterForIndexPageResult model)
+                {
+                    return model.Data.Where(i => i.Status != Models.Product.ProductStatus.NotActive).Count();
+                }
+
+                private int AverageProfit(ProductFilterForIndexPageResult model)
+                {
+                    var profit = (model.Data.Sum(i => decimal.Parse(i.InventoryDto.Profit)) * 100);
+                    var price = ((model.Data.Sum(i => decimal.Parse(i.InventoryDto.TotalPrice))));
+                    var average = profit / price;
+
+                    return Convert.ToInt32(average);
+                }
+
+            }
             <!-- گرید پروژه‌ها -->
             <div id="projectsContainer">
                 <div class="projects-grid" id="projectsGrid">
@@ -497,8 +516,8 @@
                                     <img src="@Directories.GetProductImagePathPath(item.ImageName)" alt="@item.Title" loading="lazy">
                                     <div class="project-badges">
                                         <span class="badge @(item.Status == Models.Product.ProductStatus.IsActive ? "active" :
-                                                                                                                                                                                        item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
-                                                                                                                                                                                        item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "") badge-success">
+                                                                                                                                                                                                                                                                                                                                  item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
+                                                                                                                                                                                                                                                                                                                                  item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "") badge-success">
                                             @(item.Status == Models.Product.ProductStatus.IsActive ? "فعال" :
                                                                                 item.Status == Models.Product.ProductStatus.NotActive ? "غیرفعال" :
                                                                                 item.Status == Models.Product.ProductStatus.IsDone ? "تکمیل شده" :
@@ -512,7 +531,7 @@
 
                                     <div class="progress-bar">
                                         <div class="progress-fill" style="width:
-                                        @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%"></div>
+                                                                @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%"></div>
                                     </div>
                                     <div class="progress-info">
                                         <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%</span>
@@ -640,7 +659,7 @@
                         }
                     </div>
                 }
-                
+
                 @*  <div class="pagination">
                     <button class="page-btn disabled">
                         <i class="fas fa-chevron-right"></i>

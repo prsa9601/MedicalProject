@@ -7,6 +7,7 @@ using MedicalProject.Services.Notification;
 using MedicalProject.Services.Order;
 using MedicalProject.Services.Product;
 using MedicalProject.Services.PurchaseReport;
+using MedicalProject.Services.SiteEntity;
 using MedicalProject.Services.User;
 
 namespace MedicalProject.Infrastructure;
@@ -41,6 +42,11 @@ public static class RegisterDependencyServices
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         
         services.AddHttpClient<INotificationService, NotificationService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+        services.AddHttpClient<ISiteEntityService, SiteEntityService>(httpClient =>
         {
             httpClient.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
