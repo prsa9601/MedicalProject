@@ -25,7 +25,7 @@ namespace MedicalProject.Models.PurchaseReport
         public string Title { get; set; }
         public string ImageName { get; set; }
         public Guid PurchaseId { get; set; }
-        public InventoryDto InventoryDto { get; set; }
+        public InventoryDto? InventoryDto { get; set; }
     }
     public class PurchaseReportUserInvestmentFilterResult : BaseFilter<UserPurchaseReportDto, UserPurchaseReportFilterParam>
     {
@@ -33,12 +33,12 @@ namespace MedicalProject.Models.PurchaseReport
     }
     public class UserPurchaseReportDto : BaseDto
     {
-        public Guid UserId { get; set; }
+        public Guid? UserId { get; set; }
         public string? PhoneNumber { get; set; }
         public string? FirstName { get; set; }
         public string? Lastame { get; set; }
         public string? ImageName { get; set; }
-        public int InvestmentCount { get; set; }
+        public int? InvestmentCount { get; set; }
         public List<OrderDto>? OrderDtos{ get; set; }
         public List<ProductPurchaseReportDto>? ProductPurchase { get; set; } = new();
         public List<PurchaseReportDto>? PurchaseReport { get; set; } = new();

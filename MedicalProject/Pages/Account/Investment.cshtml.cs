@@ -3,6 +3,7 @@ using MedicalProject.Models.PurchaseReport;
 using MedicalProject.Services.PurchaseReport;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -21,13 +22,14 @@ namespace MedicalProject.Pages.Account
         public PurchaseReportUserInvestmentFilterResult Result { get; set; }
 
         [BindProperty(SupportsGet = true)]
-        public UserPurchaseReportDto UserDto { get; set; }
+        public UserPurchaseReportDto? UserDto { get; set; }
 
-        public async Task OnGet()
+        public async Task<IActionResult> OnGet()
         {
             Result = await _service.GetFilterUserForCurrentUser(FilterParams);
             Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id);
             UserDto = Result.Data.FirstOrDefault(i => i.UserId.Equals(id));
+            return Page();
         }
     }
 }

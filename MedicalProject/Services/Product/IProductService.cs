@@ -89,6 +89,9 @@ namespace MedicalProject.Services.Product
 
             if (command.IndexPage is not null)
                 form.Add(new StringContent(command.IndexPage.ToString()), "IndexPage");
+         
+            if (command.status != null)
+                form.Add(new StringContent(command.status.ToString()), "Status");
 
             if (command.Image is not null)
             {

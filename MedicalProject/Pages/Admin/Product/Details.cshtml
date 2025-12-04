@@ -547,7 +547,7 @@
                                         <div class="space-y-4">
                                             <div class="financial-card p-4 bg-white rounded-lg border">
                                                 <div class="text-sm text-gray-600">قیمت کل</div>
-                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.TotalPrice.ToPersianNumbers() تومان</div>
+                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.TotalPrice.ToPersianNumbers() ریال</div>
                                             </div>
 
                                             <div class="financial-card p-4 bg-white rounded-lg border">
@@ -557,12 +557,12 @@
 
                                             <div class="financial-card p-4 bg-white rounded-lg border">
                                                 <div class="text-sm text-gray-600">قیمت هر دانگ</div>
-                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.PricePerDong.ToPersianNumbers() تومان</div>
+                                                <div class="text-xl font-bold text-gray-900">@Model.Product.InventoryDto.PricePerDong.ToPersianNumbers() ریال</div>
                                             </div>
 
                                             <div class="financial-card p-4 bg-white rounded-lg border">
                                                 <div class="text-sm text-gray-600">سود هر دانگ</div>
-                                                <div class="text-xl font-bold text-green-600">@Model.Product.InventoryDto.Profit.ToPersianNumbers() تومان</div>
+                                                <div class="text-xl font-bold text-green-600">@Model.Product.InventoryDto.Profit.ToPersianNumbers() ریال</div>
                                             </div>
 
                                             <div class="financial-card p-4 bg-white rounded-lg border">
@@ -644,7 +644,7 @@
                 
                 <div class="space-y-4">
                     <div class="form-group">
-                        <label class="form-label">قیمت کل (تومان)</label>
+                        <label class="form-label">قیمت کل (ریال)</label>
                         <input type="text" name="totalPrice" class="form-control" 
                                value="@Model.Product.InventoryDto?.TotalPrice" 
                                placeholder="مثال: 100000000" required>
@@ -658,7 +658,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">سود هر دانگ (تومان)</label>
+                        <label class="form-label">سود هر دانگ (ریال)</label>
                         <input type="text" name="profit" class="form-control" 
                                value="@Model.Product.InventoryDto?.Profit" 
                                placeholder="مثال: 50000" required>

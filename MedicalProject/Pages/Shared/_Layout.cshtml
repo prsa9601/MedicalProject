@@ -1,4 +1,6 @@
 ﻿@using MedicalProject.Models
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -315,7 +317,7 @@
         .glass {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            -webkit-background-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
@@ -389,7 +391,7 @@
 
         /* Dark Mode Support */
         @@media (prefers-color-scheme: dark) {
-            :root {
+            : root {
                 --bg-primary: #1f2937;
                 --bg-secondary: #111827;
                 --text-primary: #f9fafb;
@@ -477,7 +479,7 @@
                         پروژه‌ها
                         <span class="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
                     </a>
-               @*      <a asp-page="/Front/Categories" class="nav-link text-gray-700 hover:text-blue-600 transition-colors font-medium relative group">
+                    @*      <a asp-page="/Front/Categories" class="nav-link text-gray-700 hover:text-blue-600 transition-colors font-medium relative group">
                         دسته‌بندی‌ها
                         <span class="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
                     </a> *@
@@ -506,10 +508,31 @@
                     </div>
                 </div>
 
+
+                @{
+                    // چک کردن پالیسی در View
+                    var isSuperAdmin = await AuthorizationService.AuthorizeAsync(User, "SuperAdmin");
+                }
+
+
                 <!-- User Actions -->
                 <div class="flex items-center space-x-4 space-x-reverse">
                     @if (User.Identity.IsAuthenticated)
                     {
+                        @if (isSuperAdmin.Succeeded)
+                        {
+                            <a href="/Admin/Product"
+                               class="btn btn-danger flex items-center space-x-2 space-x-reverse px-4 py-2 mr-2">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="hidden sm:inline">پنل ادمین</span>
+                                <span class="sm:hidden">ادمین</span>
+                            </a>
+                        }
                         <!-- User Menu -->
                         <div class="relative group">
                             <button onclick="toggleProfileDropdown()"
@@ -606,7 +629,7 @@
                        class="mobile-nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border-r-4 border-transparent hover:border-blue-600">
                         پروژه‌ها
                     </a>
-                   @*  <a href="/Front/Categories"
+                    @*  <a href="/Front/Categories"
                        class="mobile-nav-link block px-3 py-3 text-base font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border-r-4 border-transparent hover:border-blue-600">
                         دسته‌بندی‌ها
                     </a> *@
@@ -1221,60 +1244,60 @@
             // موفقیت
             @if (TempData["Success"] != null)
             {
-                        <text>
-                            Alert.success(decodePersianText('@TempData["Success"]'));
-                        </text>
+                            <text>
+                                Alert.success(decodePersianText('@TempData["Success"]'));
+                            </text>
             }
 
             // خطا
             @if (TempData["Error"] != null)
             {
-                        <text>
-                            const errorMsg = decodePersianText('@TempData["Error"]');
-                            if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
-                                Alert.notFound(errorMsg);
-                        } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
-                                Alert.serverError(errorMsg);
-                        } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
-                                Alert.badRequest(errorMsg);
-                        } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
-                                Alert.unauthorized(errorMsg);
-                        } else {
-                                Alert.error(errorMsg);
-                        }
-                        </text>
+                            <text>
+                                const errorMsg = decodePersianText('@TempData["Error"]');
+                                if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                                    Alert.notFound(errorMsg);
+                            } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                                    Alert.serverError(errorMsg);
+                            } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                                    Alert.badRequest(errorMsg);
+                            } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                                    Alert.unauthorized(errorMsg);
+                            } else {
+                                    Alert.error(errorMsg);
+                            }
+                            </text>
             }
 
             // هشدار
             @if (TempData["Warning"] != null)
             {
-                        <text>
-                            const warningMsg = decodePersianText('@TempData["Warning"]');
-                            if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
-                                Alert.validationWarning(warningMsg);
-                        } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
-                                Alert.financialWarning(warningMsg);
-                        } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
-                                Alert.securityWarning(warningMsg);
-                        } else {
-                                Alert.warning(warningMsg);
-                        }
-                        </text>
+                            <text>
+                                const warningMsg = decodePersianText('@TempData["Warning"]');
+                                if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                                    Alert.validationWarning(warningMsg);
+                            } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                                    Alert.financialWarning(warningMsg);
+                            } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                                    Alert.securityWarning(warningMsg);
+                            } else {
+                                    Alert.warning(warningMsg);
+                            }
+                            </text>
             }
 
             // اطلاعیه
             @if (TempData["Info"] != null)
             {
-                        <text>
-                            const infoMsg = decodePersianText('@TempData["Info"]');
-                            if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
-                                Alert.systemInfo(infoMsg);
-                        } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
-                                Alert.financialInfo(infoMsg);
-                        } else {
-                                Alert.info(infoMsg);
-                        }
-                        </text>
+                            <text>
+                                const infoMsg = decodePersianText('@TempData["Info"]');
+                                if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                                    Alert.systemInfo(infoMsg);
+                            } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                                    Alert.financialInfo(infoMsg);
+                            } else {
+                                    Alert.info(infoMsg);
+                            }
+                            </text>
             }
         }
 

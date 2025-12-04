@@ -3,8 +3,10 @@ using MedicalProject.Infrastructure.Utils.Decryption;
 using MedicalProject.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,15 +26,52 @@ builder.Services.AddControllersWithViews();
 //    options.ViewLocationFormats.Add("/Pages/Shared/{0}.cshtml");
 //});
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(option =>
+{
 
-//builder.Services.AddRazorPages()
-//    .AddRazorRuntimeCompilation()
-//    .AddRazorPagesOptions(options =>
-//    {
-//        // options.Conventions.AuthorizeFolder("/Profile", "Account");
-//        options.Conventions.AuthorizeFolder("/SellerPanel", "SellerPanel");
-//    });
+    //option.AddPolicy("AdminAreaAccess", policy =>
+    //{
+    //    policy.RequireAuthenticatedUser();
+    //    policy.RequireAssertion(context =>
+    //    {
+    //        var roles = context.User.Claims
+    //            .Where(c => c.Type == ClaimTypes.Role)
+    //            .Select(c => c.Value);
+
+    //        return roles.Any(r =>
+    //            r.Equals("SuperAdmin", StringComparison.OrdinalIgnoreCase) ||
+    //            r.Equals("Admin", StringComparison.OrdinalIgnoreCase));
+    //    });
+    //});
+
+    option.AddPolicy("Account", builder =>
+    {
+        builder.RequireAuthenticatedUser();
+    });
+    option.AddPolicy("SuperAdmin", builder =>
+    {
+        builder.RequireAuthenticatedUser();
+    
+        builder.RequireAssertion(f => f.User.Claims
+            .Any(c => c.Type == ClaimTypes.Role && c.Value.Contains("SuperAdmin")));
+    });
+    option.AddPolicy("Programmer", builder =>
+    {
+        builder.RequireAuthenticatedUser();
+        builder.RequireAssertion(f => f.User.Claims
+            .Any(c => c.Type == ClaimTypes.Role && c.Value.Contains("Programmer")));
+    });
+});
+
+
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation()
+    .AddRazorPagesOptions(options =>
+    {
+        options.Conventions.AuthorizeFolder("/Account", "Account");
+        //options.Conventions.AuthorizeFolder("/Admin", "Programmer");
+        options.Conventions.AuthorizeFolder("/Admin", "SuperAdmin");
+    });
 
 //builder.Services.AddAuthentication(option =>
 //{

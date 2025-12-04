@@ -1250,6 +1250,8 @@
         }
 
         // اسکریپت حذف کاربر با SweetAlert (آپدیت شده)
+               // اسکریپت حذف کاربر با SweetAlert
+            // اسکریپت حذف کاربر با بررسی دقیق پاسخ
         async function deleteUser(userId) {
             const result = await Swal.fire({
                 title: 'آیا از حذف این کاربر اطمینان دارید؟',
@@ -1264,42 +1266,116 @@
 
             if (result.isConfirmed) {
                 try {
-                    showLoading();
-
-                    const formData = new FormData();
-                    formData.append('userId', userId);
-
-                    const response = await fetch('?handler=Delete', {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    Swal.fire({
+                        title: 'در حال حذف...',
+                        text: 'لطفا منتظر بمانید',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
                         }
                     });
 
-                    if (response.ok) {
-                        await Swal.fire({
-                            title: 'حذف شد!',
-                            text: 'کاربر با موفقیت حذف شد.',
-                            icon: 'success',
-                            confirmButtonText: 'باشه'
-                        });
+                    // روش 1: استفاده از FormData
+                    const formData = new FormData();
+                    formData.append('userId', userId);
 
-                        // ریلود صفحه با Ajax پس از حذف
-                        await loadPage(1);
-                    } else {
-                        throw new Error('خطا در حذف کاربر');
+                    // روش 2: استفاده از URLSearchParams
+                    // const params = new URLSearchParams();
+                    // params.append('userId', userId);
+
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                    const response = await fetch(`?handler=Delete`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            // 'Content-Type': 'application/x-www-form-urlencoded', // اگر از URLSearchParams استفاده می‌کنید
+                            'RequestVerificationToken': token,
+                            'X-Requested-With': 'XMLHttpRequest' // برای تشخیص درخواست Ajax
+                        }
+                    });
+
+                    const responseText = await response.text();
+
+                    // ایجاد یک DOM موقت برای تحلیل HTML پاسخ
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(responseText, 'text/html');
+
+                    // بررسی وجود پیام خطا در پاسخ
+                    const errorElements = doc.querySelectorAll('[id*="Error"], .alert-danger, .text-danger');
+                    const successElements = doc.querySelectorAll('[id*="Success"], .alert-success, .text-success');
+
+                    // بررسی محتوای صفحه برای پیام‌ها
+                    let hasError = false;
+                    let errorMessage = '';
+                    let successMessage = '';
+
+                    // اگر عنصر خطا پیدا شد
+                    if (errorElements.length > 0) {
+                        hasError = true;
+                        errorElements.forEach(el => {
+                            if (el.textContent.trim()) {
+                                errorMessage += el.textContent.trim() + '\n';
+                            }
+                        });
                     }
+
+                    // اگر عنصر موفقیت پیدا شد
+                    if (successElements.length > 0) {
+                        successElements.forEach(el => {
+                            if (el.textContent.trim()) {
+                                successMessage += el.textContent.trim() + '\n';
+                            }
+                        });
+                    }
+
+                    // اگر در بدنه صفحه متن خطا وجود دارد (مثلاً در تگ script)
+                    if (responseText.includes('TempData["Error"]') && responseText.includes('خطا')) {
+                        // استخراج پیام خطا از کد JavaScript
+                        const errorMatch = responseText.match(/TempData\["Error"\]\s*[=:]\s*['"]([^'"]+)['"]/);
+                        if (errorMatch && errorMatch[1]) {
+                            hasError = true;
+                            errorMessage = decodeURIComponent(errorMatch[1]);
+                        }
+                    }
+
+                    // بررسی وضعیت پاسخ
+                    if (!response.ok) {
+                        hasError = true;
+                        errorMessage = `خطای سرور: ${response.status} ${response.statusText}`;
+                    }
+
+                    Swal.close();
+
+                    // if (hasError) {
+                    //     await Swal.fire({
+                    //         title: 'خطا در حذف',
+                    //         text: errorMessage || 'خطای نامشخص در حذف کاربر',
+                    //         icon: 'error',
+                    //         confirmButtonText: 'باشه'
+                    //     });
+                    // } else {
+                    //     await Swal.fire({
+                    //         title: 'موفقیت',
+                    //         text: successMessage || 'کاربر با موفقیت حذف شد',
+                    //         icon: 'success',
+                    //         confirmButtonText: 'باشه'
+                    //     });
+
+                        // رفرش صفحه برای نمایش تغییرات
+                        location.reload();
+                    // }
+
                 } catch (error) {
                     console.error('Error:', error);
+                    Swal.close();
+
                     await Swal.fire({
-                        title: 'خطا!',
-                        text: 'خطا در حذف کاربر',
+                        title: 'خطای شبکه',
+                        text: 'خطا در ارتباط با سرور. لطفا اتصال اینترنت را بررسی کنید.',
                         icon: 'error',
                         confirmButtonText: 'باشه'
                     });
-                } finally {
-                    hideLoading();
                 }
             }
         }
@@ -1329,6 +1405,7 @@
                 console.log('جستجو برای:', searchTerm);
             }
         });
+        
 
         // مدیریت کلیک روی دکمه مشاهده جزئیات
         document.querySelectorAll('button[title="مشاهده جزئیات"]').forEach(button => {

@@ -31,19 +31,38 @@ namespace MedicalProject.Pages.Admin.Users
 
                 if (result.IsSuccess)
                 {
-                    TempData["SuccessMessage"] = "کاربر با موفقیت حذف شد";
+                    // اگر درخواست Ajax است
+                    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    {
+                        return new JsonResult(new { success = true, message = "کاربر با موفقیت حذف شد" });
+                    }
+
+                    TempData["Success"] = "کاربر با موفقیت حذف شد";
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "خطا در حذف کاربر";
+                    //if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                    //{
+                    TempData["Error"] = result.MetaData.Message;
+                        return new JsonResult(new { success = false, message = result.MetaData.Message });
+                    //}
+
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"خطا: {ex.Message}";
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return new JsonResult(new { success = false, message = $"خطا: {ex.Message}" });
+                }
+
+                TempData["Error"] = $"خطا: {ex.Message}";
             }
 
-            return RedirectToPage();
+            Users = await _service.GetUserByFilter(FilterParams);
+
+            // برای درخواست‌های عادی
+            return Page();
         }
 
         //public async Task<IActionResult> OnPostToggleUserStatusAsync(Guid userId, bool isActive)

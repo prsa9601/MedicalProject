@@ -29,7 +29,7 @@ namespace MedicalProject.Services.Auth
         {
             try
             {
-                var result = await _client.DeleteAsync("auth/logout");
+                var result = await _client.DeleteAsync("Auth/logout");
                 return await result.Content.ReadFromJsonAsync<ApiResult>();
             }
             catch (Exception e)

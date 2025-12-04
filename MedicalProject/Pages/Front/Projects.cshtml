@@ -6,6 +6,776 @@
     ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
 }
 
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* استایل‌های آیکون‌ها */
+        .stat-item i {
+            width: 1rem;
+            text-align: center;
+            color: #6b7280;
+            font-style: normal;
+        }
+
+        /* اطمینان از لود فونت */
+        .fas, .far, .fab {
+            font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands' !important;
+            font-weight: 900;
+        }
+
+        /* استایل‌های سفارشی برای صفحه پروژه‌ها */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 1.25rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 5px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
+        }
+
+            .project-card:hover {
+                transform: translateY(-8px) scale(1.01);
+                box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25);
+                border-color: rgba(59, 130, 246, 0.3);
+            }
+
+            .project-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+                border-radius: 1.25rem 1.25rem 0 0;
+            }
+
+        .project-image {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+            .project-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+        .project-card:hover .project-image img {
+            transform: scale(1.1);
+        }
+
+        .project-badges {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 10;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+            .badge.active {
+                background: linear-gradient(135deg, rgba(34, 197, 94, 0.9), rgba(21, 128, 61, 0.9));
+                color: white;
+            }
+
+            .badge.deactive {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(185, 28, 28, 0.9));
+                color: white;
+            }
+
+            .badge.isdone {
+                background: linear-gradient(135deg, rgba(139, 92, 246, 0.9), rgba(109, 40, 217, 0.9));
+                color: white;
+            }
+
+        .project-content {
+            padding: 1.75rem;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            background: linear-gradient(90deg, #1f2937, #4b5563);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .project-description {
+            color: #6b7280;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #f3f4f6;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #10b981);
+            border-radius: 1rem;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .progress-fill::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                animation: shimmer 2s infinite;
+            }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-percentage {
+            font-weight: 700;
+            font-size: 1.125rem;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .project-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, rgba(249, 250, 251, 0.8), rgba(243, 244, 246, 0.8));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+        }
+
+            .stat-item i {
+                width: 1.25rem;
+                height: 1.25rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                border-radius: 0.5rem;
+                color: #6b7280;
+                font-size: 0.75rem;
+            }
+
+        .project-pricing {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .price-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .price-label {
+            font-size: 0.8125rem;
+            color: #64748b;
+            margin-bottom: 0.375rem;
+            font-weight: 500;
+        }
+
+        .price-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+            color: #1e293b;
+        }
+
+            .price-value.primary {
+                background: linear-gradient(90deg, #3b82f6, #2563eb);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+            .action-buttons a {
+                flex: 1;
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                color: white;
+                padding: 0.875rem 1.5rem;
+                border-radius: 0.75rem;
+                font-weight: 600;
+                text-align: center;
+                text-decoration: none;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border: none;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+
+                .action-buttons a:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+                    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+                }
+
+                .action-buttons a:active {
+                    transform: translateY(0);
+                }
+
+        /* انیمیشن‌های سفارشی */
+        @@keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .staggered {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation-delay: calc(var(--i) * 0.1s);
+            opacity: 0;
+        }
+
+        /* صفحه‌بندی بهبود یافته */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            padding: 1rem;
+        }
+
+        .page-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.75rem;
+            height: 2.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            background: white;
+            color: #475569;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+            .page-btn:hover:not(.disabled):not(.active) {
+                background: #f1f5f9;
+                border-color: #cbd5e1;
+                transform: translateY(-1px);
+            }
+
+            .page-btn.active {
+                background: linear-gradient(135deg, #3b82f6, #2563eb);
+                border-color: transparent;
+                color: white;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            }
+
+            .page-btn.disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+                pointer-events: none;
+            }
+
+        /* حالت خالی */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            grid-column: 1 / -1;
+        }
+
+        .empty-icon {
+            width: 5rem;
+            height: 5rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .empty-icon i {
+                font-size: 2rem;
+                color: #9ca3af;
+            }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            max-width: 28rem;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* رسپانسیو */
+        @@media (max-width: 1024px) {
+            .projects-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .project-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .project-content {
+                padding: 1.25rem;
+            }
+        }
+
+        /* استایل‌های خاص برای محتوای فارسی */
+        .persian-numbers {
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        /* استایل‌های آماری */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @@media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            transition: all 0.3s ease;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <!-- هدر صفحه -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+        <div class="absolute inset-0 bg-black opacity-10"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 text-shadow-lg">پروژه‌های سرمایه‌گذاری</h1>
+                <p class="text-xl opacity-90 max-w-3xl mx-auto leading-relaxed">
+                    فرصت‌های سرمایه‌گذاری مطمئن در تجهیزات پزشکی و صنعتی با بالاترین بازدهی
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- اطلاعات آماری -->
+        <div class="stats-grid mb-12">
+            <div class="stat-card">
+                <div class="stat-value text-blue-600">
+                    @(Model.Result != null && Model.Result.EntityCount > 0 ? ProductNumber(Model.Result) : 0)
+                </div>
+                <div class="stat-label">پروژه فعال</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-green-600">
+                    @(Model.Result != null && Model.Result.EntityCount > 0 ? InvestmentPrice(Model.Result) : 0)M
+                </div>
+                <div class="stat-label">تومان سرمایه‌گذاری</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-purple-600">
+                    @(Model.Result != null && Model.Result.EntityCount > 0 ? InvestmentNumber(Model.Result).ToString("N0") : 0)
+                </div>
+                <div class="stat-label">سرمایه‌گذار</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value text-orange-600">
+                    @(Model.Result != null && Model.Result.EntityCount > 0 ? AverageProfit(Model.Result) : 0)%
+                </div>
+                <div class="stat-label">میانگین سود</div>
+            </div>
+        </div>
+
+        @functions
+        {
+            private decimal InvestmentNumber(ProductFilterForIndexPageResult model)
+            {
+                if (model?.Data?.Count == 0)
+                {
+                    return 0;
+                }
+                int res = 0;
+                foreach (var item in model.Data)
+                {
+                    res += item.PurchaseReportDto?.Count() ?? 0;
+                }
+                return res;
+            }
+
+            private string InvestmentPrice(ProductFilterForIndexPageResult model)
+            {
+                if (model?.Data?.Count == 0)
+                {
+                    return "0";
+                }
+                decimal res = 0;
+                foreach (var item in model.Data)
+                {
+                    var sum = item.PurchaseReportDto?.Sum(i => decimal.Parse(i.TotalPrice ?? "0")) ?? 0;
+                    res += sum;
+                }
+                return (res / 1000000).ToString("F2");
+            }
+
+            private int ProductNumber(ProductFilterForIndexPageResult model)
+            {
+                if (model?.Data?.Count == 0)
+                {
+                    return 0;
+                }
+                return model.Data.Where(i => i.Status != Models.Product.ProductStatus.NotActive).Count();
+            }
+
+            private int AverageProfit(ProductFilterForIndexPageResult model)
+            {
+                if (model?.Data?.Count == 0)
+                {
+                    return 0;
+                }
+                var profit = (model.Data.Sum(i => decimal.Parse(i.InventoryDto?.Profit ?? "0")) * 100);
+                var price = ((model.Data.Sum(i => decimal.Parse(i.InventoryDto?.TotalPrice ?? "0"))));
+                if (price == 0) return 0;
+                var average = profit / price;
+                return Convert.ToInt32(average);
+            }
+        }
+
+        <!-- گرید پروژه‌ها -->
+        <div id="projectsContainer">
+            @if (Model.Result == null || Model.Result.EntityCount == 0)
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>پروژه‌ای یافت نشد</h3>
+                    <p class="text-lg">در حال حاضر پروژه‌ای برای نمایش وجود ندارد.</p>
+                    <p class="text-gray-500 mt-2">به زودی پروژه‌های جدید اضافه خواهند شد.</p>
+                </div>
+            }
+            else
+            {
+                <div class="projects-grid" id="projectsGrid">
+                    @{
+                        var index = 0;
+                        foreach (var item in Model.Result.Data)
+                        {
+                            <div class="project-card fade-in" style="--i: @(index);">
+                                <div class="project-image">
+                                    <img src="@Directories.GetProductImagePathPath(item.ImageName)" alt="@item.Title" loading="lazy">
+                                    <div class="project-badges">
+                                        <span class="badge @(item.Status == Models.Product.ProductStatus.IsActive ? "active" :
+                                                                                                                                            item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
+                                                                                                                                            item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "")">
+                                            @(item.Status == Models.Product.ProductStatus.IsActive ? "فعال" :
+                                                                            item.Status == Models.Product.ProductStatus.NotActive ? "غیرفعال" :
+                                                                            item.Status == Models.Product.ProductStatus.IsDone ? "تکمیل شده" :
+                                                                            "نامشخص")
+                                                                                 </span>
+                                                                             </div>
+                                                                         </div>
+                                                                         <div class="project-content">
+                                                                             <h3 class="project-title">@item.Title</h3>
+                                                                             <p class="project-description">@item.Description</p>
+
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"
+                                             style="width: @(CalculateProgress(item.PurchaseReportDto?.Sum(i => i.PurchaseDang) ?? 0).ToString("F2"))%"></div>
+                                    </div>
+                                    <div class="progress-info">
+                                        <span class="progress-percentage">
+                                            @(CalculateProgress(item.PurchaseReportDto?.Sum(i => i.PurchaseDang) ?? 0).ToString("F2"))%
+                                        </span>
+                                        <span class="progress-text">پیشرفت تأمین مالی</span>
+                                    </div>
+
+                                    <div class="project-stats">
+                                        <div class="stat-item">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span>@($"{item.InventoryDto?.Profit} سود هر دانگ" ?? "ثبت نشده است")</span>
+                                        </div>
+                                        <div class="stat-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>@($"تاریخ سوددهی {item.InventoryDto?.ProfitableTime}" ?? "ثبت نشده است")</span>
+                                        </div>
+
+                                        <div class="stat-item">
+                                            <i class="fas fa-users"></i>
+                                            <span>@(item.InventoryDto?.Dong ?? 6) سهم</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="project-pricing">
+                                        <div class="price-item">
+                                            <span class="price-label">قیمت هر سهم</span>
+                                            <span class="price-value persian-numbers">
+                                                @(item.InventoryDto?.PricePerDong != null ?
+                                                                                    $"{decimal.Parse(item.InventoryDto.PricePerDong):N0} ریال" :
+                                                                                    "قیمت ثبت نشده")
+                                </span>
+                            </div>
+                            <div class="price-item">
+                                <span class="price-label">حداقل سرمایه</span>
+                                <span class="price-value primary persian-numbers">
+                                    @((ConvertToDecimal(item.InventoryDto?.PricePerDong) / 2)?.ToString("N0") ?? "0") ریال
+                                </span>
+                            </div>
+                        </div>
+
+                                                    <div class="action-buttons">
+                                                        <a href="/Front/Projects/Details?slug=@item.Slug"
+                                                           class="flex items-center justify-center gap-2">
+                                                            <i class="fas fa-eye"></i>
+                                                            مشاهده جزئیات
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            index++;
+                        }
+                    }
+                </div>
+
+                <!-- صفحه‌بندی -->
+                @if (Model.Result?.Data?.Any() == true && Model.Result.PageCount > 1)
+                {
+                    <div class="pagination">
+                        <!-- دکمه قبلی -->
+                        @if (Model.Result.FilterParams.PageId > 1)
+                        {
+                            <a href="?pageId=@(Model.Result.FilterParams.PageId - 1)&take=@Model.Result.FilterParams.Take"
+                               class="page-btn">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="page-btn disabled">
+                                <i class="fas fa-chevron-right"></i>
+                            </span>
+                        }
+
+                        <!-- صفحات -->
+                        @{
+                            var currentPage = Model.Result.FilterParams.PageId;
+                            var totalPages = Model.Result.PageCount;
+                            var startPage = Math.Max(1, currentPage - 2);
+                            var endPage = Math.Min(totalPages, currentPage + 2);
+                        }
+
+                        @if (startPage > 1)
+                        {
+                            <a href="?pageId=1&take=@Model.Result.FilterParams.Take" class="page-btn">1</a>
+                            @if (startPage > 2)
+                            {
+                                <span class="px-2 text-gray-500">...</span>
+                            }
+                        }
+
+                        @for (int i = startPage; i <= endPage; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <span class="page-btn active">@i</span>
+                            }
+                            else
+                            {
+                                <a href="?pageId=@i&take=@Model.Result.FilterParams.Take" class="page-btn">@i</a>
+                            }
+                        }
+
+                        @if (endPage < totalPages)
+                        {
+                            @if (endPage < totalPages - 1)
+                            {
+                                <span class="px-2 text-gray-500">...</span>
+                            }
+                            <a href="?pageId=@totalPages&take=@Model.Result.FilterParams.Take" class="page-btn">@totalPages</a>
+                        }
+
+                        <!-- دکمه بعدی -->
+                        @if (Model.Result.FilterParams.PageId < Model.Result.PageCount)
+                        {
+                            <a href="?pageId=@(Model.Result.FilterParams.PageId + 1)&take=@Model.Result.FilterParams.Take"
+                               class="page-btn">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="page-btn disabled">
+                                <i class="fas fa-chevron-left"></i>
+                            </span>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    public decimal? ConvertToDecimal(object value)
+    {
+        if (value == null) return null;
+        return decimal.TryParse(value.ToString(), out decimal result) ? result : null;
+    }
+
+    private double CalculateProgress(double sum)
+    {
+        if (sum == 0) return 0;
+        return (sum * 100) / 6;
+    }
+}
+
+
+
+@* @page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Models.Product.DTOs
+@model MedicalProject.Pages.Front.ProjectsModel
+@{
+    ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
+}
+
 
 @section Styles {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -449,234 +1219,252 @@
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-blue-600">@(ProductNumber(Model.Result))</div>
+                        <div class="text-2xl font-bold text-blue-600">@(Model.Result != null || Model.Result.EntityCount > 0 ? ProductNumber(Model.Result) : 0)</div>
                         <div class="text-sm text-gray-600">پروژه فعال</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-green-600">@(InvestmentPrice(Model.Result))M </div>
+                        <div class="text-2xl font-bold text-green-600">@(Model.Result != null || Model.Result.EntityCount > 0 ? InvestmentPrice(Model.Result) : 0)M </div>
                         <div class="text-sm text-gray-600">تومان سرمایه‌گذاری</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-purple-600">@(InvestmentNumber(Model.Result).ToString("N0"))</div>
+                        <div class="text-2xl font-bold text-purple-600">@(Model.Result != null || Model.Result.EntityCount > 0 ? InvestmentNumber(Model.Result).ToString("N0") : 0)</div>
                         <div class="text-sm text-gray-600">سرمایه‌گذار</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-orange-600">@AverageProfit(Model.Result)%</div>
-                        <div class="text-sm text-gray-600">میانگین سود</div>
+                        <div class="text-2xl font-bold text-orange-600">
+                            @(Model.Result != null || Model.Result.EntityCount > 0 ? AverageProfit(Model.Result) : 0) %</ div >
+                            <div class="text-sm text-gray-600">میانگین سود</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            @functions
-            {
-                private decimal InvestmentNumber(ProductFilterForIndexPageResult model)
+                @functions
                 {
-
-                    int res = 0;
-                    foreach (var item in model.Data)
+                    private decimal InvestmentNumber(ProductFilterForIndexPageResult model)
                     {
-                        res += item.PurchaseReportDto.Count();
-                    }
-                    return res;
+                        if (model.Data.Count == 0)
+                        {
+                            return 0;
+                        }
+                        int res = 0;
+                        foreach (var item in model.Data)
+                        {
+                            res += item.PurchaseReportDto.Count();
+                        }
+                        return res;
 
-                }
-                private string InvestmentPrice(ProductFilterForIndexPageResult model)
-                {
-                    decimal res = 0;
-                    foreach (var item in model.Data)
+                    }
+                    private string InvestmentPrice(ProductFilterForIndexPageResult model)
                     {
-                        var sum = item.PurchaseReportDto.Sum(i => decimal.Parse(i.TotalPrice));
-                        res += sum;
-                    }
-                    return (res / 1000000).ToString("F2");
-                }
-
-                private int ProductNumber(ProductFilterForIndexPageResult model)
-                {
-                    return model.Data.Where(i => i.Status != Models.Product.ProductStatus.NotActive).Count();
-                }
-
-                private int AverageProfit(ProductFilterForIndexPageResult model)
-                {
-                    var profit = (model.Data.Sum(i => decimal.Parse(i.InventoryDto.Profit)) * 100);
-                    var price = ((model.Data.Sum(i => decimal.Parse(i.InventoryDto.TotalPrice))));
-                    var average = profit / price;
-
-                    return Convert.ToInt32(average);
-                }
-
-            }
-            <!-- گرید پروژه‌ها -->
-            <div id="projectsContainer">
-                <div class="projects-grid" id="projectsGrid">
-                    @{
-                        foreach (var item in Model.Result.Data)
+                        if (model.Data.Count == 0)
                         {
-                            <div class="project-card fade-in">
-                                <div class="project-image">
-                                    <img src="@Directories.GetProductImagePathPath(item.ImageName)" alt="@item.Title" loading="lazy">
-                                    <div class="project-badges">
-                                        <span class="badge @(item.Status == Models.Product.ProductStatus.IsActive ? "active" :
-                                                                                                                                                                                                                                                                                                                                  item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
-                                                                                                                                                                                                                                                                                                                                  item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "") badge-success">
-                                            @(item.Status == Models.Product.ProductStatus.IsActive ? "فعال" :
-                                                                                item.Status == Models.Product.ProductStatus.NotActive ? "غیرفعال" :
-                                                                                item.Status == Models.Product.ProductStatus.IsDone ? "تکمیل شده" :
-                                                                                "نامشخص")
-                                </span>
-                            </div>
-                        </div>
-                        <div class="project-content">
-                            <h3 class="project-title">@item.Title</h3>
-                            <p class="project-description">@item.Description</p>
-
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width:
-                                                                @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%"></div>
-                                    </div>
-                                    <div class="progress-info">
-                                        <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%</span>
-                                        <span class="progress-text">پیشرفت تأمین مالی</span>
-                                    </div>
-
-                                    <div class="project-stats">
-                                        <div class="stat-item">
-                                            <i class="fas fa-chart-line"></i>
-                                            <span>@($"{item.InventoryDto?.Profit} سود هر دانگ" ?? "ثبت نشده است")</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <i class="fas fa-clock"></i>
-                                            <span>@($"تاریخ سوددهی {item.InventoryDto?.ProfitableTime}" ?? "ثبت نشده است")</span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            <span></span>
-                                        </div>
-                                        <div class="stat-item">
-                                            <i class="fas fa-users"></i>
-                                            <span>@(item.InventoryDto?.Dong ?? 6) سهم</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="project-pricing">
-                                        <div class="price-item">
-                                            <span class="price-label">قیمت هر سهم</span>
-                                            <span class="price-value persian-numbers">
-                                                @(item.InventoryDto?.PricePerDong != null ? $"{item.InventoryDto.PricePerDong:N0} ریال" : "قیمت ثبت نشده")
-                                            </span>
-                                        </div>
-                                        <div class="price-item">
-                                            <span class="price-label">حداقل سرمایه</span>
-                                            <span class="price-value primary persian-numbers">
-                                                @((ConvertToDecimal(item.InventoryDto?.PricePerDong) / 2)?.ToString("N0") ?? "0") ریال
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="action-buttons">
-                                        <a href="/Front/Projects/Details?slug=@item.Slug" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
-                                            مشاهده جزئیات
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                                        }
-                    }
-                    <!-- پروژه‌ها اینجا رندر می‌شوند -->
-
-                </div>
-
-                <!-- صفحه‌بندی -->
-                <!-- صفحه‌بندی -->
-                @if (Model.Result?.Data?.Any() == true && Model.Result.PageCount > 1)
-                {
-                    <div class="pagination">
-                        <!-- دکمه قبلی -->
-                        @if (Model.Result.FilterParams.PageId > 1)
-                        {
-                            <a href="?pageId=@(Model.Result.FilterParams.PageId - 1)&take=@Model.Result.FilterParams.Take"
-                               class="page-btn">
-                                <i class="fas fa-chevron-right"></i>
-                            </a>
+                            return "0";
                         }
-                        else
+                        decimal res = 0;
+                        foreach (var item in model.Data)
                         {
-                            <span class="page-btn disabled">
-                                <i class="fas fa-chevron-right"></i>
-                            </span>
+                            var sum = item.PurchaseReportDto.Sum(i => decimal.Parse(i.TotalPrice));
+                            res += sum;
                         }
+                        return (res / 1000000).ToString("F2");
+                    }
 
-                        <!-- صفحات -->
+                    private int ProductNumber(ProductFilterForIndexPageResult model)
+                    {
+                        if (model.Data.Count == 0)
+                        {
+                            return 0;
+                        }
+                        return model.Data.Where(i => i.Status != Models.Product.ProductStatus.NotActive).Count();
+                    }
+
+                    private int AverageProfit(ProductFilterForIndexPageResult model)
+                    {
+                        if (model.Data.Count == 0)
+                        {
+                            return 0;
+                        }
+                        var profit = (model.Data.Sum(i => decimal.Parse(i.InventoryDto.Profit)) * 100);
+                        var price = ((model.Data.Sum(i => decimal.Parse(i.InventoryDto.TotalPrice))));
+                        var average = profit / price;
+
+                        return Convert.ToInt32(average);
+                    }
+
+                }
+                <!-- گرید پروژه‌ها -->
+                <div id="projectsContainer">
+                    <div class="projects-grid" id="projectsGrid">
                         @{
-                            var currentPage = Model.Result.FilterParams.PageId;
-                            var totalPages = Model.Result.PageCount;
-                            var startPage = Math.Max(1, currentPage - 2);
-                            var endPage = Math.Min(totalPages, currentPage + 2);
-                        }
-
-                        @if (startPage > 1)
-                        {
-                            <a href="?pageId=1&take=@Model.Result.FilterParams.Take" class="page-btn">1</a>
-                            @if (startPage > 2)
+                            if (Model.Result == null || Model.Result.EntityCount == 0)
                             {
-                                <span class="px-2 text-gray-500">...</span>
-                            }
-                        }
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-search"></i>
+                                    </div>
+                                    <h3>پروژه‌ای یافت نشد</h3>
+                                    <p>در حال حاضر پروژه‌ای برای نمایش وجود ندارد.</p>
+                                </div>
 
-                        @for (int i = startPage; i <= endPage; i++)
-                        {
-                            if (i == currentPage)
-                            {
-                                <span class="page-btn active">@i</span>
                             }
                             else
                             {
-                                <a href="?pageId=@i&take=@Model.Result.FilterParams.Take" class="page-btn">@i</a>
+                                foreach (var item in Model.Result.Data)
+                                {
+                                    <div class="project-card fade-in">
+                                        <div class="project-image">
+                                            <img src="@Directories.GetProductImagePathPath(item.ImageName)" alt="@item.Title" loading="lazy">
+                                            <div class="project-badges">
+                                                <span class="badge @(item.Status == Models.Product.ProductStatus.IsActive ? "active" :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    item.Status == Models.Product.ProductStatus.NotActive ? "deactive" :
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    item.Status == Models.Product.ProductStatus.IsDone ? "isdone" : "") badge-success">
+                                                    @(item.Status == Models.Product.ProductStatus.IsActive ? "فعال" :
+                                                                                            item.Status == Models.Product.ProductStatus.NotActive ? "غیرفعال" :
+                                                                                            item.Status == Models.Product.ProductStatus.IsDone ? "تکمیل شده" :
+                                                                                            "نامشخص")
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="project-content">
+                                <h3 class="project-title">@item.Title</h3>
+                                <p class="project-description">@item.Description</p>
+
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width:
+                                                                                                                        @(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%"></div>
+                                            </div>
+                                            <div class="progress-info">
+                                                <span class="progress-percentage">@(CalculateProgress(item.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2"))%</span>
+                                                <span class="progress-text">پیشرفت تأمین مالی</span>
+                                            </div>
+
+                                            <div class="project-stats">
+                                                <div class="stat-item">
+                                                    <i class="fas fa-chart-line"></i>
+                                                    <span>@($"{item.InventoryDto?.Profit} سود هر دانگ" ?? "ثبت نشده است")</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <i class="fas fa-clock"></i>
+                                                    <span>@($"تاریخ سوددهی {item.InventoryDto?.ProfitableTime}" ?? "ثبت نشده است")</span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <span></span>
+                                                </div>
+                                                <div class="stat-item">
+                                                    <i class="fas fa-users"></i>
+                                                    <span>@(item.InventoryDto?.Dong ?? 6) سهم</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="project-pricing">
+                                                <div class="price-item">
+                                                    <span class="price-label">قیمت هر سهم</span>
+                                                    <span class="price-value persian-numbers">
+                                                        @(item.InventoryDto?.PricePerDong != null ? $"{item.InventoryDto.PricePerDong:N0} ریال" : "قیمت ثبت نشده")
+                                                    </span>
+                                                </div>
+                                                <div class="price-item">
+                                                    <span class="price-label">حداقل سرمایه</span>
+                                                    <span class="price-value primary persian-numbers">
+                                                        @((ConvertToDecimal(item.InventoryDto?.PricePerDong) / 2)?.ToString("N0") ?? "0") ریال
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="action-buttons">
+                                                <a href="/Front/Projects/Details?slug=@item.Slug" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
+                                                    مشاهده جزئیات
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                                }
                             }
+
                         }
 
-                        @if (endPage < totalPages)
-                        {
-                            @if (endPage < totalPages - 1)
-                            {
-                                <span class="px-2 text-gray-500">...</span>
-                            }
-                            <a href="?pageId=@totalPages&take=@Model.Result.FilterParams.Take" class="page-btn">@totalPages</a>
-                        }
-
-                        <!-- دکمه بعدی -->
-                        @if (Model.Result.FilterParams.PageId < Model.Result.PageCount)
-                        {
-                            <a href="?pageId=@(Model.Result.FilterParams.PageId + 1)&take=@Model.Result.FilterParams.Take"
-                               class="page-btn">
-                                <i class="fas fa-chevron-left"></i>
-                            </a>
-                        }
-                        else
-                        {
-                            <span class="page-btn disabled">
-                                <i class="fas fa-chevron-left"></i>
-                            </span>
-                        }
                     </div>
-                }
 
-                @*  <div class="pagination">
-                    <button class="page-btn disabled">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span class="px-2 text-gray-500">...</span>
-                    <button class="page-btn">8</button>
-                    <button class="page-btn">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                </div> *@
+                    <!-- صفحه‌بندی -->
+                    <!-- صفحه‌بندی -->
+                    @if (Model.Result?.Data?.Any() == true && Model.Result.PageCount > 1)
+                    {
+                        <div class="pagination">
+                            <!-- دکمه قبلی -->
+                            @if (Model.Result.FilterParams.PageId > 1)
+                            {
+                                <a href="?pageId=@(Model.Result.FilterParams.PageId - 1)&take=@Model.Result.FilterParams.Take"
+                                   class="page-btn">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="page-btn disabled">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                            }
+
+                            <!-- صفحات -->
+                            @{
+                                var currentPage = Model.Result.FilterParams.PageId;
+                                var totalPages = Model.Result.PageCount;
+                                var startPage = Math.Max(1, currentPage - 2);
+                                var endPage = Math.Min(totalPages, currentPage + 2);
+                            }
+
+                            @if (startPage > 1)
+                            {
+                                <a href="?pageId=1&take=@Model.Result.FilterParams.Take" class="page-btn">1</a>
+                                @if (startPage > 2)
+                                {
+                                    <span class="px-2 text-gray-500">...</span>
+                                }
+                            }
+
+                            @for (int i = startPage; i <= endPage; i++)
+                            {
+                                if (i == currentPage)
+                                {
+                                    <span class="page-btn active">@i</span>
+                                }
+                                else
+                                {
+                                    <a href="?pageId=@i&take=@Model.Result.FilterParams.Take" class="page-btn">@i</a>
+                                }
+                            }
+
+                            @if (endPage < totalPages)
+                            {
+                                @if (endPage < totalPages - 1)
+                                {
+                                    <span class="px-2 text-gray-500">...</span>
+                                }
+                                <a href="?pageId=@totalPages&take=@Model.Result.FilterParams.Take" class="page-btn">@totalPages</a>
+                            }
+
+                            <!-- دکمه بعدی -->
+                            @if (Model.Result.FilterParams.PageId < Model.Result.PageCount)
+                            {
+                                <a href="?pageId=@(Model.Result.FilterParams.PageId + 1)&take=@Model.Result.FilterParams.Take"
+                                   class="page-btn">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="page-btn disabled">
+                                    <i class="fas fa-chevron-left"></i>
+                                </span>
+                            }
+                        </div>
+                    }
+
+               
+                </div>
             </div>
         </div>
     </div>
-</div>
 @functions {
     public decimal? ConvertToDecimal(object value)
     {
@@ -693,200 +1481,6 @@
 }
 
 @section Scripts {
-    @* <script>
-        // داده‌های نمونه برای پروژه‌ها
-        const sampleProjects = [
-            {
-                id: 1,
-                title: "سی تی اسکن 64 اسلایس",
-                description: "سرمایه‌گذاری در دستگاه سی تی اسکن پیشرفته برای بیمارستان تخصصی با بازدهی تضمینی",
-                image: "https://picsum.photos/400/300?random=1",
-                progress: 75,
-                shares: 1800,
-                pricePerShare: "۸۵۰,۰۰۰",
-                minInvestment: "۸,۵۰۰,۰۰۰",
-                profitRate: "۲۲.۵٪",
-                duration: "۳۶ ماه",
-                location: "تهران",
-                category: "تجهیزات تصویربرداری",
-                status: "active",
-                featured: true
-            },
-            {
-                id: 2,
-                title: "دستگاه ام آر آی 1.5 تسلا",
-                description: "احداث مرکز تصویربرداری با دستگاه ام آر آی پیشرفته و تکنولوژی روز دنیا",
-                image: "https://picsum.photos/400/300?random=2",
-                progress: 45,
-                shares: 1200,
-                pricePerShare: "۱,۲۰۰,۰۰۰",
-                minInvestment: "۱۲,۰۰۰,۰۰۰",
-                profitRate: "۲۸.۳٪",
-                duration: "۴۸ ماه",
-                location: "مشهد",
-                category: "تجهیزات تصویربرداری",
-                status: "active",
-                featured: false
-            },
-            {
-                id: 3,
-                title: "لابراتوار دندانپزشکی دیجیتال",
-                description: "تأسیس لابراتوار مدرن دندانپزشکی با تجهیزات دیجیتال و فناوری CAD/CAM",
-                image: "https://picsum.photos/400/300?random=3",
-                progress: 100,
-                shares: 950,
-                pricePerShare: "۶۵۰,۰۰۰",
-                minInvestment: "۶,۵۰۰,۰۰۰",
-                profitRate: "۱۸.۷٪",
-                duration: "۲۴ ماه",
-                location: "اصفهان",
-                category: "تجهیزات دندانپزشکی",
-                status: "completed",
-                featured: true
-            },
-            {
-                id: 4,
-                title: "دستگاه سونوگرافی چهار بعدی",
-                description: "خرید دستگاه سونوگرافی پیشرفته برای کلینیک تخصصی زنان و زایمان",
-                image: "https://picsum.photos/400/300?random=4",
-                progress: 32,
-                shares: 750,
-                pricePerShare: "۴۵۰,۰۰۰",
-                minInvestment: "۴,۵۰۰,۰۰۰",
-                profitRate: "۲۵.۸٪",
-                duration: "۱۸ ماه",
-                location: "شیراز",
-                category: "تجهیزات تصویربرداری",
-                status: "active",
-                featured: false
-            },
-            {
-                id: 5,
-                title: "مرکز فیزیوتراپی ورزشی",
-                description: "احداث مرکز تخصصی فیزیوتراپی با تجهیزات مدرن و کادر متخصص",
-                image: "https://picsum.photos/400/300?random=5",
-                progress: 100,
-                shares: 1100,
-                pricePerShare: "۳۸۰,۰۰۰",
-                minInvestment: "۳,۸۰۰,۰۰۰",
-                profitRate: "۱۶.۲٪",
-                duration: "۳۰ ماه",
-                location: "تبریز",
-                category: "تجهیزات فیزیوتراپی",
-                status: "completed",
-                featured: false
-            },
-            {
-                id: 6,
-                title: "دستگاه آنژیوگرافی دیجیتال",
-                description: "خرید دستگاه آنژیوگرافی پیشرفته برای بیمارستان تخصصی قلب و عروق",
-                image: "https://picsum.photos/400/300?random=6",
-                progress: 68,
-                shares: 1600,
-                pricePerShare: "۱,۵۰۰,۰۰۰",
-                minInvestment: "۱۵,۰۰۰,۰۰۰",
-                profitRate: "۳۲.۱٪",
-                duration: "۴۲ ماه",
-                location: "تهران",
-                category: "تجهیزات تصویربرداری",
-                status: "active",
-                featured: true
-            }
-        ];
 
-        // تابع رندر پروژه‌ها
-        function renderProjects(projects, viewMode = 'grid') {
-            const grid = document.getElementById('projectsGrid');
-            grid.className = `projects-grid ${viewMode === 'list' ? 'list-view' : ''}`;
-
-            grid.innerHTML = projects.map(project => `
-                <div class="project-card fade-in" data-project-id="${project.id}">
-                    <div class="project-image">
-                        <img src="${project.image}" alt="${project.title}" loading="lazy">
-                        <div class="project-badges">
-                            ${project.featured ? '<span class="badge badge-warning"><i class="fas fa-star ml-1"></i>ویژه</span>' : ''}
-                            <span class="badge ${project.status === 'active' ? 'badge-success' : 'badge-primary'}">
-                                ${project.status === 'active' ? 'فعال' : 'تکمیل شده'}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="project-content">
-                        <h3 class="project-title">${project.title}</h3>
-                        <p class="project-description">${project.description}</p>
-
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${project.progress}%"></div>
-                        </div>
-                        <div class="progress-info">
-                            <span class="progress-percentage">${project.progress}%</span>
-                            <span class="progress-text">پیشرفت تأمین مالی</span>
-                        </div>
-
-                        <div class="project-stats">
-                            <div class="stat-item">
-                                <i class="fas fa-chart-line"></i>
-                                <span>${project.profitRate} سود</span>
-                            </div>
-                            <div class="stat-item">
-                                <i class="fas fa-clock"></i>
-                                <span>${project.duration}</span>
-                            </div>
-                            <div class="stat-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>${project.location}</span>
-                            </div>
-                            <div class="stat-item">
-                                <i class="fas fa-users"></i>
-                                <span>${project.shares.toLocaleString()} سهم</span>
-                            </div>
-                        </div>
-
-                        <div class="project-pricing">
-                            <div class="price-item">
-                                <span class="price-label">قیمت هر سهم</span>
-                                <span class="price-value persian-numbers">${project.pricePerShare} ریال</span>
-                            </div>
-                            <div class="price-item">
-                                <span class="price-label">حداقل سرمایه</span>
-                                <span class="price-value primary persian-numbers">${project.minInvestment} ریال</span>
-                            </div>
-                        </div>
-
-                        <div class="action-buttons">
-                            <a href="/projects/${project.id}" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
-                                مشاهده جزئیات
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // مدیریت تغییر حالت نمایش
-        document.querySelectorAll('.view-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                const viewMode = this.dataset.view;
-                renderProjects(sampleProjects, viewMode);
-            });
-        });
-
-        // جستجوی زنده
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredProjects = sampleProjects.filter(project =>
-                project.title.toLowerCase().includes(searchTerm) ||
-                project.description.toLowerCase().includes(searchTerm) ||
-                project.location.toLowerCase().includes(searchTerm)
-            );
-            renderProjects(filteredProjects);
-        });
-
-        // مقداردهی اولیه
-        document.addEventListener('DOMContentLoaded', function() {
-            renderProjects(sampleProjects);
-        });
-    </script>  *@
 }
+ *@

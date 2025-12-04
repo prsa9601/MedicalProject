@@ -560,19 +560,19 @@
         <!-- Statistics Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value">@(Model.UserDto.OrderDtos.Where(i => i.status == Models.Order.OrderStatus.paid).SafeSum(i => i.OrderItems.TotalPrice).ToString("N0")) ریال</div>
+                <div class="stat-value">@((Model.UserDto==null?"0":Model.UserDto.OrderDtos.Where(i => i.status == Models.Order.OrderStatus.paid).SafeSum(i => i.OrderItems.TotalPrice).ToString("N0"))) ریال</div>
                 <div class="stat-label">کل سرمایه‌گذاری</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">@(Model.UserDto.ProfitPurchases.Where(i => i.Status == Models.PurchaseReport.ProfitStatus.Success).SafeSum(i => i.AmountPaid).ToString("N0")) ریال</div>
+                <div class="stat-value">@((Model.UserDto == null ? "0" : Model.UserDto.ProfitPurchases.Where(i => i.Status == Models.PurchaseReport.ProfitStatus.Success).SafeSum(i => i.AmountPaid).ToString("N0"))) ریال</div>
                 <div class="stat-label">سود کل</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">@Model.UserDto.OrderDtos.Count</div>
+                <div class="stat-value">@((Model.UserDto == null ? 0 : Model.UserDto.OrderDtos.Count))</div>
                 <div class="stat-label">سرمایه‌گذاری فعال</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">@(ProfitDepositStatus.CheckStatus(Model.UserDto) ? "پرداخت شده ✅" : "پرداخت نشده ⚠️")</div>
+                <div class="stat-value">@((Model.UserDto == null ? "سرمایه گزاری یافت نشد" : ProfitDepositStatus.CheckStatus(Model.UserDto) ? "پرداخت شده ✅" : "پرداخت نشده ⚠️"))</div>
                 <div class="stat-label">وضعیت پرداخت سود</div>
             </div>
         </div>
@@ -608,7 +608,7 @@
 
         <!-- Investments Section -->
         <div class="investments-grid">
-            @if (Model.Result == null || Model.Result.EntityCount == 0)
+            @if (Model.Result == null || Model.Result?.EntityCount == 0 || Model.UserDto == null)
             {
                 <div class="empty-state">
                     <div class="empty-icon">
@@ -616,7 +616,7 @@
                     </div>
                     <h3>سرمایه‌گذاری‌ای یافت نشد</h3>
                     <p>شما هنوز در هیچ پروژه‌ای سرمایه‌گذاری نکرده‌اید.</p>
-                    <a href="/projects" class="btn btn-primary">
+                    <a href="/Front/Projects" class="btn btn-primary">
                         <i class="fas fa-plus"></i>
                         مشاهده پروژه‌ها
                     </a>
