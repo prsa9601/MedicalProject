@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MedicalProject.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Newtonsoft.Json.Linq;
+using System.Drawing.Interop;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -37,27 +41,60 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
         }
 
-        
-        var response = await base.SendAsync(request, cancellationToken);
-
-        if (response.Headers.TryGetValues("X-Auth-Token", out var tokens))
+        try
         {
-            var newToken = tokens.First();
-            _httpContextAccessor.HttpContext.Response.Cookies.Append("auth-Token", newToken, new CookieOptions
+            var response = await base.SendAsync(request, cancellationToken);
+
+            if (response.Headers.TryGetValues("RefreshToken", out var refreshToken))
             {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                Path = "/"
-            });
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(newToken);
-            var claims = jwtToken.Claims;
-            var identity = new ClaimsIdentity(claims, "jwt");
-            var principal = new ClaimsPrincipal(identity);
-            _httpContextAccessor.HttpContext.User = principal;
+                if (refreshToken.FirstOrDefault() == "Logout")
+                {
+                    _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken");
+                    _httpContextAccessor.HttpContext.Response.Cookies.Delete("auth-Token");
+                    await _httpContextAccessor.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                }
+            }
+
+            else
+            {
+                if (response.Headers.TryGetValues("X-Auth-Token", out var tokens))
+                {
+                    var newToken = tokens.First();
+                    _httpContextAccessor.HttpContext.Response.Cookies.Append("auth-Token", newToken, new CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Strict,
+                        Expires = DateTime.UtcNow.AddMinutes(30),
+                        Path = "/"
+                    });
+
+
+                    var handler = new JwtSecurityTokenHandler();
+                    var jwtToken = handler.ReadJwtToken(newToken);
+                    var claims = jwtToken.Claims;
+                    var identity = new ClaimsIdentity(claims, "jwt");
+                    var principal = new ClaimsPrincipal(identity);
+                    _httpContextAccessor.HttpContext.User = principal;
+                }
+            }
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                _httpContextAccessor.HttpContext.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
+
+                // handle 401
+            }
+
+            return response;
+
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            return new HttpResponseMessage(System.Net.HttpStatusCode.Unauthorized);
+        }
+
+
+
 
         //if (!request.Headers.TryGetValues("Authorization", out var i))
         //{
@@ -67,7 +104,6 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
         //    }
         //}
-        return response;
     }
 
 }

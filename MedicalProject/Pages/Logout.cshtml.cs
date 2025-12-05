@@ -18,9 +18,14 @@ namespace MedicalProject.Pages
         }
         public IActionResult OnPost()
         {
+            var refreshToken = Request.Cookies["RefreshToken"];
+            if (refreshToken != null)
+            {
+                _service.Logout(refreshToken);
+            }
             Response.Cookies.Delete("auth-Token");
             Response.Cookies.Delete("RefreshToken");
-            TempData["Success"]="خروج از حساب کاربری با موفقیت انجام شد.";
+            TempData["Success"] = "خروج از حساب کاربری با موفقیت انجام شد.";
             return Redirect("/Index");
         }
     }

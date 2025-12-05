@@ -25,11 +25,11 @@ namespace MedicalProject.Services.Auth
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
-        public async Task<ApiResult?> Logout()
+        public async Task<ApiResult?> Logout(string refreshToken)
         {
             try
             {
-                var result = await _client.DeleteAsync("Auth/logout");
+                var result = await _client.DeleteAsync($"Auth/logout?refreshToken={refreshToken}");
                 return await result.Content.ReadFromJsonAsync<ApiResult>();
             }
             catch (Exception e)

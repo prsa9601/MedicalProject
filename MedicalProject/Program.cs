@@ -118,6 +118,8 @@ builder.Services.AddAuthentication(option =>
                   {
                       context.Response.StatusCode = 401;
                       await context.Response.WriteAsync("Unauthorized");
+                      context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
+
                   }
                   else
                   {
