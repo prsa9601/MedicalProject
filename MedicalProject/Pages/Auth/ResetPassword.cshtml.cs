@@ -1,4 +1,5 @@
 ﻿using MedicalProject.Infrastructure.RazorUtils;
+using MedicalProject.Models;
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.Auth;
 using MedicalProject.Services.User;
@@ -33,8 +34,8 @@ namespace MedicalProject.Pages.Auth
         [Display(Name = "تکرار رمزعبور")]
         public string ConfirmPassword { get; set; }
 
-        [BindProperty]
-        public UserDto user { get; set; }
+        [BindProperty(SupportsGet = true)]
+        public UserDto? user { get; set; }
 
         public async Task<IActionResult> OnGet(string phoneNumber)
         {
@@ -47,15 +48,20 @@ namespace MedicalProject.Pages.Auth
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
 
             user = await _service.CheckOtpCodeForPhoneNumber(phoneNumber, ipAddress);
+            if (user.FirstName == null && user.LastName == null)
+            {
+                TempData["Error"] = "ابتدا باید ثبت نام کنید";
+                return Redirect("/Index");
+            }
             if (user == null)
             {
                 TempData["Error"] = "ابتدا باید درخواست کد تایید بدهید.";
-                return Redirect("/Auth/VerificationPhoneNumber");
+                return Redirect($"/Auth/VerificationPhoneNumber?Action={ForAuthAction.ResetPassword}");
             }
             PhoneNumber = phoneNumber;
             return Page();
         }
-        
+
         public async Task<IActionResult> OnPost()
         {
             var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
@@ -70,7 +76,10 @@ namespace MedicalProject.Pages.Auth
             //برای otpcode بیاد و ارور بده سمت سرور
 
             if (result.IsSuccess)
-                return RedirectAndShowAlert(result, Redirect("/Index"));
+            {
+                TempData["Success"] = "رمز عبور با موفقیت تغییر کرد.";
+                return Redirect("/Index");
+            }
 
             TempData["Error"] = result.MetaData.Message;
             return Page();
