@@ -1,5 +1,6 @@
 ﻿@page
 @using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Infrastructure.Utils
 @using MedicalProject.Models.User.Enum
 @using System.Security.Claims
 @model MedicalProject.Pages.Account.ProfileModel
@@ -7,1175 +8,894 @@
     ViewData["Title"] = "پروفایل من - پلتفرم دنگ";
 }
 
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پروفایل من - پلتفرم دنگ</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    @*  <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
-
-    <style>
-
-        .truncate {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .inline-block {
-            display: inline-block;
-        }
-
-        .text-xs {
-            font-size: 0.75rem;
-            line-height: 1rem;
-        }
-
-        .py-1 {
-            padding-top: 0.25rem;
-            padding-bottom: 0.25rem;
-        }
-
-        .px-2 {
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-
-        .bg-gray-50 {
-            background-color: #f9fafb;
-        }
-
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-
-        .py-2 {
-            padding-top: 0.5rem;
-            padding-bottom: 0.5rem;
-        }
-
-        .px-3 {
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-        }
-
-        /* Responsive */
-        @@media (min-width: 768px) {
-            .md-flex-row {
-                flex-direction: row;
-            }
-
-            .md-items-center {
-                align-items: center;
-            }
-
-            .md-space-y-0 > * + * {
-                margin-top: 0;
-            }
-        }
-
-        @@media (min-width: 1024px) {
-            .lg-col-span-2 {
-                grid-column: span 2 / span 2;
-            }
-        }
-
-        .absolute {
-            position: absolute;
-        }
-
-        .left-3 {
-            left: 0.75rem;
-        }
-
-        .top-3 {
-            top: 0.75rem;
-        }
-
-        .pl-10 {
-            padding-left: 2.5rem;
-        }
-
-        /* اضافه کردن به بخش استایل‌ها */
-        .input-error {
-            border-color: #ef4444;
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
-        }
-
-        .error-message {
-            color: #ef4444;
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
-            display: none;
-        }
-
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f9fafb;
-            color: #374151;
-            line-height: 1.6;
-            direction: rtl;
-        }
-
-        /* Utility Classes */
-        .animate-spin {
-            animation: spin 1s linear infinite;
-        }
-
-        @@keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Layout */
-        .min-h-screen {
-            min-height: 100vh;
-        }
-
-        .max-w-7xl {
-            max-width: 80rem;
-        }
-
-        .mx-auto {
-            margin-right: auto;
-            margin-left: auto;
-        }
-
-        .px-4 {
-            padding-right: 1rem;
-            padding-left: 1rem;
-        }
-
-        .py-8 {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-        }
-
-        /* Flexbox */
-        .flex {
-            display: flex;
-        }
-
-        .flex-col {
-            flex-direction: column;
-        }
-
-        .flex-row {
-            flex-direction: row;
-        }
-
-        .flex-1 {
-            flex: 1 1 0%;
-        }
-
-        .justify-between {
-            justify-content: space-between;
-        }
-
-        .justify-center {
-            justify-content: center;
-        }
-
-        .items-start {
-            align-items: flex-start;
-        }
-
-        .items-center {
-            align-items: center;
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-        }
-
-        .grid-cols-1 {
-            grid-template-columns: repeat(1, minmax(0, 1fr));
-        }
-
-        .md-grid-cols-2 {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .lg-grid-cols-3 {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        /* Spacing */
-        .space-y-3 > * + * {
-            margin-top: 0.75rem;
-        }
-
-        .space-y-4 > * + * {
-            margin-top: 1rem;
-        }
-
-        .space-y-6 > * + * {
-            margin-top: 1.5rem;
-        }
-
-        .space-x-3 > * + * {
-            margin-right: 0.75rem;
-        }
-
-        .space-x-reverse > * + * {
-            margin-right: 0;
-            margin-left: 0.5rem;
-        }
-
-        .gap-6 {
-            gap: 1.5rem;
-        }
-
-        .gap-8 {
-            gap: 2rem;
-        }
-
-        .mb-2 {
-            margin-bottom: 0.5rem;
-        }
-
-        .mb-4 {
-            margin-bottom: 1rem;
-        }
-
-        .mb-6 {
-            margin-bottom: 1.5rem;
-        }
-
-        .mt-2 {
-            margin-top: 0.5rem;
-        }
-
-        .mt-4 {
-            margin-top: 1rem;
-        }
-
-        .mt-6 {
-            margin-top: 1.5rem;
-        }
-
-        .mr-2 {
-            margin-right: 0.5rem;
-        }
-
-        .ml-1 {
-            margin-left: 0.25rem;
-        }
-
-        .ml-2 {
-            margin-left: 0.5rem;
-        }
-
-        /* Sizing */
-        .w-full {
-            width: 100%;
-        }
-
-        .w-3 {
-            width: 0.75rem;
-        }
-
-        .w-4 {
-            width: 1rem;
-        }
-
-        .w-5 {
-            width: 1.25rem;
-        }
-
-        .w-12 {
-            width: 3rem;
-        }
-
-        .w-24 {
-            width: 6rem;
-        }
-
-        .h-3 {
-            height: 0.75rem;
-        }
-
-        .h-4 {
-            height: 1rem;
-        }
-
-        .h-5 {
-            height: 1.25rem;
-        }
-
-        .h-12 {
-            height: 3rem;
-        }
-
-        .h-24 {
-            height: 6rem;
-        }
-
-        /* Typography */
-        .text-3xl {
-            font-size: 1.875rem;
-            line-height: 2.25rem;
-        }
-
-        .text-xl {
-            font-size: 1.25rem;
-            line-height: 1.75rem;
-        }
-
-        .text-lg {
-            font-size: 1.125rem;
-            line-height: 1.75rem;
-        }
-
-        .text-sm {
-            font-size: 0.875rem;
-            line-height: 1.25rem;
-        }
-
-        .text-xs {
-            font-size: 0.75rem;
-            line-height: 1rem;
-        }
-
-        .text-2xl {
-            font-size: 1.5rem;
-            line-height: 2rem;
-        }
-
-        .font-bold {
-            font-weight: 700;
-        }
-
-        .font-semibold {
-            font-weight: 600;
-        }
-
-        .font-medium {
-            font-weight: 500;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        /* Colors */
-        .bg-gray-50 {
-            background-color: #f9fafb;
-        }
-
-        .bg-gray-200 {
-            background-color: #e5e7eb;
-        }
-
-        .bg-white {
-            background-color: #ffffff;
-        }
-
-        .bg-primary-50 {
-            background-color: #eff6ff;
-        }
-
-        .bg-primary-100 {
-            background-color: #dbeafe;
-        }
-
-        .bg-primary-200 {
-            background-color: #bfdbfe;
-        }
-
-        .text-gray-900 {
-            color: #111827;
-        }
-
-        .text-gray-700 {
-            color: #374151;
-        }
-
-        .text-gray-600 {
-            color: #4b5563;
-        }
-
-        .text-gray-500 {
-            color: #6b7280;
-        }
-
-        .text-primary-600 {
-            color: #2563eb;
-        }
-
-        .text-primary-700 {
-            color: #1d4ed8;
-        }
-
-        .text-green-600 {
-            color: #059669;
-        }
-
-        .text-white {
-            color: #ffffff;
-        }
-
-        /* Borders */
-        .border {
-            border-width: 1px;
-        }
-
-        .border-b {
-            border-bottom-width: 1px;
-        }
-
-        .border-gray-200 {
-            border-color: #e5e7eb;
-        }
-
-        .border-gray-300 {
-            border-color: #d1d5db;
-        }
-
-        /* Border Radius */
-        .rounded {
-            border-radius: 0.25rem;
-        }
-
-        .rounded-lg {
-            border-radius: 0.5rem;
-        }
-
-        .rounded-full {
-            border-radius: 9999px;
-        }
-
-        .rounded-xl {
-            border-radius: 0.75rem;
-        }
-
-        /* Shadows */
-        .shadow-sm {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        /* Focus States */
-        .focus-ring-2:focus {
-            outline: 2px solid transparent;
-            outline-offset: 2px;
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-
-        .focus-ring-primary-500:focus {
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-
-        .focus-border-primary-500:focus {
-            border-color: #3b82f6;
-        }
-
-        /* Hover States */
-        .hover-bg-gray-50:hover {
-            background-color: #f9fafb;
-        }
-
-        .hover-bg-primary-100:hover {
-            background-color: #dbeafe;
-        }
-
-        /* Transitions */
-        .transition-colors {
-            transition: color 0.3s;
-        }
-
-        /* Background Gradient */
-        .bg-gradient-to-br {
-            background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
-        }
-
-        .from-primary-100 {
-            --tw-gradient-from: #dbeafe;
-            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(219, 234, 254, 0));
-        }
-
-        .to-primary-200 {
-            --tw-gradient-to: #bfdbfe;
-        }
-
-        /* Custom Components */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5rem 1rem;
-            border: 1px solid transparent;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background-color: #2563eb;
-            color: white;
-        }
-
-            .btn-primary:hover {
-                background-color: #1d4ed8;
-            }
-
-            .btn-primary:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-
-        .btn-outline {
-            border: 1px solid #d1d5db;
-            color: #374151;
-            background-color: white;
-        }
-
-            .btn-outline:hover {
-                background-color: #f9fafb;
-            }
-
-        .card {
-            background-color: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            border: 1px solid #f3f4f6;
-            overflow: hidden;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.625rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-success {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .badge-primary {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-secondary {
-            background-color: #f3f4f6;
-            color: #374151;
-        }
-
-        .input {
-            display: block;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-            .input::placeholder {
-                color: #9ca3af;
-            }
-
-            .input:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px #3b82f6;
-                border-color: #3b82f6;
-            }
-
-            .input:disabled {
-                background-color: #f9fafb;
-                color: #6b7280;
-                cursor: not-allowed;
-            }
-
-        textarea.input {
-            resize: none;
-        }
-
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-
-        /* File Input */
-        .file-input {
-            display: block;
-            width: 100%;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-            .file-input::-webkit-file-upload-button {
-                margin-left: 1rem;
-                padding: 0.5rem 1rem;
-                border: 0;
-                border-radius: 0.5rem;
-                font-size: 0.75rem;
-                font-weight: 500;
-                background-color: #eff6ff;
-                color: #1d4ed8;
-                cursor: pointer;
-            }
-
-                .file-input::-webkit-file-upload-button:hover {
-                    background-color: #dbeafe;
-                }
-
-        /* Responsive */
-        @@media (min-width: 768px) {
-            .md-flex-row {
-                flex-direction: row;
-            }
-
-            .md-items-center {
-                align-items: center;
-            }
-
-            .md-space-y-0 > * + * {
-                margin-top: 0;
-            }
-        }
-
-        @@media (min-width: 1024px) {
-            .lg-col-span-2 {
-                grid-column: span 2 / span 2;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="app">
-        <!-- Main Content -->
-        <div id="content-section">
-            <!-- Header -->
-            <div class="bg-white shadow-sm border-b border-gray-200">
-                <div class="max-w-7xl mx-auto px-4 py-8">
-                    <div class="flex flex-col md-flex-row justify-between items-start md-items-center space-y-4 md-space-y-0">
-                        <div>
-                            <h1 class="text-3xl font-bold text-gray-900">پروفایل من</h1>
-                            <p class="text-gray-600 mt-2">
-                                مدیریت اطلاعات شخصی و حساب کاربری
-                            </p>
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex-1">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">پروفایل من</h1>
+                    <p class="text-gray-600">مدیریت اطلاعات شخصی و حساب کاربری</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="cancel-edit-btn"
+                            class="btn btn-outline hidden">
+                        <i class="fas fa-times ml-2"></i>
+                        انصراف
+                    </button>
+                    <button id="save-btn"
+                            type="button"
+                            onclick="saveProfile()"
+                            class="btn btn-primary hidden">
+                        <i class="fas fa-save ml-2"></i>
+                        ذخیره
+                    </button>
+                    <button id="edit-btn"
+                            class="btn btn-primary">
+                        <i class="fas fa-edit ml-2"></i>
+                        ویرایش
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column - Main Content -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Personal Information Card -->
+                <div class="card card-hover">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-user text-white"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">اطلاعات شخصی</h2>
+                            </div>
+                            <div class="badge @(Model.user.UserDocument?.Status == UserDocumentStatus.IsConfirmed ? "badge-success" : "badge-warning")">
+                                <i class="fas @(Model.user.UserDocument?.Status == UserDocumentStatus.IsConfirmed ? "fa-check-circle" : "fa-clock") ml-1"></i>
+                                @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
+                            </div>
                         </div>
-                        <div class="flex space-x-3 space-x-reverse">
-                            <button id="cancel-edit-btn"
-                                    class="btn btn-outline"
-                                    style="display: none;">
-                                <i class="fas fa-times ml-2"></i>
-                                انصراف
-                            </button>
-                            <button id="save-btn"
-                                    class="btn btn-primary"
-                                    style="display: none;">
-                                <i class="fas fa-save ml-2"></i>
-                                ذخیره
-                            </button>
-                            <button id="edit-btn"
-                                    class="btn btn-primary">
-                                <i class="fas fa-edit ml-2"></i>
-                                ویرایش
-                            </button>
+
+                        <!-- فرم ویرایش پروفایل -->
+                        <form id="profile-form" method="post" asp-page-handler="EditProfile">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- First Name -->
+                                <div>
+                                    <label class="label">نام</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               name="firstName"
+                                               id="first-name"
+                                               class="input pr-10"
+                                               placeholder="نام"
+                                               value="@Model.user.FirstName"
+                                               disabled />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-user text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Last Name -->
+                                <div>
+                                    <label class="label">نام خانوادگی</label>
+                                    <div class="relative">
+                                        <input type="text"
+                                               name="lastName"
+                                               id="last-name"
+                                               class="input pr-10"
+                                               placeholder="نام خانوادگی"
+                                               value="@Model.user.LastName"
+                                               disabled />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-user text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Phone -->
+                                <div>
+                                    <label class="label">شماره تلفن</label>
+                                    <div class="relative">
+                                        <input type="tel"
+                                               id="phone"
+                                               class="input pr-10 dir-ltr"
+                                               placeholder="شماره تلفن"
+                                               value="@Model.user.PhoneNumber"
+                                               disabled />
+                                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                            <i class="fas fa-phone text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-gray-500 mt-1">شماره تلفن قابل تغییر نیست</p>
+                                </div>
+                            </div>
+                            <!-- توکن CSRF -->
+                            @Html.AntiForgeryToken()
+                        </form>
+                    </div>
+                </div>
+
+                <!-- KYC Section -->
+                @{
+                    if (Model.user.UserDocument == null || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.NotConfirmed
+                    || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
+                    {
+                        <div class="card card-hover">
+                            <div class="p-6">
+                                <div class="flex items-center gap-3 mb-6">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-800 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-id-card text-white"></i>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-gray-900">احراز هویت (KYC)</h2>
+                                </div>
+
+                                @if (Model.user.UserDocument != null)
+                                {
+                                    @if (Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
+                                    {
+                                        <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-exclamation-triangle text-yellow-600 ml-2 mt-1"></i>
+                                                <div>
+                                                    <h4 class="text-yellow-800 font-semibold text-sm">توجه مهم</h4>
+                                                    <p class="text-yellow-700 text-sm mt-1">
+                                                        در صورت عدم دسترسی به کارت ملی، می‌توانید از گواهینامه رانندگی معتبر به جای آن استفاده کنید.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+
+                                <form method="post" asp-page-handler="SendUserDocument" enctype="multipart/form-data" id="kyc-form">
+                                    <div class="space-y-6">
+                                        <!-- National Code -->
+                                        <div>
+                                            <label class="label">کد ملی</label>
+                                            <div class="relative">
+                                                <input type="text"
+                                                       id="nationality-code"
+                                                       name="nationalityCode"
+                                                       class="input pr-10"
+                                                       placeholder="کد ملی (10 رقم)"
+                                                       maxlength="10"
+                                                       pattern="\d{10}"
+                                                       title="کد ملی باید 10 رقم باشد"
+                                                       required />
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-id-card text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                            <p class="text-xs text-gray-500 mt-1">کد ملی باید دقیقاً 10 رقم باشد</p>
+                                        </div>
+
+                                        <!-- National Card Image -->
+                                        <div>
+                                            <label class="label">تصویر کارت ملی</label>
+                                            <div class="relative">
+                                                <input type="file"
+                                                       id="national-card-image"
+                                                       name="nationalCardImage"
+                                                       class="input pr-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                       accept="image/*"
+                                                       required />
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-camera text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Birth Certificate Image -->
+                                        <div>
+                                            <label class="label">تصویر شناسنامه</label>
+                                            <div class="relative">
+                                                <input type="file"
+                                                       id="birth-certification-image"
+                                                       name="birthCertificationImage"
+                                                       class="input pr-10 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                                       accept="image/*"
+                                                       required />
+                                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                                    <i class="fas fa-camera text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit"
+                                                id="upload-kyc-btn"
+                                                class="btn btn-primary w-full">
+                                            <i class="fas fa-cloud-upload-alt ml-2"></i>
+                                            آپلود اسناد و ارسال برای تأیید
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+
+            <!-- Right Column - Sidebar -->
+            <div class="space-y-6">
+                <!-- Profile Summary -->
+                <div class="card card-hover">
+                    <div class="p-6">
+                        <div class="text-center">
+                            <div class="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-user text-white text-3xl"></i>
+                            </div>
+                            <h3 id="profile-name" class="text-xl font-bold text-gray-900 mb-2">
+                                @Model.user.FirstName @Model.user.LastName
+                            </h3>
+                            <div class="mb-4">
+                                <p id="profile-phone" class="text-gray-600 text-sm dir-ltr bg-gray-50 rounded-lg py-2 px-3 inline-block">
+                                    <i class="fas fa-phone text-gray-400 ml-2"></i>
+                                    @Model.user.PhoneNumber
+                                </p>
+                            </div>
+                            <div class="mb-4">
+                                <span id="profile-kyc-badge" class="badge @(Model.user.UserDocument?.Status == UserDocumentStatus.IsConfirmed ? "badge-success" : "badge-warning")">
+                                    <i class="fas @(Model.user.UserDocument?.Status == UserDocumentStatus.IsConfirmed ? "fa-check-circle" : "fa-clock") ml-1"></i>
+                                    @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="max-w-7xl mx-auto px-4 py-8">
-                <div class="grid grid-cols-1 lg-grid-cols-3 gap-8">
-                    <!-- Main Profile -->
-                    <div class="lg-col-span-2 space-y-6">
-                        <!-- Personal Information -->
-                        <div class="card">
-                            <div class="p-6">
-                                <div class="flex items-center justify-between mb-6">
-                                    <h2 class="text-xl font-semibold text-gray-900">اطلاعات شخصی</h2>
-                                    <span id="kyc-badge" class="badge badge-success">
-                                        <i class="fas fa-check-circle ml-1"></i>
-                                        @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
-                                    </span>
-                                </div>
-
-                                <div class="grid grid-cols-1 md-grid-cols-2 gap-6">
-                                    <!-- First Name -->
-                                    <div>
-                                        <label class="label">نام</label>
-                                        <div class="relative">
-                                            <input type="text"
-                                                   id="first-name"
-                                                   class="input pl-10"
-                                                   placeholder="نام"
-                                                   value="@Model.user.FirstName"
-                                                   disabled />
-                                            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Last Name -->
-                                    <div>
-                                        <label class="label">نام خانوادگی</label>
-                                        <div class="relative">
-                                            <input type="text"
-                                                   id="last-name"
-                                                   value="@Model.user.LastName"
-                                                   class="input pl-10"
-                                                   placeholder="نام خانوادگی"
-                                                   disabled />
-                                            <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
-                                        </div>
-                                    </div>
-
-                                    <!-- Phone -->
-                                    <div>
-                                        <label class="label">شماره تلفن</label>
-                                        <div class="relative">
-                                            <input type="tel"
-                                                   id="phone"
-                                                   class="w-full px-3 py-3 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
-                                                   value="@Model.user.PhoneNumber"
-                                                   placeholder="شماره تلفن"
-                                                   disabled />
-                                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                                <i class="fas fa-phone text-gray-400"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- Account Information -->
+                <div class="card card-hover">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-info-circle text-white"></i>
                             </div>
+                            <h3 class="text-lg font-bold text-gray-900">اطلاعات حساب</h3>
                         </div>
 
-                        <!-- KYC Documents -->
-                        @{
-                            if (Model.user.UserDocument == null || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.NotConfirmed
-                            || Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                <span class="text-gray-600">نقش</span>
+                                <span class="badge badge-primary">@User.FindFirst(ClaimTypes.Role)?.Value</span>
+                            </div>
+                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                                <span class="text-gray-600">وضعیت KYC</span>
+                                <span class="@(Model.user.UserDocument?.Status == UserDocumentStatus.IsConfirmed ? "text-green-600" : "text-yellow-600") font-semibold">
+                                    @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
+                                </span>
+                            </div>
+                            @if (Model.user.CreationDate != default)
                             {
-                                <div class="card">
-                                    <div class="p-6">
-                                        <h2 class="text-xl font-semibold text-gray-900 mb-6">اسناد هویت (KYC)</h2>
-                                        @if (Model.user.UserDocument != null)
-                                        {
-                                            @if (Model.user.UserDocument.Status == Models.User.Enum.UserDocumentStatus.WrongInformation)
-                                            {
-                                                <!-- Warning Alert -->
-                                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                                                    <div class="flex items-start">
-                                                        <i class="fas fa-exclamation-triangle text-yellow-600 ml-2 mt-1"></i>
-                                                        <div>
-                                                            <h4 class="text-yellow-800 font-semibold text-sm">توجه مهم</h4>
-                                                            <p class="text-yellow-700 text-sm mt-1">
-                                                                در صورت عدم دسترسی به کارت ملی، می‌توانید از گواهینامه رانندگی معتبر به جای آن استفاده کنید.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            }
-                                        }
-
-                                        <form method="post" asp-page-handler="SendUserDocument" enctype="multipart/form-data" id="kyc-form">
-                                            <div class="space-y-4">
-                                                <!-- National Code -->
-                                                <div>
-                                                    <label class="label">کد ملی</label>
-                                                    <div class="relative">
-                                                        <input type="text"
-                                                               id="nationality-code"
-                                                               name="nationalityCode"
-                                                               class="input pl-10"
-                                                               placeholder="کد ملی (10 رقم)"
-                                                               maxlength="10"
-                                                               pattern="\d{10}"
-                                                               title="کد ملی باید 10 رقم باشد"
-                                                               required />
-                                                        <i class="fas fa-id-card absolute left-3 top-3 text-gray-400"></i>
-                                                    </div>
-                                                    <small class="text-gray-500 text-xs">کد ملی باید دقیقاً 10 رقم باشد</small>
-                                                </div>
-
-                                                <!-- National Card -->
-                                                <div>
-                                                    <label class="label">تصویر کارت ملی</label>
-                                                    <input type="file"
-                                                           id="national-card-image"
-                                                           name="nationalCardImage"
-                                                           class="file-input"
-                                                           accept="image/*"
-                                                           required />
-                                                </div>
-
-                                                <!-- Birth Certificate -->
-                                                <div>
-                                                    <label class="label">تصویر شناسنامه</label>
-                                                    <input type="file"
-                                                           id="birth-certification-image"
-                                                           name="birthCertificationImage"
-                                                           class="file-input"
-                                                           accept="image/*"
-                                                           required />
-                                                </div>
-
-                                                <button type="submit"
-                                                        id="upload-kyc-btn"
-                                                        class="btn btn-primary">
-                                                    <i class="fas fa-upload ml-2"></i>
-                                                    آپلود اسناد
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-600">تاریخ عضویت</span>
+                                    <span class="text-gray-900 font-medium">@Model.user.CreationDate.ToPersianDate()</span>
                                 </div>
                             }
-                        }
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Sidebar -->
-                    <div class="space-y-6">
-                        <!-- Profile Summary -->
-                        <div class="card">
-                            <div class="p-6">
-                                <div class="text-center">
-                                    <div class="w-24 h-24 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-user w-12 h-12 text-primary-600"></i>
-                                    </div>
-                                    <h3 id="profile-name" class="text-xl font-semibold text-gray-900 mb-2 truncate">
-                                        @Model.user.FirstName @Model.user.LastName
-                                    </h3>
-                                    <div class="mb-4">
-                                        <p id="profile-phone" class="text-gray-600 text-sm dir-ltr bg-gray-50 rounded-lg py-2 px-3 inline-block">
-                                            <i class="fas fa-phone text-gray-400 ml-2 text-xs"></i>
-                                            @Model.user.PhoneNumber
-                                        </p>
-                                    </div>
-                                    <div class="mt-2">
-                                        <span id="profile-kyc-badge" class="badge badge-success text-xs py-1 px-2">
-                                            <i class="fas fa-check-circle ml-1"></i>
-                                            @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())
-                                        </span>
-                                    </div>
-                                </div>
+                <!-- Quick Actions -->
+                <div class="card card-hover">
+                    <div class="p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-8 h-8 bg-gradient-to-br from-green-600 to-green-800 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-bolt text-white"></i>
                             </div>
+                            <h3 class="text-lg font-bold text-gray-900">دسترسی سریع</h3>
                         </div>
 
-                        <!-- Wallet Info -->
-                        @*<div class="card">
-                            <div class="p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">کیف پول</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">موجودی</span>
-                                        <span id="wallet-balance" class="font-semibold text-primary-600">
-                                            ۵۰,۰۰۰,۰۰۰ ریال
-                                        </span>
+                        <div class="space-y-3">
+                            <a href="/Account/Investment"
+                               class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-chart-line text-blue-600"></i>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کل سرمایه‌گذاری</span>
-                                        <span id="total-invested" class="font-semibold">
-                                            ۴۷۲,۵۰۰,۰۰۰ ریال
-                                        </span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کل سود</span>
-                                        <span id="total-profit" class="font-semibold text-green-600">
-                                            ۴۵,۵۰۰,۰۰۰ ریال
-                                        </span>
-                                    </div>
+                                    <span class="text-gray-700">سرمایه‌گذاری‌های من</span>
                                 </div>
-                            </div>
-                        </div>*@
+                                <i class="fas fa-chevron-left text-gray-400"></i>
+                            </a>
 
-                        <!-- Account Info -->
-                        <div class="card">
-                            <div class="p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">اطلاعات حساب</h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">نقش</span>
-                                        <span class="badge badge-primary">@User.FindFirst(ClaimTypes.Role)?.Value</span>
+                            @{
+                                if (Model.user.BankAccount == null)
+                                {
+                                    <a href="/Account/BankInformation"
+                                       class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-credit-card text-green-600"></i>
+                                            </div>
+                                            <span class="text-gray-700">ثبت اطلاعات حساب</span>
+                                        </div>
+                                        <i class="fas fa-chevron-left text-gray-400"></i>
+                                    </a>
+                                }
+                                else if (Model.user.BankAccount.IsConfirmed == false)
+                                {
+                                    <a href="/Account/BankInformation"
+                                       class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-edit text-yellow-600"></i>
+                                            </div>
+                                            <span class="text-gray-700">ویرایش اطلاعات حساب</span>
+                                        </div>
+                                        <i class="fas fa-chevron-left text-gray-400"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check-circle text-green-600"></i>
+                                            </div>
+                                            <span class="text-green-700 font-medium">اطلاعات حساب تأیید شده</span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">وضعیت</span>
-                                        <span class="badge badge-success">  @(Model.user.UserDocument?.Status.Map() ?? @UserDocumentStatus.NotConfirmed.Map())</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">تاریخ عضویت</span>
-                                        <span id="join-date" class="text-sm">۱۴۰۲/۱۰/۱۵</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">آخرین ورود</span>
-                                        <span id="last-login" class="text-sm">۱۴۰۲/۱۱/۲۰</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                }
+                            }
 
-                        <!-- Quick Actions -->
-                        <div class="card">
-                            <div class="p-6">
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4">دسترسی سریع</h3>
-                                <div class="space-y-3">
-                                    <button onclick="window.location.href = '/Account/Investment'"
-                                            class="btn btn-outline w-full text-right">
-                                        <i class="fas fa-chart-line ml-2"></i>
-                                        سرمایه‌گذاری‌های من
-                                    </button>
-                                    @{
-                                        if (Model.user.BankAccount == null)
-                                        {
-                                            <button onclick="location.href='/Account/BankInformation'"
-                                                    class="btn btn-outline w-full text-right">
-                                                <i class="fas fa-eye ml-2"></i>
-                                                ثبت اطلاعات حساب
-                                            </button>
-                                        }
-                                        else if(Model.user.BankAccount.IsConfirmed == false)
-                                                                        {
-                                            <button onclick="location.href='/Account/BankInformation'"
-                                                    class="btn btn-outline w-full text-right">
-                                                <i class="fas fa-eye ml-2"></i>
-                                                ویرایش اطلاعات حساب
-                                            </button>
-                                        }
-                                        else
-                                        {
-                                            <button disabled="true"
-                                                    class="btn btn-outline w-full text-right">
-                                                <i class="fas fa-eye ml-2"></i>
-                                                اطلاعات حساب شما ثبت شده است
-                                            </button>
-                                        }
-                                    }
-                                    <button onclick="window.location.href = '/Front/Projects'"
-                                            class="btn btn-outline w-full text-right">
-                                        <i class="fas fa-bullseye ml-2"></i>
-                                        پروژه‌ها
-                                    </button>
-                                    <button onclick="window.location.href = '/Front/Notifications'"
-                                            class="btn btn-outline w-full text-right">
-                                        <i class="fas fa-clock ml-2"></i>
-                                        اعلان‌ها
-                                    </button>
+                            <a href="/Front/Projects"
+                               class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-project-diagram text-purple-600"></i>
+                                    </div>
+                                    <span class="text-gray-700">پروژه‌های جدید</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-left text-gray-400"></i>
+                            </a>
+
+                            <a href="/Front/Notifications"
+                               class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-bell text-orange-600"></i>
+                                    </div>
+                                    <span class="text-gray-700">اعلان‌ها</span>
+                                </div>
+                                <i class="fas fa-chevron-left text-gray-400"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // وضعیت برنامه
-        let isEditing = true;
+<style>
+    /* استایل‌های سفارشی برای صفحه پروفایل */
+    .file\:mr-4 {
+        margin-left: 1rem !important;
+        margin-right: 0 !important;
+    }
 
-        // تابع تغییر حالت ویرایش
-        function toggleEditMode() {
-            isEditing = !isEditing;
+    .file\:bg-blue-50 {
+        background-color: #eff6ff !important;
+    }
 
-            // فقط فیلدهای نام و نام خانوادگی تغییر حالت می‌دهند
-            const firstName = document.getElementById('first-name');
-            const lastName = document.getElementById('last-name');
+    .file\:text-blue-700 {
+        color: #1d4ed8 !important;
+    }
 
-            if (firstName) firstName.disabled = !isEditing;
-            if (lastName) lastName.disabled = !isEditing;
+    .file\:hover\:bg-blue-100:hover {
+        background-color: #dbeafe !important;
+    }
 
-            // شماره تلفن همیشه غیرفعال باشد
-            const phone = document.getElementById('phone');
-            if (phone) phone.disabled = true;
+    /* استایل‌های خاص برای دکمه‌های فایل */
+    input[type="file"]::-webkit-file-upload-button {
+        border: none;
+        border-radius: 9999px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
 
-            // کد ملی همیشه فعال باشد
-            const nationalityCode = document.getElementById('nationality-code');
-            if (nationalityCode) nationalityCode.disabled = false;
-
-            // به‌روزرسانی دکمه‌ها
-            updateButtons();
+        input[type="file"]::-webkit-file-upload-button:hover {
+            background-color: #dbeafe;
         }
 
-        // تابع ذخیره پروفایل
-        function saveProfile() {
-            const firstName = document.getElementById('first-name').value;
-            const lastName = document.getElementById('last-name').value;
+    input[type="file"]::-moz-file-upload-button {
+        border: none;
+        border-radius: 9999px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        background-color: #eff6ff;
+        color: #1d4ed8;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
 
-            // اعتبارسنجی
-            if (!firstName.trim() || !lastName.trim()) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'خطا',
-                    text: 'لطفاً نام و نام خانوادگی را وارد کنید',
-                    confirmButtonText: 'متوجه شدم'
-                });
-                return;
+    /* انیمیشن‌های سفارشی */
+    .fade-in {
+        animation: fadeIn 0.3s ease-in;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* استایل‌های برای نمایش وضعیت‌ها */
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-left: 8px;
+    }
+
+    .status-active {
+        background-color: #10b981;
+    }
+
+    .status-pending {
+        background-color: #f59e0b;
+    }
+
+    .status-inactive {
+        background-color: #9ca3af;
+    }
+
+    /* استایل‌های برای نمایش خطا */
+    .input-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    .error-message {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* استایل‌های برای نمایش موفقیت */
+    .success-message {
+        color: #10b981;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* استایل‌های برای پیش‌نمایش تصویر */
+    .image-preview {
+        width: 100%;
+        height: 200px;
+        border: 2px dashed #d1d5db;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* استایل‌های برای دکمه‌های عمل */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #4b5563;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .action-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .action-btn.primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+            .action-btn.primary:hover {
+                background: #2563eb;
             }
 
-            // نمایش وضعیت ذخیره
-            Swal.fire({
-                title: 'در حال ذخیره...',
-                text: 'لطفاً منتظر بمانید',
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
+    /* استایل‌های برای نمایش بارگذاری */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+
+    .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 3px solid #e5e7eb;
+        border-top: 3px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* رسپانسیو */
+    @@media (max-width: 768px) {
+        .grid-cols-2 {
+            grid-template-columns: 1fr !important;
+        }
+
+        .flex-col-mobile {
+            flex-direction: column !important;
+        }
+
+        .space-y-4-mobile > * + * {
+            margin-top: 1rem !important;
+        }
+    }
+
+    /* استایل‌های برای تاگل وضعیت */
+    .status-toggle {
+        display: inline-flex;
+        align-items: center;
+        background: #e5e7eb;
+        border-radius: 9999px;
+        padding: 0.25rem;
+    }
+
+    .status-toggle-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        border: none;
+        background: transparent;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .status-toggle-btn.active {
+            background: white;
+            color: #111827;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+    /* استایل‌های برای تاریخ */
+    .date-display {
+        font-family: 'Vazir', monospace;
+        direction: ltr;
+    }
+
+    /* استایل‌های برای تلفن */
+    .phone-display {
+        font-family: 'Vazir', monospace;
+        direction: ltr;
+    }
+</style>
+
+<script>
+    // وضعیت ویرایش - false یعنی در حالت نمایش، true یعنی در حالت ویرایش
+    let isEditing = false;
+
+    // تابع تغییر حالت ویرایش
+    function toggleEditMode() {
+        isEditing = !isEditing;
+
+        // فعال/غیرفعال کردن فیلدهای نام و نام خانوادگی
+        const firstName = document.getElementById('first-name');
+        const lastName = document.getElementById('last-name');
+
+        if (firstName) firstName.disabled = !isEditing;
+        if (lastName) lastName.disabled = !isEditing;
+
+        // شماره تلفن همیشه غیرفعال باشد
+        const phone = document.getElementById('phone');
+        if (phone) phone.disabled = true;
+
+        // به‌روزرسانی دکمه‌ها
+        updateButtons();
+
+        // اگر در حال خروج از حالت ویرایش هستیم، مقادیر را ریست کنیم
+        if (!isEditing) {
+            resetFormValues();
+        }
+    }
+
+    // تابع بازنشانی مقادیر فرم
+    function resetFormValues() {
+        const firstName = document.getElementById('first-name');
+        const lastName = document.getElementById('last-name');
+
+        if (firstName) firstName.value = '@Model.user.FirstName';
+        if (lastName) lastName.value = '@Model.user.LastName';
+    }
+
+    // تابع ذخیره پروفایل (ارسال به بک‌اند)
+    function saveProfile() {
+        const firstName = document.getElementById('first-name').value;
+        const lastName = document.getElementById('last-name').value;
+
+        // اعتبارسنجی
+        if (!firstName.trim() || !lastName.trim()) {
+            Alert.error('لطفاً نام و نام خانوادگی را وارد کنید', 'خطا');
+            return;
+        }
+
+        // نمایش وضعیت ذخیره
+        Alert.loading('در حال ذخیره اطلاعات...');
+
+        // جمع‌آوری داده‌ها
+        const formData = new FormData();
+        formData.append('firstName', firstName);
+        formData.append('lastName', lastName);
+
+        // ارسال درخواست به بک‌اند
+        fetch(window.location.pathname + '?handler=EditProfile', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                // اگر سرور redirect داده، به آن آدرس برو
+                window.location.href = response.url;
+                return Promise.resolve();
+            }
+            return response.text();
+        })
+        .then(data => {
+            if (data) {
+                try {
+                    const result = JSON.parse(data);
+                    if (result.success) {
+                        // موفقیت آمیز
+                        isEditing = false;
+                        updateButtons();
+
+                        // به‌روزرسانی نام در پروفایل
+                        const profileName = document.getElementById('profile-name');
+                        if (profileName) {
+                            profileName.textContent = `${firstName} ${lastName}`;
+                        }
+
+                        // غیرفعال کردن فیلدها
+                        document.getElementById('first-name').disabled = true;
+                        document.getElementById('last-name').disabled = true;
+
+                        Alert.close();
+                        Alert.success('پروفایل با موفقیت به‌روزرسانی شد', 'موفقیت');
+                    } else {
+                        Alert.close();
+                        Alert.error(result.message || 'خطا در ذخیره اطلاعات', 'خطا');
+                    }
+                } catch (e) {
+                    Alert.close();
+                    Alert.error('خطا در پردازش پاسخ سرور', 'خطا');
+                }
+            }
+        })
+        .catch(error => {
+            Alert.close();
+            Alert.error('خطا در ارتباط با سرور', 'خطا');
+            console.error('Error:', error);
+        });
+    }
+
+    // تابع به‌روزرسانی دکمه‌ها
+    function updateButtons() {
+        const editBtn = document.getElementById('edit-btn');
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        const saveBtn = document.getElementById('save-btn');
+
+        if (editBtn && cancelBtn && saveBtn) {
+            if (isEditing) {
+                // حالت ویرایش
+                editBtn.classList.add('hidden');
+                cancelBtn.classList.remove('hidden');
+                saveBtn.classList.remove('hidden');
+            } else {
+                // حالت نمایش
+                editBtn.classList.remove('hidden');
+                cancelBtn.classList.add('hidden');
+                saveBtn.classList.add('hidden');
+            }
+        }
+    }
+
+    // تابع انصراف از ویرایش
+    function cancelEdit() {
+        isEditing = false;
+        updateButtons();
+        resetFormValues();
+
+        // غیرفعال کردن فیلدها
+        document.getElementById('first-name').disabled = true;
+        document.getElementById('last-name').disabled = true;
+    }
+
+    // مقداردهی اولیه
+    document.addEventListener('DOMContentLoaded', function() {
+        // رویدادهای دکمه‌ها
+        const editBtn = document.getElementById('edit-btn');
+        const cancelBtn = document.getElementById('cancel-edit-btn');
+        const saveBtn = document.getElementById('save-btn');
+
+        if (editBtn) editBtn.addEventListener('click', toggleEditMode);
+        if (cancelBtn) cancelBtn.addEventListener('click', cancelEdit);
+
+        // ذخیره روی دکمه save در HTML تعریف شده
+
+        // رویداد فرم KYC
+        const kycForm = document.getElementById('kyc-form');
+        if (kycForm) {
+            kycForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const nationalCode = document.getElementById('nationality-code');
+                const nationalCard = document.getElementById('national-card-image');
+                const birthCertificate = document.getElementById('birth-certification-image');
+
+                // اعتبارسنجی کد ملی
+                if (!/^\d{10}$/.test(nationalCode.value)) {
+                    Alert.error('کد ملی وارد شده معتبر نیست', 'خطا');
+                    return;
+                }
+
+                if (!nationalCard.files[0] || !birthCertificate.files[0]) {
+                    Alert.error('لطفاً تمامی اسناد را انتخاب کنید', 'خطا');
+                    return;
+                }
+
+                // نمایش وضعیت آپلود
+                Alert.loading('در حال آپلود اسناد...');
+
+                // ارسال فرم
+                this.submit();
+            });
+        }
+
+        // محدود کردن ورودی کد ملی به فقط اعداد
+        const nationalityCode = document.getElementById('nationality-code');
+        if (nationalityCode) {
+            nationalityCode.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
                 }
             });
-
-            // شبیه‌سازی ذخیره (در واقعیت باید فرم سابمیت شود)
-            setTimeout(() => {
-                isEditing = false;
-                updateButtons();
-
-                // به‌روزرسانی نام در پروفایل (فقط برای نمایش)
-                const profileName = document.getElementById('profile-name');
-                if (profileName) {
-                    profileName.textContent = `${firstName} ${lastName}`;
-                }
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'موفق',
-                    text: 'پروفایل با موفقیت به‌روزرسانی شد',
-                    confirmButtonText: 'متوجه شدم'
-                });
-
-                // در اینجا می‌توانید فرم را سابمیت کنید تا تغییرات در سرور ذخیره شود
-                // document.getElementById('profile-form').submit();
-
-            }, 1500);
         }
 
-        // تابع به‌روزرسانی دکمه‌ها
-        function updateButtons() {
-            const editBtn = document.getElementById('edit-btn');
-            const cancelBtn = document.getElementById('cancel-edit-btn');
-            const saveBtn = document.getElementById('save-btn');
-
-            if (editBtn && cancelBtn && saveBtn) {
-                if (isEditing) {
-                    editBtn.style.display = 'none';
-                    cancelBtn.style.display = 'flex';
-                    saveBtn.style.display = 'flex';
-                } else {
-                    editBtn.style.display = 'flex';
-                    cancelBtn.style.display = 'none';
-                    saveBtn.style.display = 'none';
+        // پیش‌نمایش تصاویر
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function(e) {
+                const file = this.files[0];
+                if (file) {
+                    console.log('فایل انتخاب شد:', file.name);
                 }
-            }
+            });
+        });
+
+        // انیمیشن کارت‌ها
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.classList.add('fade-in');
+        });
+
+        // تنظیم وضعیت اولیه
+        const phone = document.getElementById('phone');
+        if (phone) {
+            phone.disabled = true;
         }
 
-        // مقداردهی اولیه
-        document.addEventListener('DOMContentLoaded', function() {
-            // رویدادهای دکمه‌ها
-            const editBtn = document.getElementById('edit-btn');
-            const cancelBtn = document.getElementById('cancel-edit-btn');
-            const saveBtn = document.getElementById('save-btn');
+        // تنظیم وضعیت اولیه دکمه‌ها
+        updateButtons();
+    });
 
-            if (editBtn) editBtn.addEventListener('click', toggleEditMode);
-            if (cancelBtn) cancelBtn.addEventListener('click', toggleEditMode);
-            if (saveBtn) saveBtn.addEventListener('click', saveProfile);
+    // تابع برای نمایش پیش‌نمایش تصویر
+    function previewImage(input, previewId) {
+        const preview = document.getElementById(previewId);
+        if (!preview) return;
 
-            // اضافه کردن event listener برای فرم KYC
-            const kycForm = document.getElementById('kyc-form');
-            if (kycForm) {
-                kycForm.addEventListener('submit', function(event) {
-                    event.preventDefault();
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="پیش‌نمایش">`;
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.innerHTML = '<i class="fas fa-image text-gray-400 text-4xl"></i>';
+        }
+    }
 
-                    const nationalCode = document.getElementById('nationality-code');
-                    const nationalCard = document.getElementById('national-card-image');
-                    const birthCertificate = document.getElementById('birth-certification-image');
+    // تابع اعتبارسنجی فرم
+    function validateForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return false;
 
-                    // اعتبارسنجی کد ملی
-                    if (!/^\d{10}$/.test(nationalCode.value)) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'خطا',
-                            text: 'کد ملی وارد شده معتبر نیست',
-                            confirmButtonText: 'متوجه شدم'
-                        });
-                        return;
-                    }
+        const inputs = form.querySelectorAll('input[required], select[required], textarea[required]');
+        let isValid = true;
 
-                    if (!nationalCard.files[0] || !birthCertificate.files[0]) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'خطا',
-                            text: 'لطفاً تمامی اسناد را انتخاب کنید',
-                            confirmButtonText: 'متوجه شدم'
-                        });
-                        return;
-                    }
-
-                    // نمایش وضعیت آپلود
-                    Swal.fire({
-                        title: 'در حال آپلود...',
-                        text: 'لطفاً منتظر بمانید',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // ارسال فرم
-                    this.submit();
-                });
-            }
-
-            // محدود کردن ورودی کد ملی به فقط اعداد
-            const nationalityCode = document.getElementById('nationality-code');
-            if (nationalityCode) {
-                nationalityCode.addEventListener('input', function(e) {
-                    this.value = this.value.replace(/[^0-9]/g, '');
-                    if (this.value.length > 10) {
-                        this.value = this.value.slice(0, 10);
-                    }
-                });
-            }
-
-            // اطمینان از غیرفعال بودن شماره تلفن
-            const phone = document.getElementById('phone');
-            if (phone) {
-                phone.disabled = true;
-                phone.title = 'شماره تلفن قابل تغییر نیست';
+        inputs.forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('input-error');
+                isValid = false;
+            } else {
+                input.classList.remove('input-error');
             }
         });
-    </script>
 
-</body>
-</html>
+        return isValid;
+    }
+
+    // تابع نمایش بارگذاری
+    function showLoading() {
+        const overlay = document.createElement('div');
+        overlay.className = 'loading-overlay';
+        overlay.innerHTML = '<div class="loading-spinner"></div>';
+        document.body.appendChild(overlay);
+    }
+
+    // تابع پنهان کردن بارگذاری
+    function hideLoading() {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+    }
+</script>

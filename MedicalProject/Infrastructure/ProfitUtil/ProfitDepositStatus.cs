@@ -156,7 +156,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                     if (daysPerPeriod == 0) continue;
 
                     // محاسبه دوره‌های مورد انتظار
-                    var timeSincePurchase = DateTime.Now - order.CreationDate;
+                    var timeSincePurchase = DateTime.Now - order.DateOfPurchase;
                     var totalDaysPassed = timeSincePurchase.TotalDays;
                     var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
 
@@ -179,7 +179,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                         // اگر این دوره پرداخت نشده است
                         if (!paidProfits.Any(p => p.ForWhatPeriod == period))
                         {
-                            var dueDate = order.CreationDate.AddDays(period * daysPerPeriod);
+                            var dueDate = order.DateOfPurchase.AddDays(period * daysPerPeriod);
                             var expectedAmount = CalculateExpectedAmount(product, order.OrderItems);
 
                             result.UnpaidPeriods.Add(new UnpaidPeriodInfo
@@ -364,7 +364,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                             if (product.InventoryDto?.ProfitableTime != null)
                             {
                                 var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto.ProfitableTime);
-                                var timeSincePurchase = DateTime.Now - order.CreationDate;
+                                var timeSincePurchase = DateTime.Now - order.DateOfPurchase;
                                 var totalDaysPassed = timeSincePurchase.TotalDays;
                                 var expectedPeriods = (int)(totalDaysPassed / daysPerPeriod);
 
@@ -450,7 +450,7 @@ namespace MedicalProject.Infrastructure.ProfitUtil
                             if (product == null) continue;
 
                             var daysPerPeriod = GetDaysByPaymentTime(product.InventoryDto?.ProfitableTime ?? PaymentTime.ماهانه);
-                            var timeSincePurchase = DateTime.Now - order.CreationDate;
+                            var timeSincePurchase = DateTime.Now - order.DateOfPurchase;
                             var expectedPeriods = (int)(timeSincePurchase.TotalDays / daysPerPeriod);
 
                             var paidProfits = userPurchase.ProfitPurchases?

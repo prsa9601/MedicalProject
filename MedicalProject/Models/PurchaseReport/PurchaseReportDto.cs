@@ -13,12 +13,12 @@ namespace MedicalProject.Models.PurchaseReport
         public string? TotalProfit { get; set; }
         //اطلاعات خریداری شده
         public string? PurchasePrice { get; set; }
-        public int PurchaseDang { get; set; }
+        public decimal PurchaseDang { get; set; }
         public string? Profit { get; set; }
         //اطلاعات اون موقع بر اساس یک دانگ
         public string? ProfitPerDang { get; set; }
         public string? PurchasePricePerDang { get; set; }
-        public int PurchaseDangPerDang { get; set; }
+        public decimal PurchaseDangPerDang { get; set; }
     }
     public class ProductPurchaseReportDto : BaseDto
     {

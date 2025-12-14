@@ -1,0 +1,1587 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.ProfitUtil
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.PurchaseReport
+@model MedicalProject.Pages.Account.ProductReportModel
+@{
+    ViewData["Title"] = "وضعیت سودهای من - پلتفرم دنگ";
+
+    // مقادیر پیش‌فرض برای جلوگیری از خطاهای نال
+    var totalInvestment = Model.UserProfitSummary?.TotalInvestment ?? 0;
+    var totalPaidProfit = Model.UserProfitSummary?.TotalPaidProfit ?? 0;
+    var totalUnpaidProfit = Model.UserProfitSummary?.TotalUnpaidProfit ?? 0;
+    var totalExpectedProfit = Model.UserProfitSummary?.TotalExpectedProfit ?? 0;
+    var isDebtor = Model.UserProfitSummary?.IsDebtor ?? false;
+    var unpaidPeriodsCount = Model.UserProfitSummary?.UnpaidPeriodsCount ?? 0;
+    var paidPeriodsCount = Model.UserProfitSummary?.PaidPeriodsCount ?? 0;
+    var orders = Model.UserProfitSummary?.Orders ?? new List<OrderProfitSummary>();
+    var paidProfits = Model.PaidProfits ?? new List<ProfitPurchaseReportDto>();
+    var unpaidPeriods = Model.UnpaidPeriods ?? new List<UnpaidPeriodInfo>();
+    var userName = Model.UserProfitSummary?.UserName ?? "کاربر";
+    var phoneNumber = Model.UserProfitSummary?.PhoneNumber ?? "";
+}
+
+<div class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>وضعیت سودهای من</h1>
+                <p>پیگیری و مدیریت سودهای پرداختی و پرداخت نشده</p>
+            </div>
+            <div class="header-actions">
+                <a href="/Account/Investment" class="btn btn-secondary">
+                    <i class="fas fa-arrow-right"></i>
+                    بازگشت به سرمایه‌گذاری‌ها
+                </a>
+                <a href="/Account/Profile" class="btn btn-outline">
+                    <i class="fas fa-user"></i>
+                    پروفایل
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-value">@totalInvestment.ToString("N0") ریال</div>
+            <div class="stat-label">کل سرمایه‌گذاری</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@totalPaidProfit.ToString("N0") ریال</div>
+            <div class="stat-label">سود پرداخت شده</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@totalUnpaidProfit.ToString("N0") ریال</div>
+            <div class="stat-label">سود پرداخت نشده</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">
+                @if (isDebtor)
+                {
+                    <span class="status-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        بدهکار
+                    </span>
+                }
+                else
+                {
+                    <span class="status-success">
+                        <i class="fas fa-check-circle"></i>
+                        بی‌حساب
+                    </span>
+                }
+            </div>
+            <div class="stat-label">وضعیت تسویه</div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <input type="radio" id="tab-unpaid" name="profit-tabs" class="tab-radio" checked>
+            <label for="tab-unpaid" class="tab-label" onclick="showTab('unpaid')">
+                <i class="fas fa-clock"></i>
+                سودهای پرداخت نشده
+                @if (unpaidPeriodsCount > 0)
+                {
+                    <span class="badge badge-danger">@unpaidPeriodsCount</span>
+                }
+            </label>
+
+            <input type="radio" id="tab-paid" name="profit-tabs" class="tab-radio">
+            <label for="tab-paid" class="tab-label" onclick="showTab('paid')">
+                <i class="fas fa-check-circle"></i>
+                سودهای پرداخت شده
+                @if (paidPeriodsCount > 0)
+                {
+                    <span class="badge badge-success">@paidPeriodsCount</span>
+                }
+            </label>
+
+            <input type="radio" id="tab-summary" name="profit-tabs" class="tab-radio">
+            <label for="tab-summary" class="tab-label" onclick="showTab('summary')">
+                <i class="fas fa-chart-pie"></i>
+                خلاصه وضعیت
+            </label>
+        </div>
+    </div>
+
+    <!-- Unpaid Profits Tab -->
+    <div id="unpaid-tab" class="tab-content">
+        @if (unpaidPeriodsCount == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h3>هیچ سود پرداخت نشده‌ای وجود ندارد</h3>
+                <p>شما تمام سودهای خود را دریافت کرده‌اید.</p>
+            </div>
+        }
+        else
+        {
+            <div class="section-header">
+                <h2>سودهای پرداخت نشده</h2>
+                <div class="section-summary">
+                    <span class="total-amount">@totalUnpaidProfit.ToString("N0") ریال</span>
+                    <span class="total-count">@unpaidPeriodsCount دوره</span>
+                </div>
+            </div>
+
+            @if (orders != null)
+            {
+                foreach (var order in orders.Where(o => o != null && o.TotalUnpaidProfit > 0))
+                {
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h3>سفارش شماره: @(order.OrderId != Guid.Empty ? order.OrderId.ToString().Substring(0, 8) : "---")...</h3>
+                                <div class="order-meta">
+                                    <span class="order-date">
+                                        <i class="fas fa-calendar"></i>
+                                        @(order.OrderDate != default ? order.OrderDate.ToPersianDate() : "---")
+                                    </span>
+                                    <span class="order-amount">
+                                        <i class="fas fa-wallet"></i>
+                                        @order.TotalAmount.ToString("N0") ریال
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="order-total">
+                                <span class="amount-label">سود پرداخت نشده این سفارش:</span>
+                                <span class="amount-value">@order.TotalUnpaidProfit.ToString("N0") ریال</span>
+                            </div>
+                        </div>
+
+                        @if (order.Products != null)
+                        {
+                            <div class="products-grid">
+                                @foreach (var product in order.Products.Where(p => p != null && p.UnpaidProfit > 0))
+                                {
+                                    <div class="product-card">
+                                        <div class="product-header">
+                                            <div class="product-info">
+                                                <h4>@(!string.IsNullOrEmpty(product.ProductName) ? product.ProductName : "محصول ناشناس")</h4>
+                                                <div class="product-details">
+                                                    <span class="detail-item">
+                                                        <i class="fas fa-layer-group"></i>
+                                                        @product.DongAmount دنگ
+                                                    </span>
+                                                    <span class="detail-item">
+                                                        <i class="fas fa-money-bill-wave"></i>
+                                                        @product.TotalInvestment.ToString("N0") ریال
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="product-status">
+                                                <span class="status-badge status-warning">
+                                                    <i class="fas fa-clock"></i>
+                                                    در انتظار پرداخت
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="profit-details">
+                                            <div class="detail-row">
+                                                <span>سود پرداخت شده:</span>
+                                                <span class="amount paid">@product.PaidProfit.ToString("N0") ریال</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span>سود پرداخت نشده:</span>
+                                                <span class="amount unpaid">@product.UnpaidProfit.ToString("N0") ریال</span>
+                                            </div>
+                                            <div class="detail-row">
+                                                <span>دوره‌های پرداخت شده:</span>
+                                                <span>@product.PaidPeriods از @product.ExpectedPeriods</span>
+                                            </div>
+                                        </div>
+
+                                        @if (unpaidPeriods != null && product.ProductId != Guid.Empty && order.OrderId != Guid.Empty)
+                                        {
+                                            var relatedPeriods = unpaidPeriods
+                                            .Where(p => p != null && p.ProductId == product.ProductId && p.OrderId == order.OrderId)
+                                            .ToList();
+
+                                            @if (relatedPeriods.Any())
+                                            {
+                                                <div class="unpaid-periods">
+                                                    <h5>دوره‌های پرداخت نشده:</h5>
+                                                    <div class="periods-list">
+                                                        @foreach (var period in relatedPeriods)
+                                                        {
+                                                            <div class="period-item">
+                                                                <div class="period-info">
+                                                                    <span class="period-number">دوره @period.PeriodNumber</span>
+                                                                    <span class="period-date">
+                                                                        <i class="fas fa-calendar-alt"></i>
+                                                                        موعد پرداخت: @(period.DueDate != default ? period.DueDate.ToPersianDate() : "---")
+                                                                    </span>
+                                                                </div>
+                                                                <div class="period-amount">
+                                                                    @period.ExpectedAmount.ToString("N0") ریال
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            }
+        }
+    </div>
+
+    <!-- Paid Profits Tab -->
+    <div id="paid-tab" class="tab-content" style="display: none;">
+        @if (paidPeriodsCount == 0)
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <h3>هنوز سودی پرداخت نشده است</h3>
+                <p>پس از شروع دوره پرداخت سود، لیست پرداخت‌ها در اینجا نمایش داده می‌شود.</p>
+            </div>
+        }
+        else
+        {
+            <div class="section-header">
+                <h2>تاریخچه پرداخت سودها</h2>
+                <div class="section-summary">
+                    <span class="total-amount">@totalPaidProfit.ToString("N0") ریال</span>
+                    <span class="total-count">@paidPeriodsCount دوره</span>
+                </div>
+            </div>
+
+            <div class="timeline">
+                @if (paidProfits != null)
+                {
+                    foreach (var profit in paidProfits.Where(p => p != null).OrderByDescending(p => p.ForWhatTime))
+                    {
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-header">
+                                    <h4>سود دوره @profit.ForWhatPeriod</h4>
+                                    <span class="timeline-date">@(profit.ForWhatTime != default ? profit.ForWhatTime.ToPersianDate() : "---")</span>
+                                </div>
+                                <div class="timeline-body">
+                                    <div class="product-info">
+                                        <strong>محصول:</strong> @(!string.IsNullOrEmpty(profit.ProductName) ? profit.ProductName : "نامشخص")
+                                    </div>
+                                    <div class="amount-info">
+                                        <strong>مبلغ پرداخت شده:</strong>
+                                        <span class="amount-success">@profit.AmountPaid.ToString("N0") ریال</span>
+                                    </div>
+                                    <div class="period-info">
+                                        <strong>بازه پرداخت:</strong>
+                                        <span>@profit.ProfitableTime.ToString()</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(profit.ImageName))
+                                    {
+                                        <div class="receipt-info">
+                                            <a href="@Directories.GetProductImagePathPath(profit.ImageName)"
+                                               target="_blank"
+                                               class="btn-link">
+                                                <i class="fas fa-receipt"></i>
+                                                مشاهده فیش پرداخت
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Summary Tab -->
+    <div id="summary-tab" class="tab-content" style="display: none;">
+        <div class="summary-container">
+            <div class="summary-card">
+                <h2>خلاصه وضعیت مالی</h2>
+                <div class="summary-details">
+                    <div class="summary-item">
+                        <span class="label">وضعیت کلی:</span>
+                        @if (isDebtor)
+                        {
+                            <span class="value status-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                بدهکار - نیاز به پیگیری
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="value status-success">
+                                <i class="fas fa-check-circle"></i>
+                                بی‌حساب - تسویه کامل
+                            </span>
+                        }
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">کل سرمایه‌گذاری:</span>
+                        <span class="value">@totalInvestment.ToString("N0") ریال</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">سود کل مورد انتظار:</span>
+                        <span class="value">@totalExpectedProfit.ToString("N0") ریال</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">سود پرداخت شده:</span>
+                        <span class="value amount-success">@totalPaidProfit.ToString("N0") ریال</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">سود پرداخت نشده:</span>
+                        <span class="value amount-danger">@totalUnpaidProfit.ToString("N0") ریال</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="label">درصد تحقق سود:</span>
+                        @{
+                            var percentage = totalExpectedProfit > 0
+                                            ? (totalPaidProfit / totalExpectedProfit * 100)
+                            : 0;
+                        }
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: @Math.Min(percentage, 100)%"></div>
+                            </div>
+                            <span class="percentage">@percentage.ToString("F1")%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summaries -->
+            <div class="orders-summary">
+                <h3>خلاصه سفارشات</h3>
+                @if (orders != null && orders.Any())
+                {
+                    foreach (var order in orders.Where(o => o != null))
+                    {
+                        <div class="order-summary-card">
+                            <div class="order-summary-header">
+                                <h4>سفارش @(order.OrderDate != default ? order.OrderDate.ToPersianDate() : "---")</h4>
+                                <span class="order-id">#@(order.OrderId != Guid.Empty ? order.OrderId.ToString().Substring(0, 8) : "---")...</span>
+                            </div>
+                            <div class="order-summary-stats">
+                                <div class="stat">
+                                    <span class="stat-label">سرمایه‌گذاری</span>
+                                    <span class="stat-value">@order.TotalAmount.ToString("N0") ریال</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">سود پرداخت شده</span>
+                                    <span class="stat-value amount-success">@order.TotalPaidProfit.ToString("N0") ریال</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">سود پرداخت نشده</span>
+                                    <span class="stat-value amount-danger">@order.TotalUnpaidProfit.ToString("N0") ریال</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">وضعیت</span>
+                                    @if (order.TotalUnpaidProfit > 0)
+                                    {
+                                        <span class="stat-value status-warning">در انتظار</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="stat-value status-success">تسویه شده</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="empty-state mini">
+                        <div class="empty-icon">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <p>هنوز هیچ سفارشی ثبت نشده است.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Reset and Base */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Vazirmatn', 'Vazir', 'Segoe UI', sans-serif;
+        background-color: #f8fafc;
+        color: #334155;
+        line-height: 1.6;
+        direction: rtl;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Header */
+    .header {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .header-content {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    .header-title h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .header-title p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        gap: 0.5rem;
+    }
+
+    .btn-secondary {
+        background-color: white;
+        color: #059669;
+        border: 2px solid #059669;
+    }
+
+        .btn-secondary:hover {
+            background-color: #059669;
+            color: white;
+        }
+
+    .btn-outline {
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+        .btn-outline:hover {
+            background-color: white;
+            color: #059669;
+        }
+
+    .btn-link {
+        background: none;
+        color: #3b82f6;
+        border: none;
+        padding: 0;
+        font-size: 0.875rem;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    @@media (min-width: 640px) {
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (min-width: 1024px) {
+        .stats-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+        }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    /* Status Spans */
+    .status-success {
+        background-color: #d1fae5;
+        color: #059669;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .status-danger {
+        background-color: #fee2e2;
+        color: #dc2626;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    /* Tabs */
+    .tabs-container {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .tabs {
+        display: flex;
+        gap: 1rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+    }
+
+    .tab-radio {
+        display: none;
+    }
+
+    .tab-label {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        color: #64748b;
+        font-weight: 500;
+        border: 2px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        position: relative;
+    }
+
+        .tab-label:hover {
+            background-color: #f1f5f9;
+            color: #059669;
+        }
+
+    .tab-radio:checked + .tab-label {
+        background-color: #059669;
+        color: white;
+        border-color: #059669;
+    }
+
+    .badge {
+        padding: 0.25rem 0.625rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 0.25rem;
+    }
+
+    .badge-danger {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    .badge-success {
+        background-color: #d1fae5;
+        color: #059669;
+    }
+
+    /* Tab Content */
+    .tab-content {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Section Header */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+    .section-summary {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .total-amount {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .total-count {
+        font-size: 0.875rem;
+        color: #64748b;
+        background-color: #f1f5f9;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+    }
+
+    /* Order Card */
+    .order-card {
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .order-header {
+        padding: 1.5rem;
+        background: linear-gradient(90deg, #f8fafc 0%, white 100%);
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .order-info h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .order-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+        .order-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+    .order-total {
+        text-align: left;
+    }
+
+    .amount-label {
+        display: block;
+        font-size: 0.875rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+    }
+
+    .amount-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #dc2626;
+    }
+
+    /* Products Grid */
+    .products-grid {
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    @@media (min-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Product Card */
+    .product-card {
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .product-info h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-details {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        white-space: nowrap;
+    }
+
+    .status-warning {
+        background-color: #fef3c7;
+        color: #d97706;
+    }
+
+    /* Profit Details */
+    .profit-details {
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+    .amount {
+        font-weight: 600;
+    }
+
+        .amount.paid {
+            color: #059669;
+        }
+
+        .amount.unpaid {
+            color: #dc2626;
+        }
+
+    .amount-success {
+        color: #059669;
+        font-weight: 600;
+    }
+
+    .amount-danger {
+        color: #dc2626;
+        font-weight: 600;
+    }
+
+    /* Unpaid Periods */
+    .unpaid-periods {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+        .unpaid-periods h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 0.75rem;
+        }
+
+    .periods-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .period-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 0.5rem;
+        border: 1px solid #fee2e2;
+    }
+
+    .period-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .period-number {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .period-date {
+        font-size: 0.75rem;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .period-amount {
+        font-weight: 700;
+        color: #dc2626;
+    }
+
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding: 1.5rem 0;
+    }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e2e8f0;
+        }
+
+    .timeline-item {
+        position: relative;
+        padding-right: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .timeline-marker {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 2rem;
+        height: 2rem;
+        background: white;
+        border: 2px solid #059669;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+
+        .timeline-marker i {
+            color: #059669;
+            font-size: 0.875rem;
+        }
+
+    .timeline-content {
+        background: white;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+    }
+
+    .timeline-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+        .timeline-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+    .timeline-date {
+        font-size: 0.875rem;
+        color: #64748b;
+    }
+
+    .timeline-body {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    /* Summary Container */
+    .summary-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    @@media (min-width: 1024px) {
+        .summary-container {
+            grid-template-columns: 2fr 1fr;
+        }
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+        .summary-card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+    .summary-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+        .summary-item .label {
+            font-weight: 500;
+            color: #64748b;
+        }
+
+        .summary-item .value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+    .progress-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex: 1;
+        justify-content: flex-end;
+    }
+
+    .progress-bar {
+        flex: 1;
+        height: 0.5rem;
+        background-color: #e2e8f0;
+        border-radius: 9999px;
+        overflow: hidden;
+        max-width: 200px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+        border-radius: 9999px;
+        transition: width 0.3s ease;
+    }
+
+    .percentage {
+        font-weight: 600;
+        color: #059669;
+        min-width: 3.5rem;
+        text-align: left;
+    }
+
+    /* Orders Summary */
+    .orders-summary {
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+        .orders-summary h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+        }
+
+    .order-summary-card {
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .order-summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+        .order-summary-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+    .order-id {
+        font-size: 0.75rem;
+        color: #64748b;
+        background: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    .order-summary-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    @@media (min-width: 768px) {
+        .order-summary-stats {
+            grid-template-columns: repeat(4, 1fr);
+        }
+    }
+
+    .stat {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .stat-value {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        background: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+        .empty-state.mini {
+            padding: 2rem 1rem;
+            margin: 0;
+            box-shadow: none;
+            border: 1px solid #e2e8f0;
+        }
+
+    .empty-icon {
+        width: 6rem;
+        height: 6rem;
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 2rem;
+    }
+
+    .empty-state.mini .empty-icon {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state.mini p {
+        margin-bottom: 0;
+    }
+
+    /* Responsive */
+    @@media (max-width: 640px) {
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .section-summary {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .order-total {
+            width: 100%;
+            text-align: right;
+        }
+
+        .timeline-body {
+            grid-template-columns: 1fr;
+        }
+
+        .order-summary-stats {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .stat {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+    }
+
+    /* Error States */
+    .error-message {
+        background-color: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #dc2626;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .error-message i {
+            font-size: 1.25rem;
+        }
+
+    .loading-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+
+    .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 3px solid #e2e8f0;
+        border-top: 3px solid #059669;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1.5rem;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<script>
+    // Tab switching functionality
+    function showTab(tabName) {
+        // Hide all tab contents
+        const tabs = ['unpaid', 'paid', 'summary'];
+        tabs.forEach(tab => {
+            const element = document.getElementById(tab + '-tab');
+            if (element) {
+                element.style.display = 'none';
+            }
+        });
+
+        // Remove active class from all tab labels
+        document.querySelectorAll('.tab-label').forEach(label => {
+            label.classList.remove('active');
+        });
+
+        // Show selected tab content
+        const selectedTab = document.getElementById(tabName + '-tab');
+        if (selectedTab) {
+            selectedTab.style.display = 'block';
+        }
+
+        // Add active class to selected tab label
+        const eventTarget = event?.target?.closest('.tab-label');
+        if (eventTarget) {
+            eventTarget.classList.add('active');
+        }
+
+        // Update URL hash
+        if (history && history.pushState) {
+            history.pushState(null, null, '#' + tabName);
+        }
+    }
+
+    // Initialize first tab as active
+    document.addEventListener('DOMContentLoaded', function() {
+        try {
+            showTab('unpaid');
+
+            // Check URL hash
+            if (window.location && window.location.hash) {
+                const hash = window.location.hash.substring(1);
+                const validTabs = ['unpaid', 'paid', 'summary'];
+                if (validTabs.includes(hash)) {
+                    showTab(hash);
+                    // Update radio button
+                    const radioButton = document.getElementById('tab-' + hash);
+                    if (radioButton) {
+                        radioButton.checked = true;
+                    }
+                }
+            }
+
+            // Initialize tab labels
+            document.querySelectorAll('.tab-label').forEach(label => {
+                label.addEventListener('click', function(e) {
+                    const radioId = this.getAttribute('for');
+                    if (radioId) {
+                        const tabName = radioId.replace('tab-', '');
+                        showTab(tabName);
+                    }
+                });
+            });
+
+        } catch (error) {
+            console.error('Error initializing tabs:', error);
+        }
+
+        // Highlight overdue items
+        highlightOverdueItems();
+    });
+
+    // Print functionality
+    function printReport() {
+        try {
+            window.print();
+        } catch (error) {
+            alert('خطا در پرینت گزارش: ' + error.message);
+        }
+    }
+
+    // Export to PDF functionality
+    function exportToPDF() {
+        try {
+            // Implement PDF export logic here
+            alert('صادر کردن به PDF - این قابلیت به زودی اضافه می‌شود.');
+        } catch (error) {
+            alert('خطا در صادر کردن PDF: ' + error.message);
+        }
+    }
+
+    // Refresh data
+    function refreshData() {
+        try {
+            window.location.reload();
+        } catch (error) {
+            alert('خطا در بروزرسانی داده‌ها: ' + error.message);
+        }
+    }
+
+    // Calculate overdue days
+    function calculateOverdueDays(dueDate) {
+        try {
+            if (!dueDate) return 0;
+
+            const today = new Date();
+            const due = new Date(dueDate);
+
+            // Handle invalid dates
+            if (isNaN(due.getTime())) return 0;
+
+            const diffTime = due - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        } catch (error) {
+            console.error('Error calculating overdue days:', error);
+            return 0;
+        }
+    }
+
+    // Highlight overdue items
+    function highlightOverdueItems() {
+        try {
+            const periodItems = document.querySelectorAll('.period-item');
+            periodItems.forEach(item => {
+                const dateElement = item.querySelector('.period-date');
+                if (dateElement) {
+                    const dateText = dateElement.textContent || '';
+
+                    // Check for "گذشته" in text
+                    if (dateText.includes('گذشته')) {
+                        item.style.borderColor = '#dc2626';
+                        item.style.backgroundColor = '#fee2e2';
+                    }
+
+                    // Check date difference
+                    try {
+                        // Extract date from text (assuming Persian date format)
+                        const persianDateMatch = dateText.match(/\d{4}\/\d{1,2}\/\d{1,2}/);
+                        if (persianDateMatch) {
+                            // Here you would need a Persian date converter
+                            // For now, we'll just use the text detection
+                        }
+                    } catch (dateError) {
+                        console.error('Error parsing date:', dateError);
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error highlighting overdue items:', error);
+        }
+    }
+
+    // Request payment for a period
+    function requestPayment(periodNumber, productId, orderId) {
+        try {
+            if (!periodNumber || !productId || !orderId) {
+                alert('اطلاعات دوره ناقص است');
+                return;
+            }
+
+            // Show confirmation dialog
+            if (confirm('آیا از درخواست پرداخت سود دوره ' + periodNumber + ' اطمینان دارید؟')) {
+                // Here you would make an AJAX call to the server
+                // For now, just show a message
+                alert('درخواست پرداخت ثبت شد. تیم پشتیبانی با شما تماس خواهد گرفت.');
+
+                // You could also submit a form or make an API call here
+                /*
+                const formData = new FormData();
+                formData.append('periodNumber', periodNumber);
+                formData.append('productId', productId);
+                formData.append('orderId', orderId);
+
+                fetch('/Account/ProfitStatus?handler=RequestPayment', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('درخواست پرداخت با موفقیت ثبت شد');
+                        refreshData();
+                    } else {
+                        alert('خطا: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('خطا در ارتباط با سرور');
+                });
+                */
+            }
+        } catch (error) {
+            alert('خطا در ثبت درخواست پرداخت: ' + error.message);
+        }
+    }
+
+    // Generate report
+    function generateReport(type) {
+        try {
+            const validTypes = ['detailed', 'summary', 'tax'];
+            if (!validTypes.includes(type)) {
+                alert('نوع گزارش نامعتبر است');
+                return;
+            }
+
+            // Show loading
+            alert('در حال تولید گزارش ' + type + '...');
+
+            // Here you would make an API call to generate the report
+            /*
+            fetch('/Account/ProfitStatus?handler=GenerateReport&type=' + type, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.downloadUrl) {
+                    window.open(data.downloadUrl, '_blank');
+                } else {
+                    alert('خطا در تولید گزارش: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('خطا در ارتباط با سرور');
+            });
+            */
+        } catch (error) {
+            alert('خطا در تولید گزارش: ' + error.message);
+        }
+    }
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl + P for print
+        if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+            e.preventDefault();
+            printReport();
+        }
+
+        // Ctrl + R for refresh
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            refreshData();
+        }
+
+        // Alt + 1,2,3 for tab switching
+        if (e.altKey) {
+            switch (e.key) {
+                case '1':
+                    e.preventDefault();
+                    showTab('unpaid');
+                    document.getElementById('tab-unpaid').checked = true;
+                    break;
+                case '2':
+                    e.preventDefault();
+                    showTab('paid');
+                    document.getElementById('tab-paid').checked = true;
+                    break;
+                case '3':
+                    e.preventDefault();
+                    showTab('summary');
+                    document.getElementById('tab-summary').checked = true;
+                    break;
+            }
+        }
+    });
+</script>

@@ -1,0 +1,550 @@
+﻿@page
+@model MedicalProject.Pages.ContactModel
+@{
+    ViewData["Title"] = "تماس با ما";
+}
+
+@section Styles {
+    <style>
+        /* استایل‌های عمومی مشابه Index */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .contact-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .contact-icon {
+            width: 4rem;
+            height: 4rem;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-icon i {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .contact-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info {
+            color: #6b7280;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .contact-info a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .contact-info a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            resize: vertical;
+            min-height: 150px;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+
+        .social-link {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            transform: translateY(-4px) scale(1.1);
+        }
+
+        .social-telegram {
+            background: linear-gradient(135deg, #0088cc, #006699);
+        }
+
+        .social-instagram {
+            background: linear-gradient(135deg, #e4405f, #c13584);
+        }
+
+        .social-whatsapp {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+        }
+
+        .social-linkedin {
+            background: linear-gradient(135deg, #0077b5, #005582);
+        }
+
+        /* انیمیشن‌ها */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* نقشه */
+        .map-container {
+            height: 300px;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-top: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+        }
+
+        /* رسپانسیو */
+        @@media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-card {
+                padding: 1.5rem;
+            }
+            
+            .social-links {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* پیام موفقیت/خطا */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+        }
+
+        /* اطلاعات تماس */
+        .contact-detail {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-detail i {
+            color: #3b82f6;
+            font-size: 1.25rem;
+            margin-top: 0.25rem;
+        }
+
+        .contact-detail div {
+            flex: 1;
+        }
+
+        .contact-detail h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .contact-detail p {
+            color: #6b7280;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gray-50">
+    <!-- هدر صفحه -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <h1 class="text-3xl font-bold text-gray-900 mb-4">تماس با ما</h1>
+                <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                    ما اینجا هستیم تا به سوالات شما پاسخ دهیم و راهنماییتان کنیم. با ما در ارتباط باشید.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- محتوای اصلی -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- پیام‌ها -->
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert @(Model.IsSuccess ? "alert-success" : "alert-error") fade-in">
+                @Model.Message
+            </div>
+        }
+
+        <div class="contact-grid">
+            <!-- فرم تماس -->
+            <div class="contact-card fade-in">
+                <h2 class="contact-title">پیام خود را ارسال کنید</h2>
+                <p class="contact-info mb-6">فرم زیر را پر کنید تا در اسرع وقت با شما تماس بگیریم.</p>
+                
+                <form method="post" class="slide-in">
+                    <div class="form-group">
+                        <label class="form-label" for="Name">نام و نام خانوادگی</label>
+                        <input type="text" 
+                               id="Name" 
+                               name="Name" 
+                               class="form-input" 
+                               placeholder="نام خود را وارد کنید"
+                               value="@Model.ContactForm?.Name"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="Email">ایمیل</label>
+                        <input type="email" 
+                               id="Email" 
+                               name="Email" 
+                               class="form-input" 
+                               placeholder="example@email.com"
+                               value="@Model.ContactForm?.Email"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="Phone">شماره تماس</label>
+                        <input type="tel" 
+                               id="Phone" 
+                               name="Phone" 
+                               class="form-input" 
+                               placeholder="09xxxxxxxxx"
+                               value="@Model.ContactForm?.Phone"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="Subject">موضوع</label>
+                        <input type="text" 
+                               id="Subject" 
+                               name="Subject" 
+                               class="form-input" 
+                               placeholder="موضوع پیام"
+                               value="@Model.ContactForm?.Subject"
+                               required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="Message">پیام</label>
+                        <textarea id="Message" 
+                                  name="Message" 
+                                  class="form-textarea" 
+                                  placeholder="پیام خود را اینجا بنویسید..."
+                                  required>@Model.ContactForm?.Message</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn-submit">
+                            ارسال پیام
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- اطلاعات تماس -->
+            <div class="contact-card fade-in">
+                <h2 class="contact-title">راه‌های ارتباطی</h2>
+                <p class="contact-info mb-6">می‌توانید از طریق راه‌های زیر با ما در ارتباط باشید.</p>
+                
+                <div class="contact-details">
+                    <div class="contact-detail">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>تلفن</h4>
+                            <p>۰۲۱-۱۲۳۴۵۶۷۸</p>
+                            <p class="text-sm text-gray-500">شنبه تا پنجشنبه، ۹ صبح تا ۵ عصر</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <h4>ایمیل</h4>
+                            <p>info@dang-platform.ir</p>
+                            <p class="text-sm text-gray-500">ظرف ۲۴ ساعت پاسخ داده می‌شود</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-detail">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <h4>آدرس</h4>
+                            <p>تهران، خیابان ولیعصر، پلاک ۱۲۳</p>
+                            <p class="text-sm text-gray-500">ساعت کاری: ۹:۰۰ تا ۱۷:۰۰</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- شبکه‌های اجتماعی -->
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">ما را در شبکه‌های اجتماعی دنبال کنید</h3>
+                    <div class="social-links">
+                        <a href="https://t.me/dangplatform" target="_blank" class="social-link social-telegram" title="تلگرام">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="https://instagram.com/dangplatform" target="_blank" class="social-link social-instagram" title="اینستاگرام">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://wa.me/989123456789" target="_blank" class="social-link social-whatsapp" title="واتساپ">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="https://linkedin.com/company/dangplatform" target="_blank" class="social-link social-linkedin" title="لینکدین">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نقشه -->
+        <div class="contact-card fade-in mt-8">
+            <h2 class="contact-title mb-6">موقعیت ما روی نقشه</h2>
+            <div class="map-container">
+                <div class="map-placeholder">
+                    <div class="text-center">
+                        <i class="fas fa-map text-4xl mb-4"></i>
+                        <p>نقشه موقعیت ما</p>
+                        <p class="text-sm text-gray-500 mt-2">تهران، خیابان ولیعصر، پلاک ۱۲۳</p>
+                    </div>
+                </div>
+                <!-- اگر API نقشه دارید اینجا اضافه کنید -->
+                <!--
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=..."
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+                </iframe>
+                -->
+            </div>
+        </div>
+
+        <!-- سوالات متداول -->
+        <div class="contact-card fade-in mt-8">
+            <h2 class="contact-title mb-6">سوالات متداول</h2>
+            <div class="space-y-4">
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">ساعات کاری شما چه زمانی است؟</h3>
+                    <p class="text-gray-600">شنبه تا پنجشنبه از ساعت ۹:۰۰ تا ۱۷:۰۰ آماده پاسخگویی به شما هستیم.</p>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">چه مدت طول می‌کشد تا پاسخ دریافت کنم؟</h3>
+                    <p class="text-gray-600">پیام‌های شما در اسرع وقت بررسی شده و ظرف ۲۴ ساعت کاری پاسخ داده می‌شوند.</p>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">آیا می‌توانم برای مشاوره حضوری مراجعه کنم؟</h3>
+                    <p class="text-gray-600">بله، با هماهنگی قبلی می‌توانید برای مشاوره حضوری به آدرس ما مراجعه کنید.</p>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900 mb-2">چطور می‌توانم سرمایه‌گذاری کنم؟</h3>
+                    <p class="text-gray-600">از طریق پروژه‌های فعال در سایت می‌توانید سرمایه‌گذاری کنید. برای راهنمایی بیشتر با ما تماس بگیرید.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // تابع تبدیل اعداد به فارسی
+        function toPersianNumbers(num) {
+            const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+            return num.toString().replace(/\d/g, x => persianDigits[x]);
+        }
+
+        // اعتبارسنجی فرم
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    const phoneInput = document.getElementById('Phone');
+                    const emailInput = document.getElementById('Email');
+                    
+                    // اعتبارسنجی شماره تلفن
+                    const phoneRegex = /^09[0-9]{9}$/;
+                    if (!phoneRegex.test(phoneInput.value)) {
+                        event.preventDefault();
+                        Alert.error('لطفاً شماره تلفن معتبر وارد کنید (مثال: 09123456789)');
+                        phoneInput.focus();
+                        return;
+                    }
+                    
+                    // اعتبارسنجی ایمیل
+                    const emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                    if (!emailRegex.test(emailInput.value)) {
+                        event.preventDefault();
+                        Alert.error('لطفاً ایمیل معتبر وارد کنید');
+                        emailInput.focus();
+                        return;
+                    }
+                });
+            }
+            
+            // نمایش پیام موفقیت
+            @if (!string.IsNullOrEmpty(Model.Message) && Model.IsSuccess)
+            {
+                <text>
+                setTimeout(() => {
+                    Alert.success('@Model.Message');
+                }, 500);
+                </text>
+            }
+            
+            // انیمیشن برای آیتم‌ها
+            const contactItems = document.querySelectorAll('.contact-detail, .social-link');
+            contactItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.classList.add('fade-in');
+            });
+        });
+    </script>
+}

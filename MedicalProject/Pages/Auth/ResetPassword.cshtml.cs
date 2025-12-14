@@ -34,7 +34,7 @@ namespace MedicalProject.Pages.Auth
         [Display(Name = "تکرار رمزعبور")]
         public string ConfirmPassword { get; set; }
 
-        [BindProperty(SupportsGet = true)]
+        //[BindProperty(SupportsGet = true)]
         public UserDto? user { get; set; }
 
         public async Task<IActionResult> OnGet(string phoneNumber)
@@ -48,7 +48,7 @@ namespace MedicalProject.Pages.Auth
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
 
             user = await _service.CheckOtpCodeForPhoneNumber(phoneNumber, ipAddress);
-            if (user.FirstName == null && user.LastName == null)
+            if (user == null || user.FirstName == null && user.LastName == null)
             {
                 TempData["Error"] = "ابتدا باید ثبت نام کنید";
                 return Redirect("/Index");
@@ -62,10 +62,12 @@ namespace MedicalProject.Pages.Auth
             return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
             var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? forwardedHeader;
+            user = await _service.CheckOtpCodeForPhoneNumber(PhoneNumber, ipAddress);
+
             var result = await _service.ChangePassword(new Models.User.ChangePasswordCommand
             {
                 ipAddress = ipAddress ?? "0000-0000-0000-0000",

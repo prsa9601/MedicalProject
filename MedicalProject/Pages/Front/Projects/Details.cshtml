@@ -227,7 +227,7 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between text-sm">
                                     <span class="text-gray-600">پیشرفت تأمین سرمایه</span>
-                                    <span class="font-medium text-gray-900">@CalculateProgress(Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang))٪</span>
+                                    <span class="font-medium text-gray-900">@CalculateProgress(Model.Product.PurchaseReportDto.Sum(i => i.PurchaseDang)).ToString("F2")٪</span>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-3">
                                     <div class="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-300"
@@ -335,9 +335,17 @@
                                     }
                                     else
                                     {
-                                        <button onclick="window.location.href='/Front/Payment/Payment?slug=@Model.Product.Slug'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
-                                            سرمایه‌گذاری می‌کنم
-                                        </button>
+                                        <form method="post" asp-page-handler="SetProject" id="investmentForm">
+                                            <!-- فیلد مخفی برای مقدار دانگ -->
+                                            <input type="hidden" id="dongAmountInput" name="dongAmount" value="0.5" />
+                                            <input type="hidden" name="slug" value="@Model.Product.Slug" />
+                                            <button type="submit"
+                                                    class="btn btn-primary w-full py-3 text-lg font-semibold"
+                                                    id="investButton"
+                                                    disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                                سرمایه‌گذاری می‌کنم
+                                            </button>
+                                        </form>
                                     }
                                 }
                                 else
@@ -390,7 +398,7 @@
         </div>
 
         <!-- Related Projects -->
-    @*     <section class="mt-16">
+        @*     <section class="mt-16">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-900">پروژه‌های مشابه</h2>
                 <a href="/Front/Projects" class="text-blue-600 hover:text-blue-700 font-medium flex items-center">
@@ -518,6 +526,12 @@
         if (sum == 0) return 0;
         return (sum * 100) / 6;
     }
+
+    private decimal CalculateProgress(decimal sum)
+    {
+        if (sum == 0) return 0;
+        return (sum * 100) / 6;
+    }
 }
 
 @functions {
@@ -549,6 +563,10 @@
     }
 
     private string FormatNumber(int number)
+    {
+        return number.ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
+    }
+    private string FormatNumber(decimal number)
     {
         return number.ToString("N0", new System.Globalization.CultureInfo("fa-IR"));
     }

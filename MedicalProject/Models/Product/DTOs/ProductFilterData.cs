@@ -48,7 +48,7 @@ namespace MedicalProject.Models.Product.DTOs
     {
         public Guid ProductId { get; set; }
         public string TotalPrice { get; set; }
-        public int Dong { get; set; }
+        public decimal Dong { get; set; }
         //سود هر دانگ
         //public int DongPurchase { get; set; }
         public string Profit { get; set; }

@@ -18,7 +18,7 @@ namespace MedicalProject.Models.User
     public class EditUserCommand
     {
         public Guid userId { get; set; }
-        public required string phoneNumber { get; set; }
+        public string phoneNumber { get; set; }
         public required string firstName { get; set; }
         public required string lastName { get; set; }
         public string? password { get; set; }

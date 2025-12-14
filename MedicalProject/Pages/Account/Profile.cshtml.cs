@@ -39,5 +39,23 @@ namespace MedicalProject.Pages.Account
 
             return Redirect("/Account/Profile");
         }
+        public async Task<IActionResult> OnPostEditProfile(string firstName, string lastName)
+        {
+            var result = await _service.Edit(new Models.User.EditUserCommand
+            {
+                firstName = firstName,
+                lastName = lastName,
+                userId = user.Id
+            });
+            if (result.IsSuccess)
+            {
+                TempData["Success"] = result.MetaData.Message;
+                user = await _service.GetCurrentUser();
+            }
+            else
+                TempData["Error"] = result.MetaData.Message;
+
+            return Redirect("/Account/Profile");
+        }
     }
 }

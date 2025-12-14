@@ -3,16 +3,20 @@ using MedicalProject.Models.Order;
 using MedicalProject.Models.Product;
 using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Models.PurchaseReport;
+using System;
+using System.Threading;
 
 namespace MedicalProject.Services.Order
 {
     public interface IOrderService
     {
         Task<ApiResult> Create(CancellationToken cancellationToken);
-        Task<ApiResult> IsFinally(IsFinallyOrderCommand command, CancellationToken cancellationToken);
+        Task<ApiResult> IsFinally(OrderIsFinallyViewModel command, CancellationToken cancellationToken);
+        Task<ApiResult> SetOrderItem(SetOrderItemCommandViewModel command, CancellationToken cancellationToken);
 
 
         Task<OrderDto?> GetById(Guid orderId, CancellationToken cancellationToken);
+        Task<OrderDto?> GetCurrentUser();
         Task<OrderFilterResult> GetFilter(OrderFilterParam param, CancellationToken cancellationToken);
         Task<OrderFilterResult> GetForReport(OrderFilterParam param, CancellationToken cancellationToken);
     }
@@ -32,7 +36,7 @@ namespace MedicalProject.Services.Order
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }
 
-        public async Task<ApiResult> IsFinally(IsFinallyOrderCommand command, CancellationToken cancellationToken)
+        public async Task<ApiResult> IsFinally(OrderIsFinallyViewModel command, CancellationToken cancellationToken)
         {
             var result = await _client.PostAsJsonAsync($"{ModuleName}/IsFinally", command, cancellationToken);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
@@ -77,6 +81,18 @@ namespace MedicalProject.Services.Order
                 url += $"&PhoneNumber={param.PhoneNumber}";
 
             var result = await _client.GetFromJsonAsync<ApiResult<OrderFilterResult>>(url, cancellationToken);
+            return result?.Data;
+        }
+
+        public async Task<ApiResult> SetOrderItem(SetOrderItemCommandViewModel command, CancellationToken cancellationToken)
+        {
+            var result = await _client.PatchAsJsonAsync($"{ModuleName}/SetOrderItem", command, cancellationToken);
+            return await result.Content.ReadFromJsonAsync<ApiResult>();
+        }
+
+        public async Task<OrderDto?> GetCurrentUser()
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<OrderDto>>($"{ModuleName}/GetCurrentUser");
             return result?.Data;
         }
     }

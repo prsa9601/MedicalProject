@@ -5,9 +5,9 @@ namespace MedicalProject.Models.User.DTOs
 {
     public class UserDto : BaseDto
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string PhoneNumber { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? ImageName { get; set; }
         public bool IsActive { get; set; }
         public UserRoleDto? UserRole { get; set; }
