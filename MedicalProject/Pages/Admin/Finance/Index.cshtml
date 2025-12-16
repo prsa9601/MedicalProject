@@ -567,14 +567,14 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز شده برای کاربران</p>
                                 <p class="text-2xl font-bold mt-2">
-                                   @*  @(Model.UserPurchaseReportResult.Data.Where(i => i.ProfitPurchases.
+                                    @*  @(Model.UserPurchaseReportResult.Data.Where(i => i.ProfitPurchases.
                                     Where(i=>i.Status==Models.PurchaseReport.ProfitStatus.Success)
                                                                         .Sum(p => p.AmountPaid)).ToString("N0")) *@
-                                   @(Model.UserPurchaseReportResult.Data
-                                   .SelectMany(i => i.ProfitPurchases) // همه ProfitPurchases ها رو یکی می‌کنه
-                                   .Where(p => p.Status == Models.PurchaseReport.ProfitStatus.Success) // فقط موفق‌ها
-                                   .Sum(p => p.AmountPaid) // مجموع مبلغ پرداختی
-                                   .ToString("N0"))
+                                    @(Model.UserPurchaseReportResult.Data
+                                                                        .SelectMany(i => i.ProfitPurchases) // همه ProfitPurchases ها رو یکی می‌کنه
+                                                                        .Where(p => p.Status == Models.PurchaseReport.ProfitStatus.Success) // فقط موفق‌ها
+                                                                        .Sum(p => p.AmountPaid) // مجموع مبلغ پرداختی
+                                                                        .ToString("N0"))
                                     <span class="text-sm">ریال</span>
                                 </p>
                                 <div class="flex items-center mt-2">
@@ -589,8 +589,8 @@
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
                                 <p class="text-2xl font-bold mt-2">
                                     @(Model.UserPurchaseReportResult.Data
-                                    .Sum(i => i.ProductPurchase.Count())
-                                    .ToString("N0"))
+                                                                        .Sum(i => i.ProductPurchase.Count())
+                                                                        .ToString("N0"))
                                 </p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-arrow-up ml-1 text-green-300"></i>
@@ -604,7 +604,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز نشده برای کاربران</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @(ProfitDepositStatus.GetUsersProfitStatus(Model.UserPurchaseReportResult.Data).SelectMany(i=>i.UnpaidPeriods).Sum(i=>i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+                                    @(ProfitDepositStatus.GetUsersProfitStatus(Model.UserPurchaseReportResult.Data).SelectMany(i => i.UnpaidPeriods).Sum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
                                 </p>
                                 <div class="flex items-center mt-2">
                                     <i class="fas fa-chart-line ml-1 text-green-300"></i>
@@ -760,8 +760,9 @@
                                             <th>کاربر</th>
                                             <th>شماره تلفن</th>
                                             <th>سرمایه‌گذاری کل</th>
-                                            <th>سود کل</th>
-                                            <th>سود ماه جاری</th>
+                                            <th>سود کل پرداخت شده</th>
+                                             <th>سود کل پرداخت نشده</th> 
+                                            @* <th>سود ماه جاری</th> *@
                                             <th>وضعیت</th>
                                             <th>عملیات</th>
                                         </tr>
@@ -769,7 +770,7 @@
                                     <tbody>
                                         @{
                                             int number = 1;
-                                            foreach (var item in Model.UserPurchaseReportResult.Data)
+                                            foreach (var item in Model.ResultDto.Data)
                                             {
                                                 <tr>
                                                     <td>@(number++)</td>
@@ -784,25 +785,28 @@
                                                         </div>
                                                     </td>
                                                     <td>@item.PhoneNumber</td>
-                                                    <td>@item.PurchaseReport.SafeSum(i => i.TotalPrice).ToString("N0") ریال</td>
-                                                    <td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @item.PurchaseReport.SafeSum(i => i.TotalProfit).ToString("N0") ریال
+                                                    <td>@item.OrderDtos.SafeSum(i => i.OrderItems.TotalPrice).ToString("N0") ریال</td>
+                                                    <td class="@item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? " profit-positive" : "profit-negative" )">
+                                                        @item.OrderDtos.SelectMany(i=>i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
                                                     </td>
-                                                    <td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
+                                                    <td class="@item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? " profit-positive" : "profit-negative" )">
+                                                        @item.OrderDtos.SelectMany(i=>i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                    </td>
+                                                    @*<td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
                                                         @item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang).ToString("N0") ریال
-                                                    </td>
+                                                    </td>*@
                                                     <td>
-                                                        <span class="badge @(ProfitDepositStatus.CheckStatus(item) == true ? "badge-success" : "badge-danger")">
-                                                            @(ProfitDepositStatus.CheckStatus(item) == false ? "واریز نشده" : "واریز شده")
+                                                        <span class="badge @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() == 0 ? "badge-success" : "badge-danger")">
+                                                            @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() > 0 ? "واریز نشده" : "واریز شده")
                                                         </span>
                                                     </td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <button onclick="location.href='Finance/UserReport/@item.UserId'"
+                                                            <button onclick="location.href='Finance/UserReport/@item.Id'"
                                                                     class="btn btn-outline btn-sm" title="مشاهده جزئیات">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button onclick="showSettlementModal('@item.UserId')"
+                                                            <button onclick="showSettlementModal('@item.Id')"
                                                                     class="btn btn-success btn-sm" title="تسویه حساب">
                                                                 <i class="fas fa-money-bill-wave"></i>
                                                             </button>
@@ -998,60 +1002,60 @@
         // موفقیت
         @if (TempData["Success"] != null)
         {
-                    <text>
-                        Alert.success(decodePersianText('@TempData["Success"]'));
-                    </text>
+                        <text>
+                            Alert.success(decodePersianText('@TempData["Success"]'));
+                        </text>
         }
 
         // خطا
         @if (TempData["Error"] != null)
         {
-                    <text>
-                        const errorMsg = decodePersianText('@TempData["Error"]');
-                        if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
-                        Alert.notFound(errorMsg);
-                        } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
-                        Alert.serverError(errorMsg);
-                        } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
-                        Alert.badRequest(errorMsg);
-                        } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
-                        Alert.unauthorized(errorMsg);
-                        } else {
-                        Alert.error(errorMsg);
-                        }
-                    </text>
+                        <text>
+                            const errorMsg = decodePersianText('@TempData["Error"]');
+                            if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                            Alert.notFound(errorMsg);
+                            } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                            Alert.serverError(errorMsg);
+                            } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                            Alert.badRequest(errorMsg);
+                            } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                            Alert.unauthorized(errorMsg);
+                            } else {
+                            Alert.error(errorMsg);
+                            }
+                        </text>
         }
 
         // هشدار
         @if (TempData["Warning"] != null)
         {
-                    <text>
-                        const warningMsg = decodePersianText('@TempData["Warning"]');
-                        if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
-                        Alert.validationWarning(warningMsg);
-                        } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
-                        Alert.financialWarning(warningMsg);
-                        } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
-                        Alert.securityWarning(warningMsg);
-                        } else {
-                        Alert.warning(warningMsg);
-                        }
-                    </text>
+                        <text>
+                            const warningMsg = decodePersianText('@TempData["Warning"]');
+                            if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                            Alert.validationWarning(warningMsg);
+                            } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                            Alert.financialWarning(warningMsg);
+                            } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                            Alert.securityWarning(warningMsg);
+                            } else {
+                            Alert.warning(warningMsg);
+                            }
+                        </text>
         }
 
         // اطلاعیه
         @if (TempData["Info"] != null)
         {
-                    <text>
-                        const infoMsg = decodePersianText('@TempData["Info"]');
-                        if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
-                        Alert.systemInfo(infoMsg);
-                        } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
-                        Alert.financialInfo(infoMsg);
-                        } else {
-                        Alert.info(infoMsg);
-                        }
-                    </text>
+                        <text>
+                            const infoMsg = decodePersianText('@TempData["Info"]');
+                            if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                            Alert.systemInfo(infoMsg);
+                            } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                            Alert.financialInfo(infoMsg);
+                            } else {
+                            Alert.info(infoMsg);
+                            }
+                        </text>
         }
         }
     </script>

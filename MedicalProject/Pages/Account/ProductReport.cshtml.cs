@@ -21,10 +21,7 @@ namespace MedicalProject.Pages.Account
         }
 
         [BindProperty(SupportsGet = true)]
-        public UserPurchaseReportDto Result { get; set; }
-
-
-
+        public UserProfitPurchaseReportDto Result { get; set; }
         public UserProfitSummary? UserProfitSummary { get; set; }
         public List<ProfitPurchaseReportDto> PaidProfits { get; set; } = new();
         public List<UnpaidPeriodInfo> UnpaidPeriods { get; set; } = new();
@@ -34,6 +31,7 @@ namespace MedicalProject.Pages.Account
 
         public async Task<IActionResult> OnGet()
         {
+            Result = await _service.GetProfit();
             try
             {
                 IsLoading = true;
@@ -52,11 +50,10 @@ namespace MedicalProject.Pages.Account
                 }
 
                 // Get user purchase report
-                var filterParam = new UserPurchaseReportFilterParam
+                FilterParams = new UserPurchaseReportForCurrentUserFilterParam
                 {
-                    UserId = userGuid,
                     PageId = 1,
-                    Take = 100 // Get all records
+                    Take = 100000 // Get all records
                 };
 
                 var result = await _service.GetFilterUserForCurrentUser(FilterParams);
@@ -207,30 +204,7 @@ namespace MedicalProject.Pages.Account
             }
         }
 
-        public IActionResult OnPostRequestPayment(int periodNumber, Guid productId, Guid orderId)
-        {
-            try
-            {
-                if (periodNumber <= 0 || productId == Guid.Empty || orderId == Guid.Empty)
-                {
-                    TempData["Error"] = "اطلاعات دوره ناقص است";
-                    return RedirectToPage();
-                }
-
-                // Logic for requesting payment for a specific period
-                // This would typically save a payment request to the database
-                // For now, just show a success message
-
-                TempData["Success"] = "درخواست پرداخت سود با موفقیت ثبت شد. تیم پشتیبانی با شما تماس خواهد گرفت.";
-                return RedirectToPage();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error requesting payment for period {PeriodNumber}", periodNumber);
-                TempData["Error"] = $"خطا در ثبت درخواست پرداخت: {ex.Message}";
-                return RedirectToPage();
-            }
-        }
+ 
 
         public IActionResult OnPostGenerateReport(string reportType)
         {

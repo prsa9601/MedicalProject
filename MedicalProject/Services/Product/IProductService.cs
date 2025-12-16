@@ -1,6 +1,7 @@
 ﻿using MedicalProject.Models;
 using MedicalProject.Models.Product;
 using MedicalProject.Models.Product.DTOs;
+using MedicalProject.Models.PurchaseReport;
 using MedicalProject.Models.User.DTOs;
 using Microsoft.AspNetCore.SignalR;
 using System;
@@ -18,6 +19,7 @@ namespace MedicalProject.Services.Product
         Task<ProductDto?> GetBySlug(string slug);
         Task<ProductFilterResult> GetFilter(ProductFilterParam param);
         Task<ProductFilterForIndexPageResult> GetFilterForIndexPage(ProductFilterParam param);
+
     }
     public class ProductService : IProductService
     {
@@ -147,5 +149,7 @@ namespace MedicalProject.Services.Product
             var result = await _client.GetFromJsonAsync<ApiResult<ProductFilterForIndexPageResult>>(url);
             return result?.Data;
         }
+
+       
     }
 }

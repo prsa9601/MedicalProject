@@ -13,6 +13,10 @@ namespace MedicalProject.Services.PurchaseReport
         Task<PurchaseReportUserInvestmentFilterResult> GetFilterUserForCurrentUser(UserPurchaseReportForCurrentUserFilterParam param);
         Task<UserPurchaseReportDto> GetById(Guid userId);
         Task<UserPurchaseReportDto> GetForCurrentUser();
+        Task<UserProfitPurchaseReportDto> GetProfit();
+        Task<UserProfitPurchaseReportDto> GetProfitById(Guid id);
+        Task<UserProfitPurchaseReportDtoFilterResult> GetProfitFilter(UserProfitPurchaseReportDtoFilterParam param);
+
     }
     internal class PurchaseReportService : IPurchaseReportService
     {
@@ -90,6 +94,29 @@ namespace MedicalProject.Services.PurchaseReport
         public async Task<UserPurchaseReportDto> GetForCurrentUser()
         {
             var result = await _client.GetFromJsonAsync<ApiResult<UserPurchaseReportDto?>>($"{ModuleName}/GetForCurrentUser");
+            return result?.Data;
+        }
+
+        public async Task<UserProfitPurchaseReportDto> GetProfit()
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<UserProfitPurchaseReportDto>>($"{ModuleName}/GetProfit");
+            return result?.Data;
+        }
+
+        public async Task<UserProfitPurchaseReportDto> GetProfitById(Guid id)
+        {
+            var result = await _client.GetFromJsonAsync<ApiResult<UserProfitPurchaseReportDto>>($"{ModuleName}/GetProfitById?id={id}");
+            return result?.Data;
+        }
+        public async Task<UserProfitPurchaseReportDtoFilterResult> GetProfitFilter(UserProfitPurchaseReportDtoFilterParam param)
+        {
+            string url = $"{ModuleName}/GetProfitFilter?take={param.Take}&pageId={param.PageId}";
+            if (param.IsDebtor != null)
+                url += $"&IsDebtor={param.IsDebtor}";
+            if (param.search is not null)
+                url += $"&search={param.search}";
+
+            var result = await _client.GetFromJsonAsync<ApiResult<UserProfitPurchaseReportDtoFilterResult>>(url);
             return result?.Data;
         }
     }

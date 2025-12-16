@@ -1,4 +1,4 @@
-using MedicalProject.Models.Product.DTOs;
+﻿using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Models.PurchaseReport;
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.Order;
@@ -42,15 +42,25 @@ namespace MedicalProject.Pages.Front.Projects
                 ProductId = Product.Id,
             }, cancellationToken);
         }
-        public async Task OnPostSetProject(decimal dongAmount, string slug)
+        public async Task<IActionResult> OnPostSetProject(decimal dongAmount, string slug)
         {
             Product = await _service.GetBySlug(slug);
 
-            var order = await _orderService.SetOrderItem(new Models.Order.SetOrderItemCommandViewModel
+            var orderResult = await _orderService.SetOrderItem(new Models.Order.SetOrderItemCommandViewModel
             {
                 productId = Product.Id,
                 dongAmount = dongAmount
             }, CancellationToken.None);
+
+            if (orderResult.IsSuccess)
+            {
+                return Redirect($"/Front/Payment/Payment?slug={Product.Slug}");
+            }
+            else
+            {
+                TempData["Error"] = "خطایی در سیستم رخ داده است.";
+                return Redirect($"/Front/Project/Details?slug={Product.Slug}");
+            }
         }
     }
 }
