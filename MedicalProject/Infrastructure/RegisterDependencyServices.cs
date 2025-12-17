@@ -3,12 +3,14 @@ using MedicalProject.Infrastructure.FileUtil.Interfaces;
 using MedicalProject.Infrastructure.FileUtil.Services;
 using MedicalProject.Infrastructure.RazorUtils;
 using MedicalProject.Services.Auth;
+using MedicalProject.Services.Contact;
 using MedicalProject.Services.Notification;
 using MedicalProject.Services.Order;
 using MedicalProject.Services.Product;
 using MedicalProject.Services.Profit;
 using MedicalProject.Services.PurchaseReport;
 using MedicalProject.Services.SiteEntity;
+using MedicalProject.Services.SiteSetting;
 using MedicalProject.Services.User;
 
 namespace MedicalProject.Infrastructure;
@@ -43,6 +45,16 @@ public static class RegisterDependencyServices
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
         
         services.AddHttpClient<INotificationService, NotificationService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+        services.AddHttpClient<IContactService, ContactService>(httpClient =>
+        {
+            httpClient.BaseAddress = new Uri(baseAddress);
+        }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();
+        
+        services.AddHttpClient<ISiteSettingService, SiteSettingService>(httpClient =>
         {
             httpClient.BaseAddress = new Uri(baseAddress);
         }).AddHttpMessageHandler<HttpClientAuthorizationDelegatingHandler>();

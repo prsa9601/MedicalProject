@@ -1,0 +1,1403 @@
+﻿@page
+@model MedicalProject.Pages.Admin.Settings.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تنظیمات سیستم - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های مشابه با صفحه تماس‌ها */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .table-responsive {
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+
+            .table {
+                min-width: 1000px;
+                font-size: 0.875rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        /* کارت‌های تنظیمات */
+        .settings-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .settings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+
+        .setting-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* تب‌ها */
+        .settings-tabs {
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .settings-tab {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .settings-tab.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .settings-tab:hover {
+            color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+
+        /* فرم‌های تنظیمات */
+        .setting-group {
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .setting-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .setting-title i {
+            margin-left: 0.75rem;
+            color: #3b82f6;
+        }
+
+        /* سوئیچ‌های تنظیمات */
+        .setting-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .setting-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .setting-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #d1d5db;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .setting-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .setting-slider {
+            background-color: #10b981;
+        }
+
+        input:checked + .setting-slider:before {
+            transform: translateX(30px);
+        }
+
+        /* پیش‌نمایش */
+        .preview-box {
+            background-color: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .preview-box:hover {
+            border-color: #3b82f6;
+            background-color: #f0f9ff;
+        }
+
+        /* استایل‌های مشترک */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .input:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 768px) {
+            .settings-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+
+            .settings-tab {
+                white-space: nowrap;
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+
+            .setting-group {
+                padding: 1rem;
+            }
+
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @@media (max-width: 640px) {
+            .preview-box {
+                padding: 1rem;
+            }
+
+            .setting-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* استایل‌های سفارشی مشابه تماس‌ها */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #047857;
+        }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b91c1c;
+        }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+        .btn-outline:hover {
+            background-color: #f9fafb;
+        }
+
+        .btn-info {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #0284c7;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* ریسپانسیو */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+                transition: right 0.3s ease;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .card {
+                margin: 0 -1rem;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900 hidden sm:inline">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+                        @Html.AntiForgeryToken()
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold hidden lg:inline">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <h1 class="text-xl md:text-2xl font-bold text-gray-900">تنظیمات سیستم</h1>
+                                <p class="mt-1 text-sm text-gray-600 hidden md:block">مدیریت تنظیمات کلی و پیشرفته سیستم</p>
+                            </div>
+                            <div class="flex items-center space-x-2 space-x-reverse w-full md:w-auto">
+                                <button onclick="saveAllSettings()" class="btn btn-primary flex-1 md:flex-none">
+                                    <i class="fas fa-save ml-1 md:ml-2"></i>
+                                    <span class="hidden sm:inline">ذخیره همه تغییرات</span>
+                                </button>
+                                <button onclick="resetToDefault()" class="btn btn-outline flex-1 md:flex-none">
+                                    <i class="fas fa-undo ml-1 md:ml-2"></i>
+                                    <span class="hidden sm:inline">بازنشانی پیش‌فرض</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-6">
+                    <!-- Settings Tabs -->
+                    <div class="card mb-6">
+                        <div class="p-4 md:p-6">
+                            <div class="flex settings-tabs overflow-x-auto">
+                                <button class="settings-tab active" onclick="showTab('general')">
+                                    <i class="fas fa-cog ml-2"></i>
+                                    تنظیمات عمومی
+                                </button>
+                              @*   <button class="settings-tab" onclick="showTab('security')">
+                                    <i class="fas fa-shield-alt ml-2"></i>
+                                    امنیتی
+                                </button>
+                                <button class="settings-tab" onclick="showTab('notifications')">
+                                    <i class="fas fa-bell ml-2"></i>
+                                    اعلان‌ها
+                                </button>
+                                <button class="settings-tab" onclick="showTab('appearance')">
+                                    <i class="fas fa-palette ml-2"></i>
+                                    ظاهری
+                                </button>
+                                <button class="settings-tab" onclick="showTab('advanced')">
+                                    <i class="fas fa-tools ml-2"></i>
+                                    پیشرفته
+                                </button> *@
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- General Settings Tab -->
+                    <div id="generalTab" class="settings-tab-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Site Settings -->
+                            <div class="card settings-card">
+                                <div class="p-4 md:p-6">
+                                    <div class="setting-title">
+                                        <div class="setting-icon bg-blue-100 text-blue-600">
+                                            <i class="fas fa-globe"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">تنظیمات سایت</h3>
+                                            <p class="text-sm text-gray-600">تنظیمات اصلی و عمومی سیستم</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4 mt-4">
+                                        <div class="form-group">
+                                            <label class="form-label">نام شرکت</label>
+                                            <input type="text" id="companyName" class="form-control" 
+                                                   value="پلتفرم دنگ" placeholder="نام شرکت را وارد کنید">
+                                        </div>
+
+                                      
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Settings -->
+                          
+                            </div>
+                       @*  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Site Settings -->
+                            <div class="card settings-card">
+                                <div class="p-4 md:p-6">
+                                    <div class="setting-title">
+                                        <div class="setting-icon bg-blue-100 text-blue-600">
+                                            <i class="fas fa-globe"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">تنظیمات سایت</h3>
+                                            <p class="text-sm text-gray-600">تنظیمات اصلی و عمومی سیستم</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4 mt-4">
+                                        <div class="form-group">
+                                            <label class="form-label">نام سایت</label>
+                                            <input type="text" id="siteName" class="form-control" 
+                                                   value="پلتفرم دنگ" placeholder="نام سایت را وارد کنید">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">توضیحات سایت</label>
+                                            <textarea id="siteDescription" class="form-control" rows="3"
+                                                      placeholder="توضیحات مختصر سایت">پلتفرم مدیریت خدمات پزشکی</textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">آدرس سایت</label>
+                                            <input type="url" id="siteUrl" class="form-control" 
+                                                   value="https://dengplatform.ir" placeholder="آدرس کامل سایت">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">ایمیل مدیر</label>
+                                            <input type="email" id="adminEmail" class="form-control" 
+                                                   value="admin@dengplatform.ir" placeholder="ایمیل مدیر سیستم">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Settings -->
+                            <div class="card settings-card">
+                                <div class="p-4 md:p-6">
+                                    <div class="setting-title">
+                                        <div class="setting-icon bg-green-100 text-green-600">
+                                            <i class="fas fa-phone-alt"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">تنظیمات تماس</h3>
+                                            <p class="text-sm text-gray-600">اطلاعات تماس و پشتیبانی</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4 mt-4">
+                                        <div class="form-group">
+                                            <label class="form-label">شماره تماس پشتیبانی</label>
+                                            <input type="tel" id="supportPhone" class="form-control" 
+                                                   value="021-12345678" placeholder="شماره تماس پشتیبانی">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">ایمیل پشتیبانی</label>
+                                            <input type="email" id="supportEmail" class="form-control" 
+                                                   value="support@dengplatform.ir" placeholder="ایمیل پشتیبانی">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">آدرس</label>
+                                            <textarea id="address" class="form-control" rows="2"
+                                                      placeholder="آدرس دفتر مرکزی">تهران، خیابان ولیعصر</textarea>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label class="form-label">ساعات کاری</label>
+                                            <input type="text" id="workingHours" class="form-control" 
+                                                   value="شنبه تا پنجشنبه ۸:۰۰ تا ۱۷:۰۰" placeholder="ساعات کاری">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> *@
+
+                            <!-- System Settings -->
+                          @*   <div class="card settings-card col-span-1 lg:col-span-2">
+                                <div class="p-4 md:p-6">
+                                    <div class="setting-title">
+                                        <div class="setting-icon bg-purple-100 text-purple-600">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-gray-900">تنظیمات سیستم</h3>
+                                            <p class="text-sm text-gray-600">تنظیمات پیشرفته سیستم</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">فعال کردن ثبت‌نام کاربران</label>
+                                                    <p class="text-sm text-gray-500">اجازه ثبت‌نام به کاربران جدید</p>
+                                                </div>
+                                                <label class="setting-switch">
+                                                    <input type="checkbox" id="enableRegistration" checked>
+                                                    <span class="setting-slider"></span>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">نمایش کپی رایت</label>
+                                                    <p class="text-sm text-gray-500">نمایش متن کپی رایت در فوتر</p>
+                                                </div>
+                                                <label class="setting-switch">
+                                                    <input type="checkbox" id="showCopyright" checked>
+                                                    <span class="setting-slider"></span>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">زبان پیش‌فرض</label>
+                                                    <p class="text-sm text-gray-500">زبان اصلی سیستم</p>
+                                                </div>
+                                                <select id="defaultLanguage" class="form-control w-32">
+                                                    <option value="fa" selected>فارسی</option>
+                                                    <option value="en">English</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">زمان‌بندی پشتیبان‌گیری</label>
+                                                    <p class="text-sm text-gray-500">پشتیبان‌گیری خودکار</p>
+                                                </div>
+                                                <select id="backupSchedule" class="form-control w-32">
+                                                    <option value="daily">روزانه</option>
+                                                    <option value="weekly" selected>هفتگی</option>
+                                                    <option value="monthly">ماهانه</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">حداکثر سایز آپلود</label>
+                                                    <p class="text-sm text-gray-500">(MB) حداکثر حجم فایل آپلودی</p>
+                                                </div>
+                                                <input type="number" id="maxUploadSize" class="form-control w-24" 
+                                                       value="10" min="1" max="100">
+                                            </div>
+
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <label class="form-label">فعال کردن دیباگ</label>
+                                                    <p class="text-sm text-gray-500">نمایش خطاهای سیستم</p>
+                                                </div>
+                                                <label class="setting-switch">
+                                                    <input type="checkbox" id="enableDebug">
+                                                    <span class="setting-slider"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> *@
+                        </div>
+                    </div>
+
+                  
+                    <!-- Save Button -->
+                    <div class="mt-6 flex justify-end">
+                        <button onclick="saveAllSettings()" class="btn btn-primary px-8 py-3">
+                            <i class="fas fa-save ml-2"></i>
+                            ذخیره تمام تنظیمات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-2 md:top-4 mx-auto p-2 md:p-4 border w-full max-w-2xl shadow-2xl rounded-xl bg-white max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 id="modalTitle" class="text-lg md:text-xl font-bold text-gray-900">ویرایش تنظیمات</h3>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 p-1 md:p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div id="modalContent" class="mt-4">
+                <!-- محتوای مودال -->
+            </div>
+
+            <div class="mt-6 pt-4 border-t flex justify-end space-x-2 space-x-reverse">
+                <button onclick="closeModal()" class="btn btn-outline">انصراف</button>
+                <button onclick="saveModalChanges()" class="btn btn-primary">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // مدیریت تب‌ها
+        let currentTab = 'general';
+
+        function showTab(tabName) {
+            // مخفی کردن همه تب‌ها
+            document.querySelectorAll('.settings-tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // حذف active از همه دکمه‌ها
+            document.querySelectorAll('.settings-tab').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // نمایش تب انتخاب شده
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            
+            // فعال کردن دکمه مربوطه
+            document.querySelectorAll('.settings-tab').forEach(btn => {
+                if (btn.textContent.includes(getTabTitle(tabName))) {
+                    btn.classList.add('active');
+                }
+            });
+
+            currentTab = tabName;
+        }
+
+        function getTabTitle(tabName) {
+            const titles = {
+                'general': 'عمومی',
+                'security': 'امنیتی',
+                'notifications': 'اعلان‌ها',
+                'appearance': 'ظاهری',
+                'advanced': 'پیشرفته'
+            };
+            return titles[tabName] || '';
+        }
+
+        // ذخیره تنظیمات
+        async function saveAllSettings() {
+            try {
+                // جمع‌آوری داده‌ها
+                const settings = {
+                   
+                        companyName: document.getElementById('companyName').value,
+                        // siteName: document.getElementById('siteName').value,
+                        // siteDescription: document.getElementById('siteDescription').value,
+                        // siteUrl: document.getElementById('siteUrl').value,
+                        // adminEmail: document.getElementById('adminEmail').value,
+                        // supportPhone: document.getElementById('supportPhone').value,
+                        // supportEmail: document.getElementById('supportEmail').value,
+                        // address: document.getElementById('address').value,
+                        // workingHours: document.getElementById('workingHours').value,
+                        // enableRegistration: document.getElementById('enableRegistration').checked,
+                        // showCopyright: document.getElementById('showCopyright').checked,
+                        // defaultLanguage: document.getElementById('defaultLanguage').value,
+                        // backupSchedule: document.getElementById('backupSchedule').value,
+                        // maxUploadSize: document.getElementById('maxUploadSize').value,
+                        // enableDebug: document.getElementById('enableDebug').checked
+                    
+                };
+
+                const formData = new FormData();
+                formData.append('companyName', settings.companyName);
+
+                const response = await fetch('?handler=SaveSettings', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (response.ok) {
+                    await Swal.fire({
+                        title: 'موفقیت!',
+                        text: 'تنظیمات با موفقیت ذخیره شدند.',
+                        icon: 'success',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                } else {
+                    throw new Error('خطا در ذخیره تنظیمات');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    title: 'خطا!',
+                    text: 'خطا در ذخیره تنظیمات',
+                    icon: 'error',
+                    confirmButtonText: 'باشه',
+                    customClass: {
+                        container: 'rtl',
+                        title: 'text-right',
+                        htmlContainer: 'text-right'
+                    }
+                });
+            }
+        }
+
+        // بازنشانی به پیش‌فرض
+        async function resetToDefault() {
+            const result = await Swal.fire({
+                title: 'بازنشانی تنظیمات',
+                text: 'آیا از بازنشانی همه تنظیمات به حالت پیش‌فرض اطمینان دارید؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، بازنشانی شود',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch('?handler=ResetSettings', {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفقیت!',
+                            text: 'تنظیمات با موفقیت بازنشانی شدند.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                container: 'rtl',
+                                title: 'text-right',
+                                htmlContainer: 'text-right'
+                            }
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در بازنشانی تنظیمات');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در بازنشانی تنظیمات',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                }
+            }
+        }
+
+        // تست اتصال ایمیل
+        async function testEmailConnection() {
+            try {
+                const formData = new FormData();
+                formData.append('smtpServer', document.getElementById('smtpServer').value);
+                formData.append('smtpPort', document.getElementById('smtpPort').value);
+                formData.append('smtpUsername', document.getElementById('smtpUsername').value);
+                formData.append('smtpUseSSL', document.getElementById('smtpUseSSL').checked);
+
+                const response = await fetch('?handler=TestEmail', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (response.ok) {
+                    await Swal.fire({
+                        title: 'موفقیت!',
+                        text: 'اتصال ایمیل با موفقیت تست شد.',
+                        icon: 'success',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                } else {
+                    throw new Error('خطا در اتصال به سرور ایمیل');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                await Swal.fire({
+                    title: 'خطا!',
+                    text: 'خطا در اتصال به سرور ایمیل',
+                    icon: 'error',
+                    confirmButtonText: 'باشه',
+                    customClass: {
+                        container: 'rtl',
+                        title: 'text-right',
+                        htmlContainer: 'text-right'
+                    }
+                });
+            }
+        }
+
+        // مدیریت لیست IP
+        function manageIPWhitelist() {
+            const modal = document.getElementById('settingsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+
+            modalTitle.textContent = 'مدیریت لیست IP های مجاز';
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label class="form-label">افزودن IP جدید</label>
+                        <input type="text" id="newIP" class="form-control" placeholder="مثال: 192.168.1.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">IP های فعلی</label>
+                        <div class="space-y-2" id="ipList">
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span>192.168.1.100</span>
+                                <button onclick="removeIP(this)" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                <span>10.0.0.5</span>
+                                <button onclick="removeIP(this)" class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="addNewIP()" class="btn btn-primary w-full">
+                        <i class="fas fa-plus ml-2"></i>
+                        افزودن IP
+                    </button>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function addNewIP() {
+            const newIP = document.getElementById('newIP').value;
+            if (!newIP) return;
+
+            const ipList = document.getElementById('ipList');
+            const ipItem = document.createElement('div');
+            ipItem.className = 'flex items-center justify-between p-2 bg-gray-50 rounded';
+            ipItem.innerHTML = `
+                <span>${newIP}</span>
+                <button onclick="removeIP(this)" class="text-red-600 hover:text-red-800">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            ipList.appendChild(ipItem);
+            document.getElementById('newIP').value = '';
+        }
+
+        function removeIP(button) {
+            button.closest('div').remove();
+        }
+
+        // مدیریت قالب‌ها
+        function showTemplate(templateType) {
+            const buttons = document.querySelectorAll('.active-template');
+            buttons.forEach(btn => btn.classList.remove('active-template'));
+            event.target.classList.add('active-template');
+
+            const preview = document.getElementById('templatePreview');
+            const templates = {
+                'welcome': {
+                    title: 'ایمیل خوش‌آمدگویی',
+                    description: 'این ایمیل به کاربران جدید پس از ثبت‌نام ارسال می‌شود.',
+                    content: `سلام [نام کاربر]،<br><br>
+                            به پلتفرم دنگ خوش آمدید. حساب کاربری شما با موفقیت ایجاد شد.<br><br>
+                            شماره کاربری: [کد کاربر]<br><br>
+                            با تشکر،<br>تیم پشتیبانی دنگ`
+                },
+                'reset_password': {
+                    title: 'ایمیل بازیابی رمز عبور',
+                    description: 'این ایمیل برای بازیابی رمز عبور کاربر ارسال می‌شود.',
+                    content: `سلام [نام کاربر]،<br><br>
+                            برای بازیابی رمز عبور خود روی لینک زیر کلیک کنید:<br><br>
+                            [لینک بازیابی]<br><br>
+                            این لینک به مدت 24 ساعت معتبر است.<br><br>
+                            با تشکر،<br>تیم پشتیبانی دنگ`
+                },
+                'contact_response': {
+                    title: 'ایمیل پاسخ تماس',
+                    description: 'این ایمیل در پاسخ به پیام کاربر ارسال می‌شود.',
+                    content: `سلام [نام کاربر]،<br><br>
+                            با تشکر از تماس شما.<br>
+                            پیام شما با موفقیت دریافت شد و در اسرع وقت پاسخ داده خواهد شد.<br><br>
+                            شماره پیگیری: [کد پیگیری]<br><br>
+                            با تشکر،<br>تیم پشتیبانی دنگ`
+                },
+                'system_alert': {
+                    title: 'هشدار سیستم',
+                    description: 'این ایمیل برای مدیران سیستم در صورت بروز خطا ارسال می‌شود.',
+                    content: `هشدار سیستم<br><br>
+                            خطای سیستم در تاریخ [تاریخ] ساعت [زمان] رخ داده است.<br><br>
+                            جزئیات خطا: [جزئیات خطا]<br><br>
+                            لطفاً در اسرع وقت بررسی فرمایید.`
+                }
+            };
+
+            const template = templates[templateType];
+            preview.innerHTML = `
+                <h4 class="text-lg font-semibold mb-2">${template.title}</h4>
+                <p class="text-gray-700 mb-4">${template.description}</p>
+                
+                <div class="bg-white p-4 rounded-lg border text-right">
+                    <p><strong>عنوان:</strong> ${template.title}</p>
+                    <p><strong>متن:</strong></p>
+                    <div class="mt-2 p-3 bg-gray-50 rounded">
+                        ${template.content}
+                    </div>
+                </div>
+            `;
+        }
+
+        function editTemplate() {
+            const modal = document.getElementById('settingsModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalContent = document.getElementById('modalContent');
+
+            modalTitle.textContent = 'ویرایش قالب ایمیل';
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="form-group">
+                        <label class="form-label">عنوان ایمیل</label>
+                        <input type="text" id="templateTitle" class="form-control" value="خوش آمدید به پلتفرم دنگ">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">متن ایمیل</label>
+                        <textarea id="templateBody" class="form-control" rows="10">
+سلام [نام کاربر]،
+
+به پلتفرم دنگ خوش آمدید. حساب کاربری شما با موفقیت ایجاد شد.
+
+شماره کاربری: [کد کاربر]
+
+متغیرهای قابل استفاده:
+[نام کاربر] - نام کامل کاربر
+[کد کاربر] - شماره کاربری
+[تاریخ] - تاریخ جاری
+[زمان] - زمان جاری
+
+با تشکر،
+تیم پشتیبانی دنگ
+                        </textarea>
+                    </div>
+
+                    <div class="bg-gray-50 p-3 rounded-lg">
+                        <h5 class="font-semibold mb-2">متغیرهای قابل استفاده:</h5>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="insertVariable('[نام کاربر]')" class="badge badge-info cursor-pointer">نام کاربر</button>
+                            <button onclick="insertVariable('[کد کاربر]')" class="badge badge-info cursor-pointer">کد کاربر</button>
+                            <button onclick="insertVariable('[ایمیل]')" class="badge badge-info cursor-pointer">ایمیل</button>
+                            <button onclick="insertVariable('[تاریخ]')" class="badge badge-info cursor-pointer">تاریخ</button>
+                            <button onclick="insertVariable('[زمان]')" class="badge badge-info cursor-pointer">زمان</button>
+                            <button onclick="insertVariable('[لینک]')" class="badge badge-info cursor-pointer">لینک</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function insertVariable(variable) {
+            const textarea = document.getElementById('templateBody');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            textarea.value = textarea.value.substring(0, start) + variable + textarea.value.substring(end);
+            textarea.focus();
+            textarea.selectionStart = textarea.selectionEnd = start + variable.length;
+        }
+
+        // توابع مودال
+        function closeModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function saveModalChanges() {
+            // در اینجا کد ذخیره تغییرات مودال را اضافه کنید
+            await Swal.fire({
+                title: 'موفقیت!',
+                text: 'تغییرات با موفقیت ذخیره شد.',
+                icon: 'success',
+                confirmButtonText: 'باشه',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right'
+                }
+            });
+            closeModal();
+        }
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+
+            // بستن مودال با کلیک خارج
+            const modal = document.getElementById('settingsModal');
+            if (modal && !modal.contains(event.target) && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // بستن با کلید ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // تنظیمات ریسپانسیو سایدبار
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+    </script>
+    <script src="~/Alert.js"></script>
+
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+            // موفقیت
+            @if (TempData["Success"] != null)
+            {
+                <text>
+                    Alert.success(decodePersianText('@TempData["Success"]'));
+                </text>
+            }
+
+            // خطا
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                    const errorMsg = decodePersianText('@TempData["Error"]');
+                    if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                        Alert.notFound(errorMsg);
+                    } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                        Alert.serverError(errorMsg);
+                    } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                        Alert.badRequest(errorMsg);
+                    } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                        Alert.unauthorized(errorMsg);
+                    } else {
+                        Alert.error(errorMsg);
+                    }
+                </text>
+            }
+
+            // هشدار
+            @if (TempData["Warning"] != null)
+            {
+                <text>
+                    const warningMsg = decodePersianText('@TempData["Warning"]');
+                    if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                        Alert.validationWarning(warningMsg);
+                    } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                        Alert.financialWarning(warningMsg);
+                    } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                        Alert.securityWarning(warningMsg);
+                    } else {
+                        Alert.warning(warningMsg);
+                    }
+                </text>
+            }
+
+            // اطلاعیه
+            @if (TempData["Info"] != null)
+            {
+                <text>
+                    const infoMsg = decodePersianText('@TempData["Info"]');
+                    if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                        Alert.systemInfo(infoMsg);
+                    } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                        Alert.financialInfo(infoMsg);
+                    } else {
+                        Alert.info(infoMsg);
+                    }
+                </text>
+            }
+        }
+
+        // نمایش پیام‌ها پس از لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
+
+            // تنظیم active برای لینک سایدبار
+            const currentPage = window.location.pathname;
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+                    link.classList.add('active');
+                }
+            });
+
+            // فعال کردن اولین تب
+            showTab('general');
+        });
+    </script>
+</body>
+</html>

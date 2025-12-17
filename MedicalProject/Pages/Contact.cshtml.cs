@@ -1,11 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MedicalProject.Services.Contact;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace MedicalProject.Pages
 {
     public class ContactModel : PageModel
     {
+        private readonly IContactService _service;
+
+        public ContactModel(IContactService service)
+        {
+            _service = service;
+        }
+
         [BindProperty]
         public ContactFormModel ContactForm { get; set; }
 
@@ -16,7 +25,7 @@ namespace MedicalProject.Pages
         {
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPost()
         {
             if (!ModelState.IsValid)
             {
@@ -27,12 +36,15 @@ namespace MedicalProject.Pages
 
             try
             {
-                // اینجا کد ارسال ایمیل یا ذخیره در دیتابیس را قرار دهید
-                // مثلا:
-                // _emailService.SendContactEmail(ContactForm);
-                // _context.ContactMessages.Add(contactMessage);
-                // await _context.SaveChangesAsync();
-
+                var result = await _service.Create(new Models.Contact.CreateContactCommand
+                {
+                    Email = ContactForm.Email,
+                    PhoneNumber = ContactForm.Phone,
+                    Description = ContactForm.Message,
+                    Title = ContactForm.Subject,
+                    FullName = ContactForm.Name,
+                    Status = Models.Contact.ContactStatus.New,
+                });
                 Message = "پیام شما با موفقیت ارسال شد. به زودی با شما تماس خواهیم گرفت.";
                 IsSuccess = true;
 

@@ -1,5 +1,5 @@
 ﻿using MedicalProject.Models;
-using MedicalProject.Models.Contract;
+using MedicalProject.Models.Contact;
 using MedicalProject.Models.SiteSetting;
 
 namespace MedicalProject.Services.SiteSetting

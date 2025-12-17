@@ -1,0 +1,1915 @@
+﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.EnumUtil
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.Contact
+@model MedicalProject.Pages.Admin.Contact.IndexModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت تماس‌ها - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* جدول ریسپانسیو */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 0 -0.5rem;
+            padding: 0 0.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .table-responsive {
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+
+            .table {
+                min-width: 1000px;
+                font-size: 0.875rem;
+            }
+
+                .table th,
+                .table td {
+                    padding: 0.5rem 0.75rem;
+                }
+        }
+
+        /* کارت‌های آمار */
+        @@media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                padding: 0.75rem;
+            }
+
+                .stat-card p:first-child {
+                    font-size: 0.75rem;
+                }
+
+                .stat-card p:last-child {
+                    font-size: 1.25rem;
+                }
+        }
+
+        @@media (max-width: 380px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* مدال‌ها در موبایل */
+        @@media (max-width: 768px) {
+            .modal-content {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+                max-height: calc(100vh - 1rem);
+                overflow-y: auto;
+            }
+
+            .modal-body {
+                padding: 0.75rem;
+            }
+        }
+
+        /* هدر در موبایل */
+        @@media (max-width: 768px) {
+            .page-header {
+                padding: 1rem;
+            }
+
+                .page-header h1 {
+                    font-size: 1.25rem;
+                }
+
+            .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%;
+            }
+
+                .header-actions .btn {
+                    width: 100%;
+                }
+        }
+
+        /* دکمه‌های عملیات در جدول */
+        @@media (max-width: 640px) {
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+                .action-buttons .btn {
+                    width: 100%;
+                    justify-content: center;
+                    padding: 0.25rem 0.5rem;
+                }
+        }
+
+        /* فیلترها در موبایل */
+        @@media (max-width: 768px) {
+            .filter-section {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .filter-inputs {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+                .filter-inputs > * {
+                    width: 100%;
+                }
+        }
+        /* صفحه‌بندی در موبایل */
+        @@media (max-width: 640px) {
+            .pagination-info {
+                font-size: 0.75rem;
+            }
+
+            .pagination-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.25rem;
+            }
+
+                .pagination-buttons .btn {
+                    min-width: 2.5rem;
+                    padding: 0.25rem;
+                }
+        }
+
+        @@media (max-width: 768px) {
+            .truncate-text {
+                max-width: 150px;
+            }
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes slideInRight {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* بهبود تجربه لمسی */
+        @@media (hover: none) and (pointer: coarse) {
+            .btn,
+            .sidebar-link,
+            .table tbody tr {
+                min-height: 44px;
+            }
+
+            .input,
+            select,
+            textarea {
+                font-size: 16px; /* جلوگیری از زوم در iOS */
+            }
+        }
+
+        /* استایل‌های سفارشی */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .btn-info {
+            background-color: #0ea5e9;
+            color: white;
+        }
+
+            .btn-info:hover {
+                background-color: #0284c7;
+            }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-secondary {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #2563eb, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+            .table th, .table td {
+                padding: 0.75rem 1rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+                vertical-align: middle;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+                white-space: nowrap;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                box-shadow: 0 0 0 2px #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .form-text {
+            display: block;
+            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .status-active {
+            background-color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: #ef4444;
+        }
+
+        .status-pending {
+            background-color: #f59e0b;
+        }
+
+        /* استایل‌های مخصوص تماس‌ها */
+        .truncate-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 200px;
+            display: block;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .truncate-text:hover {
+                color: #3b82f6;
+            }
+
+        .truncate-text-expanded {
+            white-space: normal;
+            max-width: none;
+            overflow: visible;
+        }
+
+        .badge-new {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-answered {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+                transition: right 0.3s ease;
+            }
+
+            .admin-main {
+                margin-right: 0;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+            .card {
+                margin: 0 -1rem;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+        }
+
+        @@media (max-width: 640px) {
+            .table {
+                min-width: 1000px;
+            }
+
+            .admin-content {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
+
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+
+            .md\:grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .flex-col {
+                flex-direction: column;
+            }
+
+            .space-y-3 > * + * {
+                margin-top: 0.75rem;
+            }
+
+            .p-6 {
+                padding: 1rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .table th, .table td {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+            }
+
+            .badge {
+                padding: 0.125rem 0.375rem;
+                font-size: 0.65rem;
+            }
+
+            .text-2xl {
+                font-size: 1.25rem;
+            }
+
+            .text-lg {
+                font-size: 1rem;
+            }
+
+            .h-12 {
+                height: 2.5rem;
+                width: 2.5rem;
+            }
+
+            .w-12 {
+                width: 2.5rem;
+            }
+        }
+
+        /* استایل‌های مخصوص مودال در موبایل */
+        @@media (max-width: 768px) {
+            #contactDetailsModal > div {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+                height: calc(100vh - 1rem);
+            }
+
+            #bulkActionsModal > div {
+                margin: 0.5rem;
+                max-width: calc(100% - 1rem);
+            }
+        }
+
+        /* استایل‌های برای نمایش بهتر در موبایل */
+        .mobile-hidden {
+            display: table-cell;
+        }
+
+        @@media (max-width: 768px) {
+            .mobile-hidden {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900 hidden sm:inline">پلتفرم دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+                        @Html.AntiForgeryToken()
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold hidden lg:inline">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+                   <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Page Header -->
+                <div class="bg-white border-b border-gray-200">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                            <div>
+                                <h1 class="text-xl md:text-2xl font-bold text-gray-900">مدیریت تماس‌ها</h1>
+                                <p class="mt-1 text-sm text-gray-600 hidden md:block">مدیریت و پیگیری پیام‌های دریافتی از کاربران</p>
+                            </div>
+                            <div class="flex items-center space-x-2 space-x-reverse w-full md:w-auto">
+                               @*  <button onclick="exportResult()" class="btn btn-outline flex-1 md:flex-none">
+                                    <i class="fas fa-download ml-1 md:ml-2"></i>
+                                    <span class="hidden sm:inline">خروجی Excel</span>
+                                </button>
+                                <button onclick="showBulkActions()" class="btn btn-primary flex-1 md:flex-none">
+                                    <i class="fas fa-tasks ml-1 md:ml-2"></i>
+                                    <span class="hidden sm:inline">عملیات گروهی</span>
+                                </button> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-2 sm:px-4 lg:px-8 py-4 md:py-6">
+                    <!-- Contact List -->
+                    <div class="card">
+                        <div class="p-4 md:p-6">
+                            <form method="get">
+                                <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-4 lg:space-y-0">
+                                    <h2 class="text-lg font-semibold text-gray-900 hidden md:block">لیست تماس‌های دریافتی</h2>
+
+                                    <!-- Search and Filters -->
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse w-full">
+                                        <div class="relative w-full sm:w-48 lg:w-64">
+                                            <input type="text"
+                                                   asp-for="@Model.FilterParams.PhoneNumber"
+                                                   placeholder="جستجو شماره تماس..."
+                                                   class="input pl-10 text-sm md:text-base">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fas fa-search text-gray-400"></i>
+                                            </div>
+                                        </div>
+
+                                        <div class="relative w-full sm:w-48 lg:w-64">
+                                            <input type="text"
+                                                   asp-for="@Model.FilterParams.FullName"
+                                                   placeholder="جستجو نام..."
+                                                   class="input pl-10 text-sm md:text-base">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fas fa-user text-gray-400"></i>
+                                            </div>
+                                        </div>
+
+                                        <select asp-for="@Model.FilterParams.Status" class="input w-full sm:w-auto text-sm md:text-base">
+                                            <option value="">همه وضعیت‌ها</option>
+                                            <option value="@ContactStatus.New">جدید</option>
+                                            <option value="@ContactStatus.Answered">پاسخ داده شده</option>
+                                        </select>
+
+                                        <button class="btn btn-primary w-full sm:w-auto">
+                                            <i class="fas fa-filter ml-1 md:ml-2"></i>
+                                            <span class="hidden sm:inline">اعمال فیلتر</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- Statistics Cards -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                                <div class="card card-hover">
+                                    <div class="p-3 md:p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs md:text-sm font-medium text-gray-600">کل تماس‌ها</p>
+                                                <p class="text-xl md:text-2xl font-bold text-gray-900">@(Model?.Result?.EntityCount ?? 0)</p>
+                                            </div>
+                                            <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-phone-alt text-blue-600 text-sm md:text-base"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card card-hover">
+                                    <div class="p-3 md:p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs md:text-sm font-medium text-gray-600">تماس‌های جدید</p>
+                                                <p class="text-xl md:text-2xl font-bold text-gray-900">
+                                                    @{
+                                                        int newCount = Model?.Result?.Data?.Count(contact => contact?.Status == ContactStatus.New) ?? 0;
+                                                    }
+                                                    @(newCount)
+                                                </p>
+                                            </div>
+                                            <div class="w-10 h-10 md:w-12 md:h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-exclamation-circle text-yellow-600 text-sm md:text-base"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card card-hover">
+                                    <div class="p-3 md:p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs md:text-sm font-medium text-gray-600">پاسخ داده شده</p>
+                                                <p class="text-xl md:text-2xl font-bold text-gray-900">
+                                                    @{
+                                                        int answeredCount = Model?.Result?.Data?.Count(contact => contact?.Status == ContactStatus.Answered) ?? 0;
+                                                    }
+                                                    @(answeredCount)
+                                                </p>
+                                            </div>
+                                            <div class="w-10 h-10 md:w-12 md:h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-check-circle text-green-600 text-sm md:text-base"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card card-hover">
+                                    <div class="p-3 md:p-4">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <p class="text-xs md:text-sm font-medium text-gray-600">تاریخ امروز</p>
+                                                <p class="text-xl md:text-2xl font-bold text-gray-900">
+                                                    @{
+                                                        int todayCount = Model?.Result?.Data?.Count(contact => contact?.CreationDate.Date == DateTime.Today) ?? 0;
+                                                    }
+                                                    @(todayCount)
+                                                </p>
+                                            </div>
+                                            <div class="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-calendar-day text-purple-600 text-sm md:text-base"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Table -->
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="w-10">
+                                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+                                            </th>
+                                            <th class="w-12">#</th>
+                                            <th class="mobile-hidden">نام و نام خانوادگی</th>
+                                            <th class="mobile-hidden">شماره تماس</th>
+                                            <th class="mobile-hidden">ایمیل</th>
+                                            <th>عنوان</th>
+                                            <th>پیام</th>
+                                            <th>وضعیت</th>
+                                            <th>تاریخ</th>
+                                            <th class="w-32">عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (Model?.Result?.Data == null || !Model.Result.Data.Any())
+                                            {
+                                                <tr>
+                                                    <td colspan="10" class="text-center py-8 text-gray-500">
+                                                        <i class="fas fa-inbox text-3xl md:text-4xl mb-2"></i>
+                                                        <div class="text-base md:text-lg font-medium">هیچ پیامی یافت نشد</div>
+                                                        <p class="text-xs md:text-sm mt-1">هنوز هیچ پیامی از کاربران دریافت نشده است.</p>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                int number = 1;
+                                                foreach (var contact in Model.Result.Data)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <input type="checkbox" class="contact-checkbox" value="@contact?.Id">
+                                                        </td>
+                                                        <td>@(number++)</td>
+                                                        <td class="mobile-hidden font-medium text-gray-900">
+                                                            <span class="truncate-text" onclick="toggleFullText(this, '@contact?.FullName')">
+                                                                @contact?.FullName
+                                                            </span>
+                                                        </td>
+                                                        <td class="mobile-hidden">
+                                                            <div class="flex items-center">
+                                                                <i class="fas fa-phone text-gray-400 ml-2 text-sm"></i>
+                                                                <span class="truncate-text" onclick="toggleFullText(this, '@contact?.PhoneNumber')">
+                                                                    @contact?.PhoneNumber
+                                                                </span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="mobile-hidden">
+                                                            @if (!string.IsNullOrEmpty(contact?.Email))
+                                                            {
+                                                                <div class="flex items-center">
+                                                                    <i class="fas fa-envelope text-gray-400 ml-2 text-sm"></i>
+                                                                    <span class="truncate-text" onclick="toggleFullText(this, '@contact?.Email')">
+                                                                        @contact?.Email
+                                                                    </span>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="text-gray-400 text-sm">---</span>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <span class="truncate-text font-medium" onclick="toggleFullText(this, '@contact?.Title')">
+                                                                @contact?.Title
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span class="truncate-text" onclick="toggleFullText(this, '@contact?.Description')">
+                                                                @contact?.Description
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            @if (contact?.Status == ContactStatus.New)
+                                                            {
+                                                                <span class="badge badge-new">
+                                                                    <i class="fas fa-clock ml-1 text-xs"></i>
+                                                                    <span class="text-xs">جدید</span>
+                                                                </span>
+                                                            }
+                                                            else if (contact?.Status == ContactStatus.Answered)
+                                                            {
+                                                                <span class="badge badge-answered">
+                                                                    <i class="fas fa-check ml-1 text-xs"></i>
+                                                                    <span class="text-xs">پاسخ داده شده</span>
+                                                                </span>
+                                                            }
+                                                        </td>
+                                                        <td>
+                                                            <div class="text-xs md:text-sm text-gray-600">
+                                                                <div>@contact?.CreationDate.ToString("yyyy/MM/dd")</div>
+                                                                <div class="text-xs text-gray-400">@contact?.CreationDate.ToString("HH:mm")</div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="flex items-center space-x-1 md:space-x-2 space-x-reverse">
+                                                                <button onclick="showContactDetails('@contact?.Id')"
+                                                                        class="btn btn-info btn-sm p-1 md:p-2" title="مشاهده جزئیات">
+                                                                    <i class="fas fa-eye text-xs md:text-sm"></i>
+                                                                </button>
+                                                                @if (contact?.Status == ContactStatus.New)
+                                                                {
+                                                                    <button onclick="markAsAnswered('@contact?.Id')"
+                                                                            class="btn btn-success btn-sm p-1 md:p-2" title="علامت به عنوان پاسخ داده شده">
+                                                                        <i class="fas fa-check text-xs md:text-sm"></i>
+                                                                    </button>
+                                                                }
+                                                                @*<button onclick="deleteContact('@contact?.Id')"
+                                                                        class="btn btn-danger btn-sm p-1 md:p-2" title="حذف تماس">
+                                                                    <i class="fas fa-trash text-xs md:text-sm"></i>
+                                                                </button>*@
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                        @Html.AntiForgeryToken()
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            @if (Model?.Result != null)
+                            {
+                                <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
+                                    <div class="text-xs md:text-sm text-gray-700">
+                                        نمایش
+                                        <span id="currentRange">@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) - @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
+                                        از
+                                        <span id="totalCount">@Model.Result.EntityCount</span>
+                                        تماس
+                                    </div>
+                                    <div class="flex items-center space-x-1 md:space-x-2 space-x-reverse">
+                                        <!-- دکمه صفحه قبلی -->
+                                        <button onclick="loadPage(@(Model.Result.CurrentPage - 1))"
+                                                class="btn btn-outline btn-sm p-1 md:p-2 @(Model.Result.CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Result.CurrentPage <= 1 ? "disabled" : "")>
+                                            <i class="fas fa-chevron-right text-xs"></i>
+                                        </button>
+
+                                        <!-- صفحات عددی -->
+                                        @for (int i = Model.Result.StartPage; i <= Model.Result.EndPage; i++)
+                                        {
+                                            if (i == Model.Result.CurrentPage)
+                                            {
+                                                <button class="btn btn-primary btn-sm p-1 md:p-2 text-xs md:text-sm">@i</button>
+                                            }
+                                            else
+                                            {
+                                                <button onclick="loadPage(@i)" class="btn btn-outline btn-sm p-1 md:p-2 text-xs md:text-sm">@i</button>
+                                            }
+                                        }
+
+                                        <!-- دکمه صفحه بعدی -->
+                                        <button onclick="loadPage(@(Model.Result.CurrentPage + 1))"
+                                                class="btn btn-outline btn-sm p-1 md:p-2 @(Model.Result.CurrentPage >= Model.Result.PageCount ? "opacity-50 cursor-not-allowed" : "")"
+                                                @(Model.Result.CurrentPage >= Model.Result.PageCount ? "disabled" : "")>
+                                            <i class="fas fa-chevron-left text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- انتخاب تعداد آیتم در صفحه -->
+                                <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <span class="text-xs md:text-sm text-gray-600">تعداد در هر صفحه:</span>
+                                        <select onchange="changePageSize(this.value)" class="input w-16 md:w-20 text-xs md:text-sm py-1" id="pageSizeSelect">
+                                            <option value="8" selected="@(Model.Result.Take == 8)">8</option>
+                                            <option value="16" selected="@(Model.Result.Take == 16)">16</option>
+                                            <option value="32" selected="@(Model.Result.Take == 32)">32</option>
+                                            <option value="50" selected="@(Model.Result.Take == 50)">50</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Details Modal -->
+    <div id="contactDetailsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-2 md:top-4 mx-auto p-2 md:p-4 border w-full max-w-4xl shadow-2xl rounded-xl bg-white max-h-[95vh] overflow-y-auto">
+            <div class="flex justify-between items-center pb-3 md:pb-4 border-b">
+                <h3 class="text-lg md:text-2xl font-bold text-gray-900">جزئیات تماس</h3>
+                <button onclick="closeContactDetailsModal()" class="text-gray-500 hover:text-gray-700 p-1 md:p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-times text-lg md:text-xl"></i>
+                </button>
+            </div>
+
+            <div class="mt-4 md:mt-6 space-y-4 md:space-y-6">
+                <!-- Contact Information -->
+                <div class="bg-gray-50 p-3 md:p-4 rounded-lg">
+                    <h4 class="text-base md:text-lg font-semibold text-gray-800 mb-3 md:mb-4">اطلاعات تماس</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">نام و نام خانوادگی:</label>
+                            <p class="text-gray-800 font-medium mt-1 text-sm md:text-base" id="contactFullName">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">شماره تماس:</label>
+                            <p class="text-gray-800 font-medium mt-1 text-sm md:text-base" id="contactPhoneNumber">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">آدرس ایمیل:</label>
+                            <p class="text-gray-800 font-medium mt-1 text-sm md:text-base" id="contactEmail">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">وضعیت:</label>
+                            <p class="mt-1 text-sm md:text-base" id="contactStatus">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">تاریخ ارسال:</label>
+                            <p class="text-gray-800 font-medium mt-1 text-sm md:text-base" id="contactDate">-</p>
+                        </div>
+                        <div>
+                            <label class="block text-xs md:text-sm font-medium text-gray-600">ساعت ارسال:</label>
+                            <p class="text-gray-800 font-medium mt-1 text-sm md:text-base" id="contactTime">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Message Content -->
+                <div class="bg-white border border-gray-200 rounded-lg p-3 md:p-4">
+                    <h4 class="text-base md:text-lg font-semibold text-gray-800 mb-2">عنوان پیام</h4>
+                    <p class="text-gray-800 font-medium mb-3 md:mb-4 text-sm md:text-base" id="contactTitle">-</p>
+
+                    <h4 class="text-base md:text-lg font-semibold text-gray-800 mb-2">متن پیام</h4>
+                    <div class="bg-gray-50 p-3 md:p-4 rounded-lg min-h-[100px] md:min-h-[150px]">
+                        <p class="text-gray-700 whitespace-pre-line text-sm md:text-base" id="contactDescription">-</p>
+                    </div>
+                </div>
+
+                <!-- Reply Section -->
+             
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="text-xs md:text-sm text-gray-500">
+                   
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="markCurrentAsAnswered()" id="markAsAnsweredBtn" class="btn btn-success text-xs md:text-sm">
+                        <i class="fas fa-check ml-1 md:ml-2"></i>
+                        پاسخ داده شد
+                    </button>
+                   @*  <button onclick="deleteCurrentContact()" class="btn btn-danger text-xs md:text-sm">
+                        <i class="fas fa-trash ml-1 md:ml-2"></i>
+                        حذف تماس
+                    </button> *@
+                    <button onclick="closeContactDetailsModal()" class="btn btn-outline text-xs md:text-sm">
+                        <i class="fas fa-times ml-1 md:ml-2"></i>
+                        بستن
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Modal -->
+    <div id="bulkActionsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+        <div class="relative top-10 md:top-20 mx-auto p-3 md:p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+            <div class="flex justify-between items-center pb-3 border-b">
+                <h3 class="text-lg md:text-xl font-semibold text-gray-900">عملیات گروهی</h3>
+                <button onclick="closeBulkActionsModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="mt-4">
+                <p class="text-gray-600 mb-4 text-sm md:text-base">عملیات مورد نظر را برای تماس‌های انتخاب شده انجام دهید:</p>
+
+                <div class="space-y-3">
+                    <button onclick="bulkMarkAsAnswered()" class="btn btn-success w-full text-right text-sm md:text-base">
+                        <i class="fas fa-check ml-1 md:ml-2"></i>
+                        علامت به عنوان پاسخ داده شده
+                    </button>
+
+                   @*  <button onclick="bulkDelete()" class="btn btn-danger w-full text-right text-sm md:text-base">
+                        <i class="fas fa-trash ml-1 md:ml-2"></i>
+                        حذف تماس‌های انتخاب شده
+                    </button> *@
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="closeBulkActionsModal()" class="btn btn-outline w-full text-sm md:text-base">
+                        انصراف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // تابع نمایش/بستن متن کامل
+        function toggleFullText(element, fullText) {
+            if (element.classList.contains('truncate-text-expanded')) {
+                element.classList.remove('truncate-text-expanded');
+                element.textContent = fullText.length > 30 ? fullText.substring(0, 30) + '...' : fullText;
+            } else {
+                element.classList.add('truncate-text-expanded');
+                element.textContent = fullText;
+            }
+        }
+
+        // توابع مخصوص مدیریت تماس‌ها
+        let currentContactId = null;
+
+        // تابع نمایش جزئیات تماس
+        async function showContactDetails(contactId) {
+            currentContactId = contactId;
+
+            // شبیه‌سازی دریافت اطلاعات از سرور
+            try {
+                // در حالت واقعی باید از API استفاده شود
+                const formData = new FormData();
+                formData.append('id', contactId);
+
+                const response = await fetch('?handler=ContactDetails', {
+                    method: 'Post',
+                    body: formData,
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    // پر کردن اطلاعات در مودال
+                    document.getElementById('contactFullName').textContent = data.fullName || '-';
+                    document.getElementById('contactPhoneNumber').textContent = data.phoneNumber || '-';
+                    document.getElementById('contactEmail').textContent = data.email || '-';
+                    document.getElementById('contactTitle').textContent = data.title || '-';
+                    document.getElementById('contactDescription').textContent = data.description || '-';
+                    document.getElementById('contactDate').textContent = data.creationDate ? new Date(data.creationDate).toLocaleDateString('fa-IR') : '-';
+                    document.getElementById('contactTime').textContent = data.creationDate ? new Date(data.creationDate).toLocaleTimeString('fa-IR') : '-';
+                    document.getElementById('contactId').textContent = contactId;
+
+                    // تنظیم وضعیت
+                    const statusElement = document.getElementById('contactStatus');
+                    const markBtn = document.getElementById('markAsAnsweredBtn');
+
+                    if (data.status === 'New') {
+                        statusElement.innerHTML = '<span class="badge badge-new"><i class="fas fa-clock ml-1"></i> جدید</span>';
+                        markBtn.style.display = 'inline-flex';
+                    } else if (data.status === 'Answered') {
+                        statusElement.innerHTML = '<span class="badge badge-answered"><i class="fas fa-check ml-1"></i> پاسخ داده شده</span>';
+                        markBtn.style.display = 'none';
+                    }
+
+                } else {
+                    // اگر API موجود نبود، از اطلاعات جدول استفاده کن
+                    const row = document.querySelector(`input[value="${contactId}"]`)?.closest('tr');
+                    if (row) {
+                        const cells = row.querySelectorAll('td');
+
+                        document.getElementById('contactFullName').textContent = cells[2]?.querySelector('.truncate-text')?.textContent || '-';
+                        document.getElementById('contactPhoneNumber').textContent = cells[3]?.querySelector('.truncate-text')?.textContent || '-';
+                        document.getElementById('contactEmail').textContent = cells[4]?.querySelector('.truncate-text')?.textContent || '-';
+                        document.getElementById('contactTitle').textContent = cells[5]?.querySelector('.truncate-text')?.textContent || '-';
+                        document.getElementById('contactDescription').textContent = cells[6]?.querySelector('.truncate-text')?.textContent || '-';
+
+                        const dateCell = cells[8];
+                        const dateParts = dateCell.textContent.trim().split('\n');
+                        document.getElementById('contactDate').textContent = dateParts[0]?.trim() || '-';
+                        document.getElementById('contactTime').textContent = dateParts[1]?.trim() || '-';
+
+                        document.getElementById('contactId').textContent = contactId;
+
+                        // تنظیم وضعیت
+                        const statusBadge = cells[7]?.querySelector('.badge');
+                        const markBtn = document.getElementById('markAsAnsweredBtn');
+
+                        if (statusBadge) {
+                            document.getElementById('contactStatus').innerHTML = statusBadge.outerHTML;
+                            if (statusBadge.classList.contains('badge-new')) {
+                                markBtn.style.display = 'inline-flex';
+                            } else {
+                                markBtn.style.display = 'none';
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching contact details:', error);
+                // Fallback به اطلاعات جدول
+                const row = document.querySelector(`input[value="${contactId}"]`)?.closest('tr');
+                if (row) {
+                    const cells = row.querySelectorAll('td');
+                    // ... همان کد fallback بالا
+                }
+            }
+
+            document.getElementById('contactDetailsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeContactDetailsModal() {
+            document.getElementById('contactDetailsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            currentContactId = null;
+        }
+
+        // علامت گذاری به عنوان پاسخ داده شده
+        async function markAsAnswered(contactId) {
+            if (!contactId) return;
+
+            const result = await Swal.fire({
+                title: 'علامت گذاری',
+                text: 'آیا این تماس را به عنوان پاسخ داده شده علامت گذاری می‌کنید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('id', contactId);
+
+                    const response = await fetch('?handler=Answered', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'تماس با موفقیت به عنوان پاسخ داده شده علامت گذاری شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                container: 'rtl',
+                                title: 'text-right',
+                                htmlContainer: 'text-right'
+                            }
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در بروزرسانی وضعیت تماس');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در بروزرسانی وضعیت تماس',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                }
+            }
+        }
+
+        function markCurrentAsAnswered() {
+            if (currentContactId) {
+                markAsAnswered(currentContactId);
+            }
+        }
+
+        // حذف تماس
+        async function deleteContact(contactId) {
+            if (!contactId) return;
+
+            const result = await Swal.fire({
+                title: 'حذف تماس',
+                text: 'آیا از حذف این تماس اطمینان دارید؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، حذف شود',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('id', contactId);
+
+                    const response = await fetch('?handler=Delete', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: 'تماس با موفقیت حذف شد.',
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                container: 'rtl',
+                                title: 'text-right',
+                                htmlContainer: 'text-right'
+                            }
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در حذف تماس');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در حذف تماس',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                }
+            }
+        }
+
+        function deleteCurrentContact() {
+            if (currentContactId) {
+                deleteContact(currentContactId);
+            }
+        }
+
+        // ارسال پاسخ
+        async function sendReply() {
+            const replyMessage = document.getElementById('replyMessage').value.trim();
+
+            if (!replyMessage) {
+                await Swal.fire({
+                    title: 'هشدار!',
+                    text: 'لطفاً متن پاسخ را وارد کنید.',
+                    icon: 'warning',
+                    confirmButtonText: 'باشه',
+                    customClass: {
+                        container: 'rtl',
+                        title: 'text-right',
+                        htmlContainer: 'text-right'
+                    }
+                });
+                return;
+            }
+
+            const result = await Swal.fire({
+                title: 'ارسال پاسخ',
+                text: 'آیا از ارسال این پاسخ اطمینان دارید؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله، ارسال شود',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                // در اینجا می‌توانید کد ارسال ایمیل یا پیامک را اضافه کنید
+                await Swal.fire({
+                    title: 'موفق!',
+                    text: 'پاسخ با موفقیت ارسال شد.',
+                    icon: 'success',
+                    confirmButtonText: 'باشه',
+                    customClass: {
+                        container: 'rtl',
+                        title: 'text-right',
+                        htmlContainer: 'text-right'
+                    }
+                });
+
+                // اگر تماس هنوز جدید است، آن را به عنوان پاسخ داده شده علامت گذاری کنید
+                if (currentContactId) {
+                    await markAsAnswered(currentContactId);
+                }
+            }
+        }
+
+        // انتخاب همه/عدم انتخاب همه
+        function toggleSelectAll(checkbox) {
+            const checkboxes = document.querySelectorAll('.contact-checkbox');
+            checkboxes.forEach(cb => {
+                if (cb) {
+                    cb.checked = checkbox.checked;
+                }
+            });
+        }
+
+        // نمایش مودال عملیات گروهی
+        function showBulkActions() {
+            const selectedCount = document.querySelectorAll('.contact-checkbox:checked').length;
+            if (selectedCount === 0) {
+                Swal.fire({
+                    title: 'هشدار!',
+                    text: 'لطفاً حداقل یک تماس را انتخاب کنید.',
+                    icon: 'warning',
+                    confirmButtonText: 'باشه',
+                    customClass: {
+                        container: 'rtl',
+                        title: 'text-right',
+                        htmlContainer: 'text-right'
+                    }
+                });
+                return;
+            }
+            document.getElementById('bulkActionsModal').classList.remove('hidden');
+        }
+
+        function closeBulkActionsModal() {
+            document.getElementById('bulkActionsModal').classList.add('hidden');
+        }
+
+        // عملیات گروهی
+        function getSelectedContactIds() {
+            const checkboxes = document.querySelectorAll('.contact-checkbox:checked');
+            return Array.from(checkboxes).map(cb => cb.value).filter(id => id);
+        }
+
+        async function bulkMarkAsAnswered() {
+            const selectedIds = getSelectedContactIds();
+            if (selectedIds.length === 0) return;
+
+            const result = await Swal.fire({
+                title: 'علامت گذاری گروهی',
+                text: `آیا ${selectedIds.length} تماس انتخاب شده را به عنوان پاسخ داده شده علامت گذاری می‌کنید؟`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('contactIds', JSON.stringify(selectedIds));
+
+                    const response = await fetch('?handler=BulkAnswered', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: `عملیات با موفقیت انجام شد.`,
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                container: 'rtl',
+                                title: 'text-right',
+                                htmlContainer: 'text-right'
+                            }
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در انجام عملیات');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در انجام عملیات',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                } finally {
+                    closeBulkActionsModal();
+                }
+            }
+        }
+
+        async function bulkDelete() {
+            const selectedIds = getSelectedContactIds();
+            if (selectedIds.length === 0) return;
+
+            const result = await Swal.fire({
+                title: 'حذف گروهی',
+                text: `آیا از حذف ${selectedIds.length} تماس انتخاب شده اطمینان دارید؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، حذف شوند',
+                cancelButtonText: 'لغو',
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right',
+                    confirmButton: 'ml-2',
+                    cancelButton: 'mr-2'
+                }
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append('contactIds', JSON.stringify(selectedIds));
+
+                    const response = await fetch('?handler=BulkDelete', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+
+                    if (response.ok) {
+                        await Swal.fire({
+                            title: 'موفق!',
+                            text: `عملیات با موفقیت انجام شد.`,
+                            icon: 'success',
+                            confirmButtonText: 'باشه',
+                            customClass: {
+                                container: 'rtl',
+                                title: 'text-right',
+                                htmlContainer: 'text-right'
+                            }
+                        });
+                        location.reload();
+                    } else {
+                        throw new Error('خطا در انجام عملیات');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    await Swal.fire({
+                        title: 'خطا!',
+                        text: 'خطا در انجام عملیات',
+                        icon: 'error',
+                        confirmButtonText: 'باشه',
+                        customClass: {
+                            container: 'rtl',
+                            title: 'text-right',
+                            htmlContainer: 'text-right'
+                        }
+                    });
+                } finally {
+                    closeBulkActionsModal();
+                }
+            }
+        }
+
+        function exportResult() {
+            Swal.fire({
+                title: 'در حال آماده‌سازی',
+                text: 'خروجی Excel در حال آماده‌سازی است...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 2000,
+                customClass: {
+                    container: 'rtl',
+                    title: 'text-right',
+                    htmlContainer: 'text-right'
+                }
+            });
+        }
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
+            }
+
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+
+        // توابع صفحه‌بندی
+        function loadPage(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        }
+
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('take', size);
+            url.searchParams.set('page', '1'); // بازگشت به صفحه اول
+            window.location.href = url.toString();
+        }
+
+        // بستن مدال با کلید ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeContactDetailsModal();
+                closeBulkActionsModal();
+            }
+        });
+
+        // تنظیمات ریسپانسیو سایدبار
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.body.classList.remove('sidebar-mobile-open');
+            }
+        });
+    </script>
+    <script src="~/Alert.js"></script>
+
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+        // موفقیت
+        @if (TempData["Success"] != null)
+        {
+                        <text>
+                            Alert.success(decodePersianText('@TempData["Success"]'));
+                        </text>
+        }
+
+        // خطا
+        @if (TempData["Error"] != null)
+        {
+                        <text>
+                            const errorMsg = decodePersianText('@TempData["Error"]');
+                            if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
+                            Alert.notFound(errorMsg);
+                            } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
+                            Alert.serverError(errorMsg);
+                            } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
+                            Alert.badRequest(errorMsg);
+                            } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
+                            Alert.unauthorized(errorMsg);
+                            } else {
+                            Alert.error(errorMsg);
+                            }
+                        </text>
+        }
+
+        // هشدار
+        @if (TempData["Warning"] != null)
+        {
+                        <text>
+                            const warningMsg = decodePersianText('@TempData["Warning"]');
+                            if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
+                            Alert.validationWarning(warningMsg);
+                            } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
+                            Alert.financialWarning(warningMsg);
+                            } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
+                            Alert.securityWarning(warningMsg);
+                            } else {
+                            Alert.warning(warningMsg);
+                            }
+                        </text>
+        }
+
+        // اطلاعیه
+        @if (TempData["Info"] != null)
+        {
+                        <text>
+                            const infoMsg = decodePersianText('@TempData["Info"]');
+                            if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
+                            Alert.systemInfo(infoMsg);
+                            } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
+                            Alert.financialInfo(infoMsg);
+                            } else {
+                            Alert.info(infoMsg);
+                            }
+                        </text>
+        }
+        }
+
+        // نمایش پیام‌ها پس از لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
+
+            // تنظیم active برای لینک سایدبار
+            const currentPage = window.location.pathname;
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                if (link.getAttribute('href') && currentPage.includes(link.getAttribute('href'))) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

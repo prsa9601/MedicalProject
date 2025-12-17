@@ -24,8 +24,15 @@ namespace MedicalProject.Pages.Account
         [BindProperty(SupportsGet = true)]
         public UserPurchaseReportDto? UserDto { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public UserProfitPurchaseReportDto ReportDto { get; set; }
+
         public async Task<IActionResult> OnGet()
         {
+
+            ReportDto = await _service.GetProfit();
+
+
             Result = await _service.GetFilterUserForCurrentUser(FilterParams);
             Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var id);
             UserDto = Result.Data.FirstOrDefault(i => i.UserId.Equals(id));

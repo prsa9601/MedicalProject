@@ -102,11 +102,11 @@
             color: white;
         }
 
-        .btn-primary:hover {
-            background-color: #2563eb;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-        }
+            .btn-primary:hover {
+                background-color: #2563eb;
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+            }
 
         .btn-secondary {
             background-color: white;
@@ -114,10 +114,10 @@
             border: 1px solid #e2e8f0;
         }
 
-        .btn-secondary:hover {
-            background-color: #f8fafc;
-            border-color: #cbd5e1;
-        }
+            .btn-secondary:hover {
+                background-color: #f8fafc;
+                border-color: #cbd5e1;
+            }
 
         /* Stats Grid */
         .stats-grid {
@@ -149,23 +149,34 @@
             overflow: hidden;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+            .stat-card:hover {
+                transform: translateY(-5px);
+            }
 
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 4px;
-        }
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 100%;
+                height: 4px;
+            }
 
-        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, #667eea 0%, #764ba2 100%); }
-        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%); }
-        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); }
-        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%); }
+            .stat-card:nth-child(1)::before {
+                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .stat-card:nth-child(2)::before {
+                background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            }
+
+            .stat-card:nth-child(3)::before {
+                background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            }
+
+            .stat-card:nth-child(4)::before {
+                background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+            }
 
         .stat-value {
             font-size: 2rem;
@@ -211,10 +222,10 @@
             border: 2px solid transparent;
         }
 
-        .tab-label:hover {
-            background-color: #f1f5f9;
-            color: #3b82f6;
-        }
+            .tab-label:hover {
+                background-color: #f1f5f9;
+                color: #3b82f6;
+            }
 
         .tab-radio:checked + .tab-label {
             background-color: #3b82f6;
@@ -245,10 +256,10 @@
             border: 1px solid #e2e8f0;
         }
 
-        .investment-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
+            .investment-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            }
 
         .investment-header {
             padding: 1.5rem;
@@ -276,12 +287,12 @@
             font-size: 1.25rem;
         }
 
-        .investment-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 0.75rem;
-        }
+            .investment-icon img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 0.75rem;
+            }
 
         .investment-title h3 {
             font-size: 1.125rem;
@@ -344,9 +355,9 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .detail-row:last-child {
-            border-bottom: none;
-        }
+            .detail-row:last-child {
+                border-bottom: none;
+            }
 
         .detail-label {
             font-size: 0.875rem;
@@ -358,13 +369,13 @@
             color: #1e293b;
         }
 
-        .detail-value.positive {
-            color: #059669;
-        }
+            .detail-value.positive {
+                color: #059669;
+            }
 
-        .detail-value.negative {
-            color: #dc2626;
-        }
+            .detail-value.negative {
+                color: #dc2626;
+            }
 
         /* Investment Footer */
         .investment-footer {
@@ -401,11 +412,11 @@
             color: #64748b;
         }
 
-        .action-btn:hover {
-            background-color: #f1f5f9;
-            color: #3b82f6;
-            border-color: #3b82f6;
-        }
+            .action-btn:hover {
+                background-color: #f1f5f9;
+                color: #3b82f6;
+                border-color: #3b82f6;
+            }
 
         /* Empty State */
         .empty-state {
@@ -475,23 +486,23 @@
                 flex-direction: column;
                 width: 100%;
             }
-            
+
             .btn {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .investment-header {
                 flex-direction: column;
                 gap: 1rem;
             }
-            
+
             .investment-footer {
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
             }
-            
+
             .tabs {
                 flex-wrap: wrap;
             }
@@ -503,6 +514,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -529,9 +541,9 @@
             border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
     </style>
 </head>
 <body>
@@ -560,11 +572,11 @@
         <!-- Statistics Section -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value">@((Model.UserDto==null?"0":Model.UserDto.OrderDtos.Where(i => i.status == Models.Order.OrderStatus.paid).SafeSum(i => i.OrderItems.TotalPrice).ToString("N0"))) ریال</div>
+                <div class="stat-value">@((Model.UserDto == null ? "0" : Model.UserDto.OrderDtos.Where(i => i.status == Models.Order.OrderStatus.paid).SafeSum(i => i.OrderItems.TotalPrice).ToString("N0"))) ریال</div>
                 <div class="stat-label">کل سرمایه‌گذاری</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value">@((Model.UserDto == null ? "0" : Model.UserDto.ProfitPurchases.Where(i => i.Status == Models.PurchaseReport.ProfitStatus.Success).SafeSum(i => i.AmountPaid).ToString("N0"))) ریال</div>
+                <div class="stat-value">@((Model.UserDto == null ? "0" : Model.ReportDto.OrderDtos.SelectMany(i=>i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0"))) ریال</div>
                 <div class="stat-label">سود کل</div>
             </div>
             <div class="stat-card">
@@ -586,7 +598,7 @@
                     همه سرمایه‌گذاری‌ها
                 </label>
 
-              @*   <input type="radio" id="tab-active" name="investment-tabs" class="tab-radio">
+                @*   <input type="radio" id="tab-active" name="investment-tabs" class="tab-radio">
                 <label for="tab-active" class="tab-label">
                     <i class="fas fa-play-circle"></i>
                     فعال
@@ -608,7 +620,7 @@
 
         <!-- Investments Section -->
         <div class="investments-grid">
-            @if (Model.Result == null || Model.Result?.EntityCount == 0 || Model.UserDto == null)
+            @if (Model.ReportDto == null || Model.Result?.EntityCount == 0 || Model.UserDto == null || Model.Result == null)
             {
                 <div class="empty-state">
                     <div class="empty-icon">
@@ -624,20 +636,19 @@
             }
             else
             {
-                foreach (var item in Model.UserDto.OrderDtos)
+                foreach (var item in Model.ReportDto.OrderDtos)
                 {
-                    var product = Model.UserDto.ProductPurchase.FirstOrDefault(i => i.Id.Equals(item.OrderItems.ProductId));
+                    var product = Model.UserDto.ProductPurchase.FirstOrDefault(i => i.Id.Equals(item.OrderItems.Product.Id));
                     var inventory = product?.InventoryDto;
-                    
+
                     if (product != null)
                     {
-                        var investmentAmount = item.OrderItems.DongAmount * decimal.Parse(inventory?.TotalPrice ?? "0");
-                        var currentValue = item.OrderItems.DongAmount * decimal.Parse(inventory?.TotalPrice ?? "0");
-                        var profitPerPeriod = item.OrderItems.DongAmount * decimal.Parse(inventory?.Profit ?? "0");
-                        var totalProfit = inventory?.Profit ?? "0";
+                        var currentValue = item.OrderItems.TotalPrice.ToString("N0") ?? "0";
+                        var profitPerPeriod = (decimal.Parse(item.OrderItems.Product.InventoryDto.Profit) * item.OrderItems.DongAmount).ToString("N0") ?? "0";
+                        var totalProfit = decimal.Parse(item.OrderItems.Product.InventoryDto.Profit).ToString("N0") ?? "0";
                         var status = item.status.ToString().ToLower();
-                        var paymentStatus = ProfitDepositStatus.CheckStatus(Model.UserDto);
-                        
+                        var paymentStatus = item.OrderItems.Product.Unpaid.Count() > 0 ? false : true;
+
                         <div class="investment-card" data-status="@status">
                             <div class="investment-header">
                                 <div class="investment-info">
@@ -663,22 +674,22 @@
 
                             <div class="investment-details">
                                 <div class="detail-row">
-                                    <span class="detail-label">مبلغ سرمایه‌گذاری</span>
-                                    <span class="detail-value">@investmentAmount.ToString("N0") ریال</span>
+                                    <span class="detail-label">ارزش فعلی سهم شما</span>
+                                    <span class="detail-value positive">@currentValue ریال</span>
                                 </div>
                                 <div class="detail-row">
-                                    <span class="detail-label">ارزش فعلی سهم شما</span>
-                                    <span class="detail-value positive">@currentValue.ToString("N0") ریال</span>
+                                    <span class="detail-label">تعداد دانگ خریداری شده</span>
+                                    <span class="detail-value">@item.OrderItems.DongAmount.ToString("F1") عدد</span>
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">سود شما در هر دوره</span>
-                                    <span class="detail-value positive">@profitPerPeriod.ToString("N0") ریال</span>
+                                    <span class="detail-value positive">@profitPerPeriod ریال</span>
                                 </div>
                                 <div class="detail-row">
-                                    <span class="detail-label">سود کل هر دانگ</span>
+                                    <span class="detail-label">سود هر دانگ</span>
                                     <span class="detail-value positive">@totalProfit ریال</span>
                                 </div>
-                                
+
                                 @* Progress Bar (if needed) *@
                                 @* <div class="progress-container">
                                     <div class="progress-label">
@@ -697,10 +708,10 @@
                                     @* <span>پیش‌بینی پایان: ۱۴۰۳/۰۶/۱۵</span> *@
                                 </div>
                                 <div class="investment-actions">
-                                    <button class="action-btn">
+                             @*        <button class="action-btn">
                                         <i class="fas fa-eye"></i>
                                         مشاهده جزئیات
-                                    </button>
+                                    </button> *@
                                     <button onclick="location.href='/Account/ProductReport'" class="action-btn">
                                         <i class="fas fa-file-invoice-dollar"></i>
                                         گزارش سود
@@ -728,23 +739,23 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tabRadios = document.querySelectorAll('.tab-radio');
             const investmentCards = document.querySelectorAll('.investment-card');
-            
+
             // Store all cards initially
             const allCards = Array.from(investmentCards);
-            
+
             // Show all cards by default
             allCards.forEach(card => card.style.display = 'block');
-            
+
             // Add event listeners to tabs
             tabRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     const selectedTab = this.id;
-                    
+
                     // Hide all cards
                     allCards.forEach(card => {
                         card.style.display = 'none';
                     });
-                    
+
                     // Show cards based on selected tab
                     if (selectedTab === 'tab-all') {
                         allCards.forEach(card => {
@@ -756,44 +767,44 @@
                             'tab-completed': 'completed',
                             'tab-pending': 'pending'
                         };
-                        
+
                         const selectedStatus = statusMap[selectedTab];
-                        const filteredCards = allCards.filter(card => 
+                        const filteredCards = allCards.filter(card =>
                             card.getAttribute('data-status') === selectedStatus
                         );
-                        
+
                         filteredCards.forEach(card => {
                             card.style.display = 'block';
                         });
                     }
-                    
+
                     // Show empty state if no cards visible
                     const visibleCards = Array.from(document.querySelectorAll('.investment-card[style*="display: block"]'));
                     const emptyState = document.querySelector('.empty-state');
-                    
+
                     if (visibleCards.length === 0) {
                         const emptyStateClone = emptyState.cloneNode(true);
                         emptyStateClone.querySelector('h3').textContent = 'سرمایه‌گذاری‌ای با این فیلتر یافت نشد';
                         emptyStateClone.querySelector('p').textContent = 'هیچ سرمایه‌گذاری با وضعیت انتخابی وجود ندارد.';
-                        
+
                         const investmentsGrid = document.querySelector('.investments-grid');
                         investmentsGrid.innerHTML = '';
                         investmentsGrid.appendChild(emptyStateClone);
                     }
                 });
             });
-            
+
             // Add hover effects
             investmentCards.forEach(card => {
                 card.addEventListener('mouseenter', function() {
                     this.style.transform = 'translateY(-5px)';
                 });
-                
+
                 card.addEventListener('mouseleave', function() {
                     this.style.transform = 'translateY(0)';
                 });
             });
-            
+
             // Simulate loading state (remove in production)
             setTimeout(() => {
                 const loadingState = document.getElementById('loadingState');
@@ -802,12 +813,12 @@
                 }
             }, 500);
         });
-        
+
         // Format currency function
         function formatCurrency(amount) {
             return new Intl.NumberFormat('fa-IR').format(amount) + ' ریال';
         }
-        
+
         // Progress bar animation
         function animateProgressBars() {
             const progressBars = document.querySelectorAll('.progress-fill');
@@ -819,10 +830,10 @@
                 }, 100);
             });
         }
-        
+
         // Call animation on page load
         window.addEventListener('load', animateProgressBars);
-        
+
         // Responsive adjustments
         function handleResize() {
             const tabs = document.querySelector('.tabs');
@@ -832,7 +843,7 @@
                 tabs.style.flexWrap = 'nowrap';
             }
         }
-        
+
         window.addEventListener('resize', handleResize);
         handleResize(); // Initial call
     </script>

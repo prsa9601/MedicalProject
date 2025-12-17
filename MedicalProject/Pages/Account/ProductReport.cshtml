@@ -86,7 +86,7 @@
             <input type="radio" id="tab-unpaid" name="profit-tabs" class="tab-radio" checked>
             <label for="tab-unpaid" class="tab-label" onclick="showTab('unpaid')">
                 <i class="fas fa-clock"></i>
-                سودهای پرداخت نشده
+                وضعیت سودها
                 @if (unpaidPeriodsCount > 0)
                 {
                     <span class="badge badge-danger">@unpaidPeriodsCount</span>
@@ -94,14 +94,7 @@
             </label>
 
             <input type="radio" id="tab-paid" name="profit-tabs" class="tab-radio">
-            <label for="tab-paid" class="tab-label" onclick="showTab('paid')">
-                <i class="fas fa-check-circle"></i>
-                سودهای پرداخت شده
-                @if (paidPeriodsCount > 0)
-                {
-                    <span class="badge badge-success">@paidPeriodsCount</span>
-                }
-            </label>
+           
 
             <input type="radio" id="tab-summary" name="profit-tabs" class="tab-radio">
             <label for="tab-summary" class="tab-label" onclick="showTab('summary')">
