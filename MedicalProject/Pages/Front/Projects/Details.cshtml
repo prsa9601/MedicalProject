@@ -250,10 +250,12 @@
 
                         <!-- Investment Form -->
                         <div class="space-y-4">
+                                        <form method="post" asp-page-handler="SetProject" id="investmentForm">
+
                             <div>
                                 <label class="label">تعداد دانگ مورد نظر</label>
                                 <div class="select-container">
-                                    <select id="dongAmount" class="dong-select input w-full text-right">
+                                    <select id="dongAmount" name="dongAmount" class="dong-select input w-full text-right">
                                         <option value="0.5">نیم دانگ</option>
                                         <option value="1">یک دانگ</option>
                                         <option value="1.5">یک و نیم دانگ</option>
@@ -335,9 +337,8 @@
                                     }
                                     else
                                     {
-                                        <form method="post" asp-page-handler="SetProject" id="investmentForm">
                                             <!-- فیلد مخفی برای مقدار دانگ -->
-                                            <input type="hidden" id="dongAmountInput" name="dongAmount" value="0.5" />
+                                            @* <input type="hidden" id="dongAmountInput" name="dongAmount"  value="0.5"  /> *@
                                             <input type="hidden" name="slug" value="@Model.Product.Slug" />
                                             <button type="submit"
                                                     class="btn btn-primary w-full py-3 text-lg font-semibold"
@@ -345,7 +346,6 @@
                                                     disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
                                                 سرمایه‌گذاری می‌کنم
                                             </button>
-                                        </form>
                                     }
                                 }
                                 else
@@ -359,6 +359,7 @@
                                     </p>
                                 }
                             </div>
+                                        </form>
                         </div>
 
                         <!-- Trust Indicators -->

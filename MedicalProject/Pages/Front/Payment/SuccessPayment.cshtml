@@ -1,0 +1,195 @@
+﻿@page "{orderId:Guid}"
+@model MedicalProject.Pages.Front.Payment.SuccessPaymentModel
+@{
+    ViewData["Title"] = "پرداخت موفق";
+}
+
+@section Styles {
+    <style>
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: 'Vazir', sans-serif;
+        }
+
+        .invoice-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 1rem 1rem 0 0;
+        }
+
+        .invoice-body {
+            background: white;
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 1rem 1rem;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #10b981;
+            font-size: 2.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+        .info-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .total-row {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .btn-print {
+            background: #10b981;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            .btn-print:hover {
+                background: #059669;
+            }
+
+        .btn-back {
+            background: white;
+            color: #6b7280;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .btn-back:hover {
+                background: #f9fafb;
+            }
+
+        .product-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 0.5rem;
+            object-fit: cover;
+        }
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .invoice-body {
+                border: none;
+                padding: 0;
+            }
+
+            .btn-print, .btn-back {
+                display: none !important;
+            }
+        }
+    </style>
+}
+
+<div class="min-h-screen bg-gray-50 py-8 px-4">
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="success-icon">
+                ✓
+            </div>
+            <h1 class="text-2xl font-bold text-center mb-2">پرداخت با موفقیت انجام شد</h1>
+            <p class="text-center opacity-90">سفارش شما ثبت شد و در حال پردازش است</p>
+        </div>
+
+        <!-- Invoice -->
+        <div class="invoice-body">
+            <!-- Invoice Info -->
+         
+
+            <!-- Actions -->
+            <div class="flex flex-wrap gap-4 justify-center no-print mt-8 pt-8 border-t border-gray-200">
+              @*   <button onclick="window.print()" class="btn-print flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    چاپ فاکتور
+                </button>
+ *@
+                <a href="/Account/Investment" class="btn-back flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    سرمایه‌گذاری‌های من
+                </a>
+
+                <a href="/Front/Projects/Details?slug=@Model.Product?.Slug" class="btn-back flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    مشاهده پروژه
+                </a>
+            </div>
+
+            <!-- Footer Note -->
+            <div class="text-center text-gray-500 text-sm mt-8 no-print">
+                @* <p>این فاکتور به منزله رسید پرداخت شما است. لطفاً آن را نزد خود نگه دارید.</p> *@
+                <p class="mt-1">برای پشتیبانی: <a href="tel:02112345678" class="text-blue-600">021-12345678</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto print on page load (optional)
+        // window.addEventListener('load', function() {
+        //     setTimeout(() => {
+        //         window.print();
+        //     }, 1000);
+        // });
+
+        // Copy tracking code
+        function copyTrackingCode() {
+            const trackingCode = '56';
+            navigator.clipboard.writeText(trackingCode).then(() => {
+                Alert.success('کد رهگیری کپی شد');
+            });
+        }
+    </script>
+}

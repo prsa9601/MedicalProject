@@ -894,7 +894,7 @@
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>@(investment?.PurchaseDang.ToString("N0") ?? "0")</td>
+                                                    <td>@(investment?.PurchaseDang.ToString("F1") ?? "0")</td>
                                                     <td>
                                                         @{
                                                             var purchasePrice = decimal.TryParse(investment?.PurchasePrice, out var price)

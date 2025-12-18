@@ -694,15 +694,15 @@
                                                     <td>@item.CreationDate.ToPersianDate()</td>
                                                     <td>
                                                         <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <a asp-page="Edit" asp-route-userId="@item.Id" class="btn btn-outline btn-sm" title="ویرایش">
+                                                            @*<a asp-page="Edit" asp-route-userId="@item.Id" class="btn btn-outline btn-sm" title="ویرایش">
                                                                 <i class="fas fa-edit"></i>
-                                                            </a>
+                                                            </a>*@
                                                             <button class="btn btn-outline btn-sm" title="مشاهده جزئیات">
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
-                                                            <button class="btn btn-warning btn-sm" title="مسدود کردن">
+                                                            @*<button class="btn btn-warning btn-sm" title="مسدود کردن">
                                                                 <i class="fas fa-lock"></i>
-                                                            </button>
+                                                            </button>*@
                                                             <!-- دکمه حذف -->
                                                             <button onclick="deleteUser('@item.Id')" class="btn btn-danger btn-sm" title="حذف">
                                                                 <i class="fas fa-trash"></i>
@@ -935,7 +935,7 @@
                     </div>
 
                     <!-- Sidebar -->
-                    <div class="space-y-6">
+                    @* <div class="space-y-6">
                         <div class="card">
                             <div class="p-4">
                                 <h4 class="text-lg font-semibold text-gray-900 mb-4">عملیات سریع</h4>
@@ -976,7 +976,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>*@
             </div>
         </div>
     </div>

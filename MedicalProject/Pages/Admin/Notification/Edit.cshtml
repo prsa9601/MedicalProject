@@ -612,27 +612,8 @@
                     </div>
                 </div>
 
-                <!-- Sidebar Menu -->
-                <nav class="flex-1 p-4">
-                    <div class="space-y-1">
-                        <a href="/Admin/Dashboard" class="sidebar-link">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>داشبورد</span>
-                        </a>
-                        <a href="/Admin/Users" class="sidebar-link">
-                            <i class="fas fa-users"></i>
-                            <span>مدیریت کاربران</span>
-                        </a>
-                        <a href="/Admin/Notification" class="sidebar-link active">
-                            <i class="fas fa-bell"></i>
-                            <span>نوتیفیکیشن‌ها</span>
-                        </a>
-                        <a href="/Admin/Settings" class="sidebar-link">
-                            <i class="fas fa-cog"></i>
-                            <span>تنظیمات</span>
-                        </a>
-                    </div>
-                </nav>
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+
             </div>
         </div>
 

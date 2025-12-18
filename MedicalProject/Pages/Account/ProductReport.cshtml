@@ -10,13 +10,13 @@
 
     // مقادیر پیش‌فرض برای جلوگیری از خطاهای نال
     var totalInvestment = Model.Result.InvestmentCount;
-    var totalPaidProfit = Model.UserProfitSummary?.TotalPaidProfit ?? 0;
-    var totalUnpaidProfit = Model.UserProfitSummary?.TotalUnpaidProfit ?? 0;
-    var totalExpectedProfit = Model.UserProfitSummary?.TotalExpectedProfit ?? 0;
+    var totalPaidProfit = (Model.Result.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount)).ToString("N0") ?? "0";
+    var totalUnpaidProfit = (Model.Result.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount)).ToString("N0") ?? "0";
+    var totalExpectedProfit = (Model.Result.OrderDtos.Select(i=>i.OrderItems.Product.InventoryDto).SafeSum(i=>decimal.Parse(i.Profit)) *Model.Result.OrderDtos.Select(i=>i.OrderItems).SafeSum(i=>i.DongAmount)).ToString("N0") ?? "0";
     var isDebtor = Model.UserProfitSummary?.IsDebtor ?? false;
     var unpaidPeriodsCount = Model.UserProfitSummary?.UnpaidPeriodsCount ?? 0;
     var paidPeriodsCount = Model.UserProfitSummary?.PaidPeriodsCount ?? 0;
-    var orders = Model.UserProfitSummary?.Orders ?? new List<OrderProfitSummary>();
+    var orders = Model.Result;
     var paidProfits = Model.PaidProfits ?? new List<ProfitPurchaseReportDto>();
     // var unpaidPeriods = Model.Result. ?? new List<UnpaidProfit>();
     var userName = $"{Model.Result.FirstName} {Model.Result.Lastame}" ?? "کاربر";
@@ -48,15 +48,15 @@
     <!-- Summary Cards -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-value">@Model.Result.InvestmentCount.ToString("N0") ریال</div>
+            <div class="stat-value">@Model.Result.InvestmentCount.ToString("N0") عدد</div>
             <div class="stat-label">کل سرمایه‌گذاری</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">@totalPaidProfit.ToString("N0") ریال</div>
+            <div class="stat-value">@totalPaidProfit ریال</div>
             <div class="stat-label">سود پرداخت شده</div>
         </div>
         <div class="stat-card">
-            <div class="stat-value">@totalUnpaidProfit.ToString("N0") ریال</div>
+            <div class="stat-value">@totalUnpaidProfit ریال</div>
             <div class="stat-label">سود پرداخت نشده</div>
         </div>
         <div class="stat-card">
@@ -94,7 +94,7 @@
             </label>
 
             <input type="radio" id="tab-paid" name="profit-tabs" class="tab-radio">
-           
+
 
             <input type="radio" id="tab-summary" name="profit-tabs" class="tab-radio">
             <label for="tab-summary" class="tab-label" onclick="showTab('summary')">
@@ -121,7 +121,7 @@
             <div class="section-header">
                 <h2>سودهای پرداخت نشده</h2>
                 <div class="section-summary">
-                    <span class="total-amount">@totalUnpaidProfit.ToString("N0") ریال</span>
+                    <span class="total-amount">@totalUnpaidProfit ریال</span>
                     <span class="total-count">@unpaidPeriodsCount دوره</span>
                 </div>
             </div>
@@ -154,77 +154,100 @@
                         @if (Model.Result.OrderDtos != null)
                         {
                             <div class="products-grid">
-                               @*  @foreach (var item2 in Model.Result.OrderDtos)
+                                @*  @foreach (var item2 in Model.Result.OrderDtos)
                                 { *@
-                                    <div class="product-card">
-                                        <div class="product-header">
-                                            <div class="product-info">
-                                                <h4>@(!string.IsNullOrEmpty(item.OrderItems.Product.Title) ? item.OrderItems.Product.Title : "محصول ناشناس")</h4>
-                                                <div class="product-details">
-                                                    <span class="detail-item">
-                                                        <i class="fas fa-layer-group"></i>
-                                                        @item.OrderItems.DongAmount دنگ
-                                                    </span>
-                                                    <span class="detail-item">
-                                                        <i class="fas fa-money-bill-wave"></i>
-                                                        @item.OrderItems.TotalPrice.ToString("N0") ریال
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div class="product-status">
-                                                <span class="status-badge status-warning">
-                                                    <i class="fas fa-clock"></i>
-                                                    در انتظار پرداخت
+                                <div class="product-card">
+                                    <div class="product-header">
+                                        <div class="product-info">
+                                            <h4>@(!string.IsNullOrEmpty(item.OrderItems.Product.Title) ? item.OrderItems.Product.Title : "محصول ناشناس")</h4>
+                                            <div class="product-details">
+                                                <span class="detail-item">
+                                                    <i class="fas fa-layer-group"></i>
+                                                    @item.OrderItems.DongAmount دنگ
+                                                </span>
+                                                <span class="detail-item">
+                                                    <i class="fas fa-money-bill-wave"></i>
+                                                    @item.OrderItems.TotalPrice.ToString("N0") ریال
                                                 </span>
                                             </div>
                                         </div>
+                                        <div class="product-status">
+                                            @{
+                                                if ((@item.OrderItems.Product.Paid.Count() + @item.OrderItems.Product.Unpaid.Count()) == 0)
+                                                {
 
-                                        <div class="profit-details">
-                                            <div class="detail-row">
-                                                <span>سود پرداخت شده:</span>
-                                                <span class="amount paid">@item.OrderItems.Product.Paid.SafeSum(i => i.ExpectedAmount).ToString("N0") ریال</span>
-                                            </div>
-                                            <div class="detail-row">
-                                                <span>سود پرداخت نشده:</span>
-                                                <span class="amount unpaid">@item.OrderItems.Product.Unpaid.SafeSum(i => i.ExpectedAmount).ToString("N0") ریال</span>
-                                            </div>
-                                            <div class="detail-row">
-                                                <span>دوره‌های پرداخت شده:</span>
-                                                <span>@item.OrderItems.Product.Paid.Count() از @(@item.OrderItems.Product.Paid.Count()+@item.OrderItems.Product.Unpaid.Count())</span>
-                                            </div>
+                                                    <span class="status-badge status-success">
+                                                        <i class="fas fa-clock"></i>
+                                                        پرداخت شده
+                                                    </span>
+                                                }
+                                                else if (@item.OrderItems.Product.Paid.Count() / (@item.OrderItems.Product.Paid.Count() + @item.OrderItems.Product.Unpaid.Count()) == 1 )
+                                                {
+
+                                                    <span class="status-badge status-success">
+                                                        <i class="fas fa-clock"></i>
+                                                        پرداخت شده
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="status-badge status-warning">
+                                                        <i class="fas fa-clock"></i>
+                                                        در انتظار پرداخت
+                                                    </span>
+
+                                                }
+                                            }
+
                                         </div>
+                                    </div>
 
-                                        @if (@item.OrderItems.Product.Unpaid != null)
-                                        {
-                                           @*  var relatedPeriods = unpaidPeriods
+                                    <div class="profit-details">
+                                        <div class="detail-row">
+                                            <span>سود پرداخت شده:</span>
+                                            <span class="amount paid">@item.OrderItems.Product.Paid.SafeSum(i => i.ExpectedAmount).ToString("N0") ریال</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span>سود پرداخت نشده:</span>
+                                            <span class="amount unpaid">@item.OrderItems.Product.Unpaid.SafeSum(i => i.ExpectedAmount).ToString("N0") ریال</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span>دوره‌های پرداخت شده:</span>
+                                            <span>@item.OrderItems.Product.Paid.Count() از @(@item.OrderItems.Product.Paid.Count() + @item.OrderItems.Product.Unpaid.Count())</span>
+                                        </div>
+                                    </div>
+
+                                    @if (@item.OrderItems.Product.Unpaid != null)
+                                    {
+                                        @*  var relatedPeriods = unpaidPeriods
                                             .Where(p => p != null && p.ProductId == product.ProductId && p.OrderId == order.OrderId)
                                             .ToList();
 
                                             @if (relatedPeriods.Any())
                                             { *@
-                                                <div class="unpaid-periods">
-                                                    <h5>دوره‌های پرداخت نشده:</h5>
-                                                    <div class="periods-list">
-                                                        @foreach (var period in @item.OrderItems.Product.Unpaid)
-                                                        {
-                                                            <div class="period-item">
-                                                                <div class="period-info">
-                                                                    <span class="period-number">دوره @period.PeriodNumber</span>
-                                                                    <span class="period-date">
-                                                                        <i class="fas fa-calendar-alt"></i>
-                                                                        موعد پرداخت: @(period.Date != default ? period.Date.ToPersianDate() : "---")
-                                                                    </span>
-                                                                </div>
-                                                                <div class="period-amount">
-                                                                    @period.ExpectedAmount.ToString("N0") ریال
-                                                                </div>
-                                                            </div>
-                                                        }
+                                        <div class="unpaid-periods">
+                                            <h5>دوره‌های پرداخت نشده:</h5>
+                                            <div class="periods-list">
+                                                @foreach (var period in @item.OrderItems.Product.Unpaid)
+                                                {
+                                                    <div class="period-item">
+                                                        <div class="period-info">
+                                                            <span class="period-number">دوره @period.PeriodNumber</span>
+                                                            <span class="period-date">
+                                                                <i class="fas fa-calendar-alt"></i>
+                                                                موعد پرداخت: @(period.Date != default ? period.Date.ToPersianDate() : "---")
+                                                            </span>
+                                                        </div>
+                                                        <div class="period-amount">
+                                                            @period.ExpectedAmount.ToString("N0") ریال
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            @* } *@
-                                        }
-                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                        @* } *@
+                                    }
+                                </div>
                                 @* } *@
                             </div>
                         }
@@ -251,7 +274,7 @@
             <div class="section-header">
                 <h2>تاریخچه پرداخت سودها</h2>
                 <div class="section-summary">
-                    <span class="total-amount">@totalPaidProfit.ToString("N0") ریال</span>
+                    <span class="total-amount">@totalPaidProfit ریال</span>
                     <span class="total-count">@paidPeriodsCount دوره</span>
                 </div>
             </div>
@@ -331,21 +354,21 @@
                     </div>
                     <div class="summary-item">
                         <span class="label">سود کل مورد انتظار:</span>
-                        <span class="value">@totalExpectedProfit.ToString("N0") ریال</span>
+                        <span class="value">@totalExpectedProfit ریال</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">سود پرداخت شده:</span>
-                        <span class="value amount-success">@totalPaidProfit.ToString("N0") ریال</span>
+                        <span class="value amount-success">@totalPaidProfit ریال</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">سود پرداخت نشده:</span>
-                        <span class="value amount-danger">@totalUnpaidProfit.ToString("N0") ریال</span>
+                        <span class="value amount-danger">@totalUnpaidProfit ریال</span>
                     </div>
                     <div class="summary-item">
                         <span class="label">درصد تحقق سود:</span>
                         @{
-                            var percentage = totalExpectedProfit > 0
-                            ? (totalPaidProfit / totalExpectedProfit * 100)
+                            var percentage = decimal.Parse(totalExpectedProfit) > 0
+                            ? (decimal.Parse(totalPaidProfit) / decimal.Parse(totalExpectedProfit) * 100)
                             : 0;
                         }
                         <div class="progress-container">
@@ -361,37 +384,41 @@
             <!-- Order Summaries -->
             <div class="orders-summary">
                 <h3>خلاصه سفارشات</h3>
-                @if (orders != null && orders.Any())
+                @if (orders != null)
                 {
-                    foreach (var order in orders.Where(o => o != null))
+                    foreach (var order in orders.OrderDtos)
                     {
                         <div class="order-summary-card">
                             <div class="order-summary-header">
-                                <h4>سفارش @(order.OrderDate != default ? order.OrderDate.ToPersianDate() : "---")</h4>
-                                <span class="order-id">#@(order.OrderId != Guid.Empty ? order.OrderId.ToString().Substring(0, 8) : "---")...</span>
+                                <h4>سفارش @(order.DateOfPurchase != default ? order.DateOfPurchase.ToPersianDate() : "---")</h4>
+                                <span class="order-id">#@(order.Id != Guid.Empty ? order.Id.ToString().Substring(0, 8) : "---")...</span>
                             </div>
                             <div class="order-summary-stats">
                                 <div class="stat">
                                     <span class="stat-label">سرمایه‌گذاری</span>
-                                    <span class="stat-value">@order.TotalAmount.ToString("N0") ریال</span>
+                                    <span class="stat-value">@order.OrderItems.TotalPrice.ToString("N0") ریال</span>
                                 </div>
                                 <div class="stat">
                                     <span class="stat-label">سود پرداخت شده</span>
-                                    <span class="stat-value amount-success">@order.TotalPaidProfit.ToString("N0") ریال</span>
+                                    <span class="stat-value amount-success">@order.OrderItems.Product.Paid.SafeSum(i => i.ExpectedAmount).ToString("N0") ریال</span>
                                 </div>
                                 <div class="stat">
                                     <span class="stat-label">سود پرداخت نشده</span>
-                                    <span class="stat-value amount-danger">@order.TotalUnpaidProfit.ToString("N0") ریال</span>
+                                    <span class="stat-value amount-danger">@order.OrderItems.Product.Unpaid.SafeSum(i=>i.ExpectedAmount).ToString("N0") ریال</span>
                                 </div>
                                 <div class="stat">
                                     <span class="stat-label">وضعیت</span>
-                                    @if (order.TotalUnpaidProfit > 0)
+                                    @if ((@order.OrderItems.Product.Paid.Count() + @order.OrderItems.Product.Unpaid.Count()) == 0)
                                     {
-                                        <span class="stat-value status-warning">در انتظار</span>
+                                        <span class="stat-value status-success">تسویه شده</span>
+                                    }
+                                    else if (@order.OrderItems.Product.Paid.Count() / (@order.OrderItems.Product.Paid.Count() + @order.OrderItems.Product.Unpaid.Count()) == 1)
+                                    {
+                                        <span class="stat-value status-success">تسویه شده</span>
                                     }
                                     else
                                     {
-                                        <span class="stat-value status-success">تسویه شده</span>
+                                        <span class="stat-value status-warning">در انتظار</span>
                                     }
                                 </div>
                             </div>

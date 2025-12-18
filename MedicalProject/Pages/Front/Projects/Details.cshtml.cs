@@ -54,12 +54,13 @@ namespace MedicalProject.Pages.Front.Projects
 
             if (orderResult.IsSuccess)
             {
-                return Redirect($"/Front/Payment/Payment?slug={Product.Slug}");
+                /*?slug={Product.Slug}*/
+                return Redirect($"/Front/Payment/Payment");
             }
             else
             {
-                TempData["Error"] = "خطایی در سیستم رخ داده است.";
-                return Redirect($"/Front/Project/Details?slug={Product.Slug}");
+                TempData["Error"] = orderResult.MetaData.Message;
+                return Redirect($"/Front/Projects/Details?slug={Product.Slug}");
             }
         }
     }
