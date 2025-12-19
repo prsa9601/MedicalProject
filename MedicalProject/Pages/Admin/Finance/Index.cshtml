@@ -570,15 +570,11 @@
                                     @*  @(Model.UserPurchaseReportResult.Data.Where(i => i.ProfitPurchases.
                                     Where(i=>i.Status==Models.PurchaseReport.ProfitStatus.Success)
                                                                         .Sum(p => p.AmountPaid)).ToString("N0")) *@
-                                    @(Model.UserPurchaseReportResult.Data
-                                                                        .SelectMany(i => i.ProfitPurchases) // همه ProfitPurchases ها رو یکی می‌کنه
-                                                                        .Where(p => p.Status == Models.PurchaseReport.ProfitStatus.Success) // فقط موفق‌ها
-                                                                        .Sum(p => p.AmountPaid) // مجموع مبلغ پرداختی
-                                                                        .ToString("N0"))
-                                    <span class="text-sm">ریال</span>
+                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+
                                 </p>
                                 <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up ml-1 text-green-300"></i>
+                                    @* <i class="fas fa-arrow-up ml-1 text-green-300"></i> *@
                                     @* <span class="text-green-300 text-sm">۸٪ رشد</span> *@
                                 </div>
                             </div>
@@ -588,12 +584,11 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @(Model.UserPurchaseReportResult.Data
-                                                                        .Sum(i => i.ProductPurchase.Count())
-                                                                        .ToString("N0"))
+                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos).Count().ToString("N0")) <span class="text-sm">عدد</span>
+
                                 </p>
                                 <div class="flex items-center mt-2">
-                                    <i class="fas fa-arrow-up ml-1 text-green-300"></i>
+                                    @* <i class="fas fa-arrow-up ml-1 text-green-300"></i> *@
                                     @* <span class="text-green-300 text-sm">۱۵٪ رشد</span> *@
                                 </div>
                             </div>
@@ -604,10 +599,10 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز نشده برای کاربران</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @(ProfitDepositStatus.GetUsersProfitStatus(Model.UserPurchaseReportResult.Data).SelectMany(i => i.UnpaidPeriods).Sum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x=>x.OrderItems.Product.Unpaid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
                                 </p>
                                 <div class="flex items-center mt-2">
-                                    <i class="fas fa-chart-line ml-1 text-green-300"></i>
+                                    @* <i class="fas fa-chart-line ml-1 text-green-300"></i> *@
                                     @* <span class="text-green-300 text-sm">پایدار</span> *@
                                 </div>
                             </div>
@@ -618,7 +613,7 @@
                                 <p class="text-sm opacity-90">کاربران فعال</p>
                                 <p class="text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
                                 <div class="flex items-center mt-2">
-                                    <i class="fas fa-users ml-1 text-green-300"></i>
+                                    @* <i class="fas fa-users ml-1 text-green-300"></i> *@
                                     @* <span class="text-green-300 text-sm">۱۰٪ رشد</span> *@
                                 </div>
                             </div>

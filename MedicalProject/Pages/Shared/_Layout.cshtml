@@ -35,12 +35,13 @@
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
-            --secondary-color: #4f46e5;
+            --secondary-color: #93c5fd;
             --success-color: #059669;
             --danger-color: #dc2626;
             --warning-color: #d97706;
-            --text-primary: #111827;
-            --text-secondary: #6b7280;
+             --text-primary: black; 
+             /* --text-primary: #111827;  */
+            --text-secondary: black /* #6b7280 */;
             --bg-primary: #ffffff;
             --bg-secondary: #f9fafb;
             --border-color: #e5e7eb;
@@ -389,12 +390,12 @@
             -webkit-box-orient: vertical;
         }
 
-        /* Dark Mode Support */
-        @@media (prefers-color-scheme: dark) {
+         /* Dark Mode Support */
+        /* @@media (prefers-color-scheme: dark) {
             : root {
                 --bg-primary: #1f2937;
                 --bg-secondary: #111827;
-                --text-primary: #f9fafb;
+                --text-primary: #93c5fd;
                 --text-secondary: #d1d5db;
                 --border-color: #374151;
             }
@@ -413,7 +414,7 @@
                 color: var(--text-primary);
                 border-color: var(--border-color);
             }
-        }
+        } */
 
         /* Print Styles */
         @@media print {
@@ -424,6 +425,7 @@
             body {
                 background: white !important;
                 color: black !important;
+
             }
         }
 
@@ -503,7 +505,7 @@
                         </div>
                         <input type="text"
                                placeholder="جستجو در پروژه‌ها..."
-                               class="input pr-10"
+                                class="input pr-10"
                                aria-label="جستجو در پروژه‌ها" />
                     </div>
                 </div>

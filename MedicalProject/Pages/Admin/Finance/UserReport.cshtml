@@ -15,10 +15,11 @@
     var productPurchases = result?.ProductPurchase ?? new List<ProductPurchaseReportDto>();
 
     // محاسبات ایمن
-    var totalProfit = profitPurchases.Sum(i => i?.AmountPaid ?? 0);
+    var totalProfit = ((Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount)) + (Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount))).ToString("N0");
+
     var totalInvestment = purchaseReport.SafeSum(i => i?.TotalPrice ?? "0");
     var totalDang = purchaseReport.SafeSum(i => i?.TotalDang ?? "0");
-    var avgProfit = totalDang > 0 ? (totalInvestment / totalDang) : 0;
+    var avgProfit = (((Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount)) + (Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount))) / Model.ReportDto.OrderDtos.Count());
 
     // محاسبه سود ماهانه و سالانه
     var monthlyProfit = purchaseReport
@@ -722,13 +723,13 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود کل</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @totalProfit.ToString("N0")
+                                    @totalProfit
                                     <span class="text-sm">ریال</span>
                                 </p>
-                                <div class="flex items-center mt-2">
+                                @*    <div class="flex items-center mt-2">
                                     <i class="fas fa-chart-line ml-1 text-green-300"></i>
                                     <span class="text-green-300 text-sm">@totalProfit.ToString("P1") بازدهی</span>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
 
@@ -736,7 +737,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سرمایه‌گذاری کل</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @totalInvestment.ToString("N0")
+                                    @(Model.ReportDto.OrderDtos.Select(x => x.OrderItems.TotalPrice).SafeSum(i => i).ToString("N0"))
                                     <span class="text-sm">ریال</span>
                                 </p>
                             </div>
@@ -746,12 +747,12 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">میانگین سود</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @avgProfit.ToString("P1")
+                                    @((((Model.ReportDto.OrderDtos.Sum(x => decimal.Parse(x.OrderItems.Product.InventoryDto.Profit) * x.OrderItems.DongAmount)) * 100) / Model.ReportDto.OrderDtos.Select(i => i.OrderItems.TotalPrice).SafeSum(i => i)).ToString("F2"))%
                                 </p>
-                                <div class="flex items-center mt-2">
+                                @*     <div class="flex items-center mt-2">
                                     <span class="risk-indicator risk-high"></span>
                                     <span class="text-green-300 text-sm">ریسک زیاد</span>
-                                </div>
+                                </div> *@
                             </div>
                         </div>
 
@@ -759,7 +760,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد سرمایه‌گذاری</p>
                                 <p class="text-2xl font-bold mt-2">
-                                    @purchaseReport.Count
+                                    @Model.ReportDto.OrderDtos.Count()
                                     <span class="text-sm">مورد</span>
                                 </p>
                             </div>
@@ -775,29 +776,34 @@
                             </div>
                             <div class="p-6">
                                 <div class="space-y-4">
-                                    <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="text-gray-600">سود ماهانه قابل دریافت کاربر</span>
-                                            <span class="font-semibold text-green-600">
-                                                @monthlyProfit.ToString("P1")
-                                            </span>
+                                    @{
+                                        var UnpaidSum = Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount);
+                                        var PaidSum = Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount);
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-gray-600">سود واریز شده</span>
+                                                <span class="font-semibold text-green-600">
+                                                    @(Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0"))
+                                                </span>
+                                            </div>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill" style="width:  @($"{PaidSum * 100 / (UnpaidSum + PaidSum)}%")"></div>
+                                            </div>
                                         </div>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: @(Math.Min(monthlyProfit * 100, 100))%"></div>
-                                        </div>
-                                    </div>
 
-                                    <div>
-                                        <div class="flex justify-between items-center mb-1">
-                                            <span class="text-gray-600">سود سالانه قابل دریافت کاربر</span>
-                                            <span class="font-semibold text-blue-600">
-                                                @yearlyProfit.ToString("P1")
-                                            </span>
+                                        <div>
+                                            <div class="flex justify-between items-center mb-1">
+                                                <span class="text-gray-600">بدهی به کاربر</span>
+                                                <span class="font-semibold text-blue-600">
+                                                    @(Model.ReportDto.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0"))
+                                                </span>
+                                            </div>
+                                            <div class="progress-bar">
+
+                                                <div class="progress-fill" style='width: @($"{UnpaidSum * 100 / (UnpaidSum + PaidSum)}%")'></div>
+                                            </div>
                                         </div>
-                                        <div class="progress-bar">
-                                            <div class="progress-fill" style="width: @(Math.Min(yearlyProfit * 100, 100))%"></div>
-                                        </div>
-                                    </div>
+                                    }
 
                                     <div class="flex justify-between items-center">
                                         <span class="text-gray-600">مدت عضویت:</span>
@@ -973,7 +979,7 @@
                                         else
                                         {
                                             int paymentNumber = 1;
-                                            foreach (var payment in Model.ReportDto.OrderDtos.SelectMany(i=>i.OrderItems.Product.Paid))
+                                            foreach (var payment in Model.ReportDto.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid))
                                             {
                                                 <tr>
                                                     <td>@(paymentNumber++)</td>
@@ -1048,16 +1054,16 @@
                                                     </td>
                                                     <td>
                                                         <form method="post" asp-page-handler="ProfitPayed">
-                                                            <input asp-for="@Model.orderId" value="@unpaid.OrderId" hidden/>
-                                                            <input asp-for="@Model.userId" value="@Model.ReportDto.Id" hidden/>
-                                                            <input asp-for="@Model.productId" value="@unpaid.ProductId" hidden/>
+                                                            <input asp-for="@Model.orderId" value="@unpaid.OrderId" hidden />
+                                                            <input asp-for="@Model.userId" value="@Model.ReportDto.Id" hidden />
+                                                            <input asp-for="@Model.productId" value="@unpaid.ProductId" hidden />
                                                             @* <input asp-for="@Model.forWhaeTime" value="@unpaid.Date" hidden/> *@
                                                             <input type="hidden" name="forWhaeTime" value="@unpaid.Date" />
-                                                            <input asp-for="@Model.forWhatPeriod" value="@unpaid.PeriodNumber" hidden/>
-                                                           <button class="btn btn-sm btn-primary" type="submit">
-                                                                   @* onclick="requestPayment('@unpaid.OrderId', @unpaid.PeriodNumber)"> *@
-                                                               درخواست پرداخت
-                                                           </button>
+                                                            <input asp-for="@Model.forWhatPeriod" value="@unpaid.PeriodNumber" hidden />
+                                                            <button class="btn btn-sm btn-primary" type="submit">
+                                                                @* onclick="requestPayment('@unpaid.OrderId', @unpaid.PeriodNumber)"> *@
+                                                                درخواست پرداخت
+                                                            </button>
                                                         </form>
                                                     </td>
                                                 </tr>
@@ -1068,7 +1074,7 @@
                             </div>
                         </div>
                     </div>
-                   @*  <div class="card mt-6">
+                    @*  <div class="card mt-6">
                         <div class="p-6">
                             <h2 class="text-lg font-semibold text-gray-900 mb-6">دوره‌های ناموفق در پرداخت</h2>
 
@@ -1152,7 +1158,7 @@
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-gray-600">سود قابل تسویه:</span>
-                                    <span class="font-semibold text-green-600">@totalProfit.ToString("N0") ریال</span>
+                                    <span class="font-semibold text-green-600">@totalProfit ریال</span>
                                 </div>
                             </div>
 
@@ -1165,7 +1171,7 @@
                                        max="@totalProfit"
                                        value="@totalProfit"
                                        required>
-                                <p class="text-xs text-gray-500 mt-1">حداکثر مبلغ قابل تسویه: @totalProfit.ToString("N0") ریال</p>
+                                <p class="text-xs text-gray-500 mt-1">حداکثر مبلغ قابل تسویه: @totalProfit ریال</p>
                             </div>
 
                             <div>
@@ -1197,149 +1203,149 @@
                 </div>
             </div>
         </div>
-        </div>
-        <script>
-            // توابع مدیریت پنل ادمین
-            function toggleSidebar() {
-                document.body.classList.toggle('sidebar-collapsed');
+    </div>
+    <script>
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // توابع مدال‌ها
+        function showSettlementModal() {
+            document.getElementById('settlementModal').classList.remove('hidden');
+        }
+
+        function closeSettlementModal() {
+            document.getElementById('settlementModal').classList.add('hidden');
+        }
+
+        function showInvestmentDetails(projectName) {
+            alert('جزئیات سرمایه‌گذاری: ' + projectName);
+        }
+
+        function downloadInvestmentCertificate(projectName) {
+            alert('گواهی سرمایه‌گذاری برای ' + projectName + ' در حال دانلود است...');
+        }
+
+        // توابع گزارش‌گیری
+        function printReport() {
+            window.print();
+        }
+
+        function exportUserReport() {
+            alert('گزارش کاربر در حال آماده‌سازی و دانلود است...');
+        }
+
+        function generateTaxReport() {
+            alert('گزارش مالیاتی کاربر در حال تولید است...');
+        }
+
+        function showPaymentHistory() {
+            alert('نمایش کامل تاریخچه پرداخت‌های کاربر');
+        }
+
+        function showInvestmentHistory() {
+            alert('نمایش تاریخچه کامل سرمایه‌گذاری‌های کاربر');
+        }
+
+        // توابع فیلتر
+        function applyInvestmentFilters() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            console.log('اعمال فیلتر سرمایه‌گذاری:', { status: statusFilter });
+            alert('فیلتر وضعیت اعمال شد');
+        }
+
+        // توابع ارتباط با کاربر
+        function contactUser() {
+            if (confirm('آیا مایل به برقراری تماس با کاربر هستید؟')) {
+                alert('در حال برقراری تماس با کاربر...');
+            }
+        }
+
+        // مدیریت فرم تسویه حساب
+        document.getElementById('settlementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const amount = document.getElementById('settlementAmount').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const description = document.getElementById('settlementDescription').value;
+
+            if (confirm(`آیا از تسویه حساب به مبلغ ${parseInt(amount).toLocaleString()} ریال با روش ${paymentMethod} اطمینان دارید؟`)) {
+                console.log('تسویه حساب:', { amount, paymentMethod, description });
+                alert('تسویه حساب با موفقیت انجام شد');
+                closeSettlementModal();
+            }
+        });
+
+        // مدیریت منوی سایدبار
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar();
+            } else {
+                toggleSidebar();
+            }
+        });
+
+        // بستن منوها هنگام کلیک خارج
+        document.addEventListener('click', function(event) {
+            const profileDropdown = document.getElementById('profileDropdown');
+            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+
+            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                profileDropdown.classList.add('hidden');
             }
 
-            function toggleMobileSidebar() {
-                document.body.classList.toggle('sidebar-mobile-open');
+            // بستن سایدبار موبایل هنگام کلیک خارج
+            if (window.innerWidth < 768 &&
+                !event.target.closest('.admin-sidebar') &&
+                !event.target.closest('#sidebarToggle')) {
+                document.body.classList.remove('sidebar-mobile-open');
             }
+        });
 
-            function toggleProfileDropdown() {
-                const dropdown = document.getElementById('profileDropdown');
-                dropdown.classList.toggle('hidden');
-            }
-
-            // توابع مدال‌ها
-            function showSettlementModal() {
-                document.getElementById('settlementModal').classList.remove('hidden');
-            }
-
-            function closeSettlementModal() {
-                document.getElementById('settlementModal').classList.add('hidden');
-            }
-
-            function showInvestmentDetails(projectName) {
-                alert('جزئیات سرمایه‌گذاری: ' + projectName);
-            }
-
-            function downloadInvestmentCertificate(projectName) {
-                alert('گواهی سرمایه‌گذاری برای ' + projectName + ' در حال دانلود است...');
-            }
-
-            // توابع گزارش‌گیری
-            function printReport() {
-                window.print();
-            }
-
-            function exportUserReport() {
-                alert('گزارش کاربر در حال آماده‌سازی و دانلود است...');
-            }
-
-            function generateTaxReport() {
-                alert('گزارش مالیاتی کاربر در حال تولید است...');
-            }
-
-            function showPaymentHistory() {
-                alert('نمایش کامل تاریخچه پرداخت‌های کاربر');
-            }
-
-            function showInvestmentHistory() {
-                alert('نمایش تاریخچه کامل سرمایه‌گذاری‌های کاربر');
-            }
-
-            // توابع فیلتر
-            function applyInvestmentFilters() {
-                const statusFilter = document.getElementById('statusFilter').value;
-                console.log('اعمال فیلتر سرمایه‌گذاری:', { status: statusFilter });
-                alert('فیلتر وضعیت اعمال شد');
-            }
-
-            // توابع ارتباط با کاربر
-            function contactUser() {
-                if (confirm('آیا مایل به برقراری تماس با کاربر هستید؟')) {
-                    alert('در حال برقراری تماس با کاربر...');
+        // استایل‌های چاپ
+        const printStyle = document.createElement('style');
+        printStyle.textContent = `
+            @@media print {
+                .btn, #sidebarToggle, .admin-sidebar, footer {
+                    display: none !important;
+                }
+                .admin-main {
+                    margin-right: 0 !important;
+                }
+                .card {
+                    box-shadow: none !important;
+                    border: 1px solid #ddd !important;
+                }
+                .stat-card {
+                    break-inside: avoid;
                 }
             }
-
-            // مدیریت فرم تسویه حساب
-            document.getElementById('settlementForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const amount = document.getElementById('settlementAmount').value;
-                const paymentMethod = document.getElementById('paymentMethod').value;
-                const description = document.getElementById('settlementDescription').value;
-
-                if (confirm(`آیا از تسویه حساب به مبلغ ${parseInt(amount).toLocaleString()} ریال با روش ${paymentMethod} اطمینان دارید؟`)) {
-                    console.log('تسویه حساب:', { amount, paymentMethod, description });
-                    alert('تسویه حساب با موفقیت انجام شد');
-                    closeSettlementModal();
-                }
-            });
-
-            // مدیریت منوی سایدبار
-            document.getElementById('sidebarToggle').addEventListener('click', function() {
-                if (window.innerWidth < 768) {
-                    toggleMobileSidebar();
-                } else {
-                    toggleSidebar();
-                }
-            });
-
-            // بستن منوها هنگام کلیک خارج
-            document.addEventListener('click', function(event) {
-                const profileDropdown = document.getElementById('profileDropdown');
-                const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
-
-                if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
-                    profileDropdown.classList.add('hidden');
-                }
-
-                // بستن سایدبار موبایل هنگام کلیک خارج
-                if (window.innerWidth < 768 &&
-                    !event.target.closest('.admin-sidebar') &&
-                    !event.target.closest('#sidebarToggle')) {
-                    document.body.classList.remove('sidebar-mobile-open');
-                }
-            });
-
-            // استایل‌های چاپ
-            const printStyle = document.createElement('style');
-            printStyle.textContent = `
-                @@media print {
-                    .btn, #sidebarToggle, .admin-sidebar, footer {
-                        display: none !important;
-                    }
-                    .admin-main {
-                        margin-right: 0 !important;
-                    }
-                    .card {
-                        box-shadow: none !important;
-                        border: 1px solid #ddd !important;
-                    }
-                    .stat-card {
-                        break-inside: avoid;
-                    }
-                }
-            `;
-            document.head.appendChild(printStyle);
-        </script>
-        <script>
-            // نمایش خودکار پیام‌های TempData
-            function showTempDataMessages() {
-            // موفقیت
-            @if (TempData["Success"] != null)
-            {
+        `;
+        document.head.appendChild(printStyle);
+    </script>
+    <script>
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+        // موفقیت
+        @if (TempData["Success"] != null)
+        {
                     <text>
                         Alert.success(decodePersianText('@TempData["Success"]'));
                     </text>
-            }
+        }
 
-            // خطا
-            @if (TempData["Error"] != null)
-            {
+        // خطا
+        @if (TempData["Error"] != null)
+        {
                     <text>
                         const errorMsg = decodePersianText('@TempData["Error"]');
                         if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
@@ -1354,11 +1360,11 @@
                         Alert.error(errorMsg);
                         }
                     </text>
-            }
+        }
 
-            // هشدار
-            @if (TempData["Warning"] != null)
-            {
+        // هشدار
+        @if (TempData["Warning"] != null)
+        {
                     <text>
                         const warningMsg = decodePersianText('@TempData["Warning"]');
                         if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
@@ -1371,11 +1377,11 @@
                         Alert.warning(warningMsg);
                         }
                     </text>
-            }
+        }
 
-            // اطلاعیه
-            @if (TempData["Info"] != null)
-            {
+        // اطلاعیه
+        @if (TempData["Info"] != null)
+        {
                     <text>
                         const infoMsg = decodePersianText('@TempData["Info"]');
                         if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
@@ -1386,9 +1392,9 @@
                         Alert.info(infoMsg);
                         }
                     </text>
-            }
-            }
-        </script>
-        <script src="~/Alert.js"></script>
+        }
+        }
+    </script>
+    <script src="~/Alert.js"></script>
 </body>
 </html>
