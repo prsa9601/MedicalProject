@@ -1,12 +1,267 @@
 ﻿@page
 @using MedicalProject.Infrastructure
 @using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Models.Product
+@using MedicalProject.Models.Product.DTOs
+@using System.Text.Json
+@inject IConfiguration Configuration
 @model MedicalProject.Pages.Front.IndexModel
 @{
     ViewData["Title"] = "پروژه‌های سرمایه‌گذاری";
 }
 
 @section Styles {
+@{
+
+        <meta name="robots" content="index, follow">
+
+        // ✅ تنظیم هوشمند متادیتاها
+        var siteName = Configuration["Site:Name"] ?? "سایت سرمایه‌گذاری پزشکی";
+        var siteUrl = Configuration["Site:Url"] ?? "https://medical-invest.ir";
+        var siteSlogan = Configuration["Site:Slogan"] ?? "سرمایه‌گذاری مطمئن در تجهیزات پزشکی";
+
+        // ✅ ۱. Title هوشمند
+        ViewData["Title"] = Model.Result?.Data?.Any() == true
+                ? $"پروژه‌های سرمایه‌گذاری ({Model.Result.EntityCount} پروژه فعال) | {siteName}"
+                : $"پروژه‌های سرمایه‌گذاری | {siteName}";
+
+        // ✅ ۲. Description هوشمند
+        ViewData["MetaDescription"] = Model.Result?.Data?.Any() == true
+                ? $"مشاهده {Model.Result.EntityCount} پروژه سرمایه‌گذاری فعال در تجهیزات پزشکی. سود تا {Model.Result.Data.Select(i => decimal.Parse(i.InventoryDto.TotalPrice) / 12).OrderByDescending(i=>i).FirstOrDefault()}%، سرمایه‌گذاری از {Model.Result.Data.Select(i => decimal.Parse(i.InventoryDto.TotalPrice) / 12).Order().FirstOrDefault()} تومان. {siteSlogan}"
+                : $"فرصت‌های سرمایه‌گذاری مطمئن در تجهیزات پزشکی و صنعتی. {siteSlogan}";
+
+        // ✅ ۳. Canonical URL
+        ViewData["CanonicalUrl"] = "/Index";//$"{siteUrl}";
+
+        // ✅ ۴. Keywords هوشمند
+        ViewData["MetaKeywords"] = GenerateSmartKeywords(Model.Result);
+
+        // ✅ ۵. Open Graph
+        ViewData["OgTitle"] = ViewData["Title"];
+        ViewData["OgDescription"] = ViewData["MetaDescription"];
+        ViewData["OgImage"] = Model.Result?.Data?.FirstOrDefault()?.ImageName != null
+            ? $"{siteUrl}{Directories.GetProductImagePathPath(Model.Result.Data.First().ImageName)}"
+            : $"{siteUrl}/images/og-index.jpg";
+        ViewData["OgUrl"] = ViewData["CanonicalUrl"];
+        ViewData["OgType"] = "website";
+        ViewData["OgSiteName"] = siteName;
+
+        // ✅ ۶. Twitter Cards
+        ViewData["TwitterCard"] = "summary_large_image";
+        ViewData["TwitterTitle"] = ViewData["Title"];
+        ViewData["TwitterDescription"] = ViewData["MetaDescription"];
+        ViewData["TwitterImage"] = ViewData["OgImage"];
+
+        // ✅ ۷. Robots Meta Tag
+        ViewData["RobotsMeta"] = "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1";
+
+        // ✅ ۸. Schemaهای اصلی
+        ViewData["OrganizationSchema"] = GenerateOrganizationSchema(siteName, siteUrl);
+        ViewData["WebsiteSchema"] = GenerateWebsiteSchema(siteName, siteUrl);
+        ViewData["BreadcrumbSchema"] = GenerateBreadcrumbSchema(siteUrl);
+        ViewData["ItemListSchema"] = GenerateItemListSchema(Model.Result, siteUrl);
+    
+        <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "CollectionPage",
+            "name": "@ViewData["Title"]",
+            "description": "@ViewData["MetaDescription"]",
+            "url": "@ViewData["CanonicalUrl"]",
+            "mainEntity": {
+                "@@type": "ItemList",
+                "numberOfItems": @(Model.Result?.EntityCount ?? 0),
+                "itemListOrder": "https://schema.org/ItemListOrderDescending"
+            },
+            "potentialAction": {
+                "@@type": "SearchAction",
+                "target": "@siteUrl/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+        </script>
+}
+
+
+@functions {
+    // توابع کمکی برای سئو
+
+    private string GenerateSmartKeywords(ProductFilterResult result)
+    {
+        var keywords = new List<string>
+        {
+            "سرمایه‌گذاری",
+            "پروژه سرمایه‌گذاری",
+            "تجهیزات پزشکی",
+            "سرمایه‌گذاری مطمئن",
+            "سود تضمینی",
+            "سرمایه‌گذاری در پزشکی",
+            "فرصت سرمایه‌گذاری",
+            "پروژه پزشکی",
+            "تأمین مالی",
+            "سرمایه‌گذاری صنعتی",
+            "سایت سرمایه‌گذاری",
+            "سرمایه‌گذاری آنلاین"
+        };
+
+        if (result?.Data?.Any() == true)
+        {
+            keywords.Add($"سود تا {GetMaxProfit(result)}%");
+            keywords.Add($"{result.EntityCount} پروژه فعال");
+            keywords.Add($"سرمایه‌گذاری از {GetMinPrice(result).ToPersianNumbers()} تومان");
+        }
+
+        return string.Join(", ", keywords.Take(15)); // حداکثر 15 کلمه کلیدی
+    }
+
+    private int GetMaxProfit(ProductFilterResult model)
+    {
+        if (model?.Data == null || !model.Data.Any()) return 25;
+        return model.Data.Max(i =>
+            Convert.ToInt32(i.InventoryDto?.Profit?.Replace("%", "") ?? "25"));
+    }
+
+    private int GetMinPrice(ProductFilterResult model)
+    {
+        if (model?.Data == null || !model.Data.Any()) return 10000000;
+        return model.Data.Min(i => Int32.Parse(i.InventoryDto?.PricePerDong));
+    }
+
+   
+
+    private string GetStatusText(ProductStatus status)
+    {
+        return status switch
+        {
+            ProductStatus.IsActive => "فعال",
+            ProductStatus.IsDone => "تکمیل شده",
+            _ => "ویژه"
+        };
+    }
+
+    private string GetStatusSchema(ProductStatus status)
+    {
+        return status switch
+        {
+            ProductStatus.IsActive => "https://schema.org/InStock",
+            ProductStatus.IsDone => "https://schema.org/SoldOut",
+            _ => "https://schema.org/LimitedAvailability"
+        };
+    }
+
+    // توابع تولید Schema
+    private string GenerateOrganizationSchema(string siteName, string siteUrl)
+    {
+        var schema = new
+        {
+            context = "https://schema.org",
+            type = "Organization",
+            name = siteName,
+            url = siteUrl,
+            logo = new
+            {
+                @@type = "ImageObject",
+                url = $"{siteUrl}/logo.png",
+                width = "600",
+                height = "60"
+            },
+            contactPoint = new
+            {
+                @@type = "ContactPoint",
+                telephone = "+98-21-12345678",
+                contactType = "پشتیبانی",
+                availableLanguage = "Persian"
+            }
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+
+    private string GenerateWebsiteSchema(string siteName, string siteUrl)
+    {
+        var schema = new
+        {
+            context = "https://schema.org",
+            type = "WebSite",
+            name = siteName,
+            url = siteUrl,
+            potentialAction = new
+            {
+                @@type = "SearchAction",
+                target = $"{siteUrl}/search?q={{search_term_string}}",
+                queryInput = "required name=search_term_string"
+            }
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+
+    private string GenerateBreadcrumbSchema(string siteUrl)
+    {
+        var schema = new
+        {
+            context = "https://schema.org",
+            type = "BreadcrumbList",
+            itemListElement = new[]
+            {
+                new
+                {
+                    @@type = "ListItem",
+                    position = 1,
+                    item = new
+                    {
+                        @@id = siteUrl,
+                        name = "خانه"
+                    }
+                },
+                new
+                {
+                    @@type = "ListItem",
+                    position = 2,
+                    item = new
+                    {
+                        @@id = $"{siteUrl}/projects",
+                        name = "پروژه‌های سرمایه‌گذاری"
+                    }
+                }
+            }
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+
+    private string GenerateItemListSchema(ProductFilterResult result, string siteUrl)
+    {
+        if (result?.Data == null || !result.Data.Any())
+            return null;
+
+        var items = result.Data.Take(10).Select((project, index) => new
+        {
+            @@type = "ListItem",
+            position = index + 1,
+            item = new
+            {
+                @@type = "Product",
+                name = project.Title,
+                description = project.Description?.Length > 150
+                    ? project.Description.Substring(0, 150) + "..."
+                    : project.Description,
+                image = $"{siteUrl}{Directories.GetProductImagePathPath(project.ImageName)}",
+                url = $"{siteUrl}/projects/{project.Slug}"
+            }
+        }).ToArray();
+
+        var schema = new
+        {
+            context = "https://schema.org",
+            type = "ItemList",
+            numberOfItems = result.EntityCount,
+            itemListElement = items
+        };
+
+        return JsonSerializer.Serialize(schema);
+    }
+}
     <style>
         /* استایل‌های سفارشی برای صفحه پروژه‌ها */
         .projects-grid {

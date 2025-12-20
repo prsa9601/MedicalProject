@@ -4,6 +4,7 @@ using MedicalProject.Models.PurchaseReport;
 using MedicalProject.Services.Product;
 using MedicalProject.Services.PurchaseReport;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
@@ -31,7 +32,6 @@ namespace MedicalProject.Pages.Front
                 PageId = pageId,
                 Take = take,
             });
-            
             return Page();
         }
     }

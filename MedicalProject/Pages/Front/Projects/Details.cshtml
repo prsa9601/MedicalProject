@@ -5,9 +5,148 @@
 @using MedicalProject.Models.Product.DTOs
 @model MedicalProject.Pages.Front.Projects.DetailsModel
 @{
-    ViewData["Title"] = Model.Product?.Title ?? "محصول";
+    ViewData["Title"] = Model.Product?.SeoData.MetaTitle ?? "محصول";
 }
 @section Styles {
+
+    <title>@ViewData["Title"]</title>
+    <meta name="description" content="@Model.Product.SeoData.MetaDescription" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="@Model.Product.SeoData.MetaTitle" />
+    <meta property="og:description" content="@Model.Product.SeoData.MetaDescription" />
+    <meta property="og:image" content="@Directories.GetProductImagePathPath(Model.Product.ImageName)" />
+    <meta property="og:url" content="@Model.Product.SeoData.Canonical" />
+    <meta property="og:type" content="product" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@Model.Product.SeoData.MetaTitle" />
+
+    <meta name="keywords" content="@Model.Product.SeoData.MetaKeyWords" />
+    <!-- Canonical -->
+    <link rel="canonical" href="@Model.Product.SeoData.Canonical" />
+
+    <meta name="robots" content="index, follow">
+    <!-- یا برای صفحات لاگین -->
+    <meta name="robots" content="noindex, nofollow">
+    @if (ViewData["SchemaJson"] != null)
+    {
+        <script type="application/ld+json">
+            @Html.Raw(ViewData["SchemaJson"])
+        </script>
+    }
+    <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "Organization",
+            "name": "سایت من",
+            "url": "https://example.com"
+        }
+    </script>
+@*     <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@@type": "ListItem",
+                    "position": 1,
+                    "item": {
+                        "@@id": "/",
+                        "name": "خانه"
+                    }
+                },
+                {
+                    "@@type": "ListItem",
+                    "position": 2,
+                    "item": {
+                        "@@id": "/blog",
+                        "name": "وبلاگ"
+                    }
+                },
+                {
+                    "@@type": "ListItem",
+                    "position": 3,
+                    "item": {
+                        "@@id": "@Url.PageLink()",
+                        "name": "@Model.Article.Title"
+                    }
+                }
+            ]
+        }
+    </script>
+           var articleSchema = new
+            {
+                @@context = "https://schema.org",
+                @@type = "Article",
+                headline = Article.Title,
+                description = Article.Summary,
+                image = Article.FeaturedImage,
+                datePublished = Article.PublishDate.ToString("yyyy-MM-dd"),
+                dateModified = Article.LastModified.ToString("yyyy-MM-dd"),
+                author = new
+                {
+                    @@type = "Person",
+                    name = Article.AuthorName,
+                    url = $"/author/{Article.AuthorSlug}"
+                },
+                publisher = new
+                {
+                    @@type = "Organization",
+                    name = "سایت ما",
+                    logo = new
+                    {
+                        @@type = "ImageObject",
+                        url = "/logo.png",
+                        width = "600",
+                        height = "60"
+                    }
+                },
+                mainEntityOfPage = new
+                {
+                    @@type = "WebPage",
+                    @@id = Url.PageLink() // لینک صفحه فعلی
+                }
+                    };
+    <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "Organization",
+            "name": "شرکت نوآوران",
+            "url": "https://example.com",
+            "logo": "https://example.com/logo.png",
+            "contactPoint": {
+                "@@type": "ContactPoint",
+                "telephone": "+98-21-12345678",
+                "contactType": "پشتیبانی",
+                "availableLanguage": "fa"
+            }
+        }
+    </script>
+
+    <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "WebSite",
+            "name": "سایت آموزشی ما",
+            "url": "https://example.com",
+            "potentialAction": {
+                "@@type": "SearchAction",
+                "target": "https://example.com/search?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+    <script type="application/ld+json">
+        {
+            "@@context": "https://schema.org",
+            "@@type": "Organization",
+            "name": "سایت من",
+            "url": "https://example.com"
+        }
+    </script> *@
+
     <style>
         .line-clamp-2 {
             display: -webkit-box;
