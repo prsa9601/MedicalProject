@@ -7,29 +7,31 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>افزودن محصول جدید - پلتفرم دنگ</title>
 
     <!-- فونت‌ها -->
     <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
- 
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- jQuery اول (اگر استفاده می‌کنی) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- سپس SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         /* استایل‌های سفارشی */
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+        }
+
         html {
             direction: rtl;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
@@ -39,17 +41,7 @@
             background-color: #f9fafb;
             color: #111827;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
-        }
-
-        * {
-            border-color: #e5e7eb;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: #3b82f6;
-            border-color: #3b82f6;
+            overflow-x: hidden;
         }
 
         /* کامپوننت‌های سفارشی */
@@ -65,19 +57,13 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: all 0.2s;
             cursor: pointer;
+            white-space: nowrap;
         }
 
-            .btn:focus {
-                outline: 2px solid transparent;
-                outline-offset: 2px;
-                ring: 2px;
-                ring-offset: 2px;
-            }
-
-            .btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
 
         .btn-primary {
             background-color: #2563eb;
@@ -96,15 +82,6 @@
 
             .btn-secondary:hover {
                 background-color: #f9fafb;
-            }
-
-        .btn-success {
-            background-color: #059669;
-            color: white;
-        }
-
-            .btn-success:hover {
-                background-color: #047857;
             }
 
         .btn-danger {
@@ -132,125 +109,25 @@
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
             border: 1px solid #f3f4f6;
             overflow: hidden;
+            margin-bottom: 1.5rem;
         }
 
-        .input {
+        .input, textarea, select {
             display: block;
             width: 100%;
             padding: 0.5rem 0.75rem;
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            font-family: inherit;
+            font-size: 0.875rem;
         }
 
-            .input::placeholder {
-                color: #9ca3af;
-            }
-
-            .input:focus {
+            .input:focus, textarea:focus, select:focus {
                 outline: none;
-                ring: 2px;
-                ring-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                 border-color: #3b82f6;
             }
-
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.625rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .badge-primary {
-            background-color: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-success {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .badge-warning {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .badge-danger {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-secondary {
-            background-color: #f3f4f6;
-            color: #6b7280;
-        }
-
-        /* استایل‌های مخصوص پنل ادمین */
-        .admin-sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
-            color: white;
-            transition: all 0.3s;
-        }
-
-        .admin-main {
-            margin-right: 260px;
-            transition: all 0.3s;
-        }
-
-        .admin-content {
-            min-height: calc(100vh - 64px);
-        }
-
-        .sidebar-collapsed .admin-sidebar {
-            width: 70px;
-        }
-
-        .sidebar-collapsed .admin-main {
-            margin-right: 70px;
-        }
-
-        .sidebar-link {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            color: #d1d5db;
-            border-radius: 0.5rem;
-            margin: 0.25rem 0.5rem;
-            transition: all 0.2s;
-        }
-
-            .sidebar-link:hover, .sidebar-link.active {
-                background-color: rgba(255, 255, 255, 0.1);
-                color: white;
-            }
-
-            .sidebar-link i {
-                width: 24px;
-                text-align: center;
-            }
-
-            .sidebar-link span {
-                margin-right: 0.75rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-        .sidebar-collapsed .sidebar-link span {
-            display: none;
-        }
 
         .form-group {
             margin-bottom: 1.5rem;
@@ -261,52 +138,94 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #374151;
+            font-size: 0.875rem;
         }
-
-        .form-control {
-            display: block;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-        }
-
-            .form-control:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px #3b82f6;
-                border-color: #3b82f6;
-            }
 
         .form-text {
             display: block;
             margin-top: 0.25rem;
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: #6b7280;
         }
 
-        .checkbox-label {
+        .required-field::after {
+            content: " *";
+            color: #dc2626;
+        }
+
+        .validation-error {
+            color: #dc2626;
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
             display: flex;
             align-items: center;
-            cursor: pointer;
+            gap: 0.25rem;
         }
 
-        .checkbox-input {
-            width: 1rem;
-            height: 1rem;
-            border-radius: 0.25rem;
-            border: 1px solid #d1d5db;
-            margin-left: 0.5rem;
+        .field-validation-error {
+            border-color: #dc2626 !important;
         }
 
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 40;
+            overflow-y: auto;
+        }
+
+        .admin-main {
+            margin-right: var(--sidebar-width);
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: var(--sidebar-collapsed);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                transition: all 0.3s;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            opacity: 0;
+            width: 0;
+            margin: 0;
+        }
+
+        /* آپلود تصویر */
         .image-upload {
             border: 2px dashed #d1d5db;
             border-radius: 0.5rem;
-            padding: 2rem;
+            padding: 1.5rem;
             text-align: center;
             background-color: #f9fafb;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
             .image-upload:hover {
@@ -319,14 +238,64 @@
                 background-color: #dbeafe;
             }
 
-        /* Responsive */
-        @@media (max-width: 1024px) {
+        .image-preview {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* هشدارها و اطلاعیه‌ها */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+
+        .alert-danger {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        /* موبایل منو */
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 35;
+        }
+
+        /* Media Queries */
+        @@media (max-width: 1200px) {
             .admin-sidebar {
-                width: 70px;
+                width: var(--sidebar-collapsed);
             }
 
             .admin-main {
-                margin-right: 70px;
+                margin-right: var(--sidebar-collapsed);
             }
 
             .sidebar-link span {
@@ -334,82 +303,218 @@
             }
         }
 
-        @@media (max-width: 768px) {
+        @@media (max-width: 992px) {
             .admin-sidebar {
-                position: fixed;
-                right: -260px;
-                z-index: 50;
-                height: 100vh;
+                transform: translateX(100%);
+                width: 280px;
             }
 
             .admin-main {
-                margin-right: 0;
+                margin-right: 0 !important;
             }
 
-            .sidebar-mobile-open .admin-sidebar {
-                right: 0;
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .sidebar-open .admin-sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-open .mobile-overlay {
+                display: block;
             }
 
             .sidebar-link span {
                 display: block;
             }
+
+            .form-container {
+                padding: 1rem;
+            }
         }
 
-        .validation-error {
-            color: #dc2626;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+        @@media (max-width: 768px) {
+            .header-container {
+                padding: 0.5rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .page-header-actions {
+                width: 100%;
+                display: flex;
+                justify-content: flex-end;
+            }
+
+            .card-content {
+                padding: 1rem !important;
+            }
+
+            .card-header {
+                padding: 1rem !important;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+                .form-actions .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+            .grid-cols-2 {
+                grid-template-columns: 1fr !important;
+            }
+
+            .image-upload {
+                padding: 1rem;
+            }
+
+            textarea {
+                font-size: 16px; /* جلوگیری از زوم در iOS */
+            }
         }
 
-        .field-validation-error {
-            border-color: #dc2626;
+        @@media (max-width: 576px) {
+            .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+                .btn i {
+                    margin-left: 0.25rem !important;
+                    margin-right: 0.25rem !important;
+                }
+
+            h1 {
+                font-size: 1.25rem !important;
+            }
+
+            h2 {
+                font-size: 1rem !important;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .input, textarea, select {
+                padding: 0.375rem 0.5rem;
+                font-size: 0.75rem;
+            }
+
+            .form-label {
+                font-size: 0.75rem;
+            }
         }
 
-        .alert-success {
-            background-color: #d1fae5;
-            border: 1px solid #a7f3d0;
-            color: #065f46;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+        @@media (max-width: 400px) {
+            .logo-text {
+                display: none;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .icon-text {
+                display: none;
+            }
+
+            .btn-text {
+                font-size: 0.7rem;
+            }
         }
 
-        .alert-danger {
-            background-color: #fee2e2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+        /* استایل‌های بهبود یافته برای موبایل */
+        .touch-friendly {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* افزایش سایز دکمه‌ها در دستگاه‌های تاچ */
+        @@media (hover: none) and (pointer: coarse) {
+            .btn {
+                padding: 0.75rem 1rem;
+            }
+
+            .input, textarea, select {
+                font-size: 16px; /* جلوگیری از زوم در iOS */
+                padding: 0.75rem;
+            }
+
+            .sidebar-link {
+                padding: 1rem;
+            }
+        }
+
+        /* بهبود فوکوس برای دکمه‌ها و اینپوت‌ها */
+        .btn:focus-visible,
+        .input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        /* حالت پرینت */
+        @@media print {
+            .admin-sidebar,
+            .mobile-menu-btn,
+            .user-actions,
+            .form-actions,
+            .btn {
+                display: none !important;
+            }
+
+            .admin-main {
+                margin: 0 !important;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
         }
     </style>
 </head>
 <body class="admin-layout">
+    <!-- Overlay برای موبایل -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="header-container px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo and Toggle -->
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                <div class="flex items-center gap-2">
+                    <button id="mobileMenuToggle" class="mobile-menu-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <button id="sidebarToggle" class="hidden md:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <a href="/">
-                        <div class="flex items-center space-x-2 space-x-reverse">
-                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">د</span>
-                            </div>
-                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                    <a href="/" class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">د</span>
                         </div>
+                        <span class="logo-text text-xl font-bold text-gray-900">پلتفرم دنگ</span>
                     </a>
                 </div>
 
                 <!-- User Actions -->
-                <div class="flex items-center space-x-4 space-x-reverse">
+                <div class="user-actions flex items-center gap-2 sm:gap-4">
                     <!-- Notifications -->
-                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors touch-friendly">
                         <i class="fas fa-bell"></i>
-                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
                             3
                         </span>
                     </a>
@@ -417,11 +522,11 @@
                     <!-- Profile Dropdown -->
                     <div class="relative">
                         <button onclick="toggleProfileDropdown()"
-                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                                class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors touch-friendly">
                             <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-user text-blue-600"></i>
                             </div>
-                            <span class="hidden sm:block font-medium text-gray-700">
+                            <span class="user-name hidden sm:block font-medium text-gray-700">
                                 ادمین
                             </span>
                         </button>
@@ -429,18 +534,18 @@
                         <!-- Dropdown Menu -->
                         <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                             <a href="/Admin/Dashboard"
-                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                               class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-tachometer-alt ml-3"></i>
                                 داشبورد
                             </a>
                             <a href="/Profile"
-                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                               class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-user ml-3"></i>
                                 پروفایل
                             </a>
                             <form asp-page="/Logout" method="post" class="w-full">
                                 <button type="submit"
-                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-right">
                                     <i class="fas fa-sign-out-alt ml-3"></i>
                                     خروج
                                 </button>
@@ -452,43 +557,43 @@
         </div>
     </header>
 
-    <div class="flex">
+    <div class="flex relative">
         <!-- Sidebar -->
-        <div class="admin-sidebar fixed h-full z-30">
+        <div class="admin-sidebar">
             <div class="flex flex-col h-full">
                 <!-- Sidebar Header -->
                 <div class="p-4 border-b border-blue-700">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                                 <span class="text-blue-600 font-bold text-sm">د</span>
                             </div>
-                            <span class="text-white font-bold">پنل مدیریت</span>
+                            <span class="text-white font-bold whitespace-nowrap">پنل مدیریت</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sidebar Menu -->
                 <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
-
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="admin-main flex-1">
+        <div class="admin-main flex-1 w-full">
             <div class="admin-content">
                 <!-- Page Header -->
                 <div class="bg-white border-b border-gray-200">
-                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h1 class="text-2xl font-bold text-gray-900">افزودن محصول جدید</h1>
-                                <p class="mt-1 text-sm text-gray-600">اطلاعات محصول جدید را وارد کنید</p>
+                    <div class="max-w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                        <div class="page-header flex justify-between items-center">
+                            <div class="flex-1 min-w-0">
+                                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">افزودن محصول جدید</h1>
+                                <p class="mt-1 text-xs sm:text-sm text-gray-600 truncate-text">اطلاعات محصول جدید را وارد کنید</p>
                             </div>
-                            <div class="flex items-center space-x-3 space-x-reverse">
-                                <a asp-page="Index" class="btn btn-outline">
+                            <div class="page-header-actions">
+                                <a asp-page="Index" class="btn btn-outline text-xs sm:text-sm">
                                     <i class="fas fa-arrow-right ml-2"></i>
-                                    بازگشت به لیست
+                                    <span class="icon-text">بازگشت به لیست</span>
+                                    <span class="sm:hidden">بازگشت</span>
                                 </a>
                             </div>
                         </div>
@@ -496,25 +601,21 @@
                 </div>
 
                 <!-- Main Content Area -->
-                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="max-w-full px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
                     <!-- Alerts -->
                     @if (TempData["SuccessMessage"] != null)
                     {
-                        <div class="alert-success">
-                            <div class="flex items-center">
-                                <i class="fas fa-check-circle ml-2"></i>
-                                <span>@TempData["SuccessMessage"]</span>
-                            </div>
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle"></i>
+                            <div>@TempData["SuccessMessage"]</div>
                         </div>
                     }
 
                     @if (TempData["ErrorMessage"] != null)
                     {
-                        <div class="alert-danger">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle ml-2"></i>
-                                <span>@TempData["ErrorMessage"]</span>
-                            </div>
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>@TempData["ErrorMessage"]</div>
                         </div>
                     }
 
@@ -522,15 +623,15 @@
                     @if (!ViewData.ModelState.IsValid)
                     {
                         <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle text-red-500 ml-2"></i>
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fas fa-exclamation-triangle text-red-500"></i>
                                 <h3 class="text-red-800 font-semibold">خطا در اعتبارسنجی</h3>
                             </div>
-                            <div class="mt-2 text-red-700 text-sm">
+                            <div class="text-red-700 text-sm space-y-1">
                                 <ul>
                                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                                     {
-                                        <li>@error.ErrorMessage</li>
+                                        <li>• @error.ErrorMessage</li>
                                     }
                                 </ul>
                             </div>
@@ -540,29 +641,29 @@
                     <form method="post" class="space-y-6" enctype="multipart/form-data">
                         <!-- Basic Information Card -->
                         <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h2 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-info-circle ml-2 text-blue-500"></i>
-                                    اطلاعات پایه محصول
+                            <div class="card-header p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-info-circle text-blue-500"></i>
+                                    <span>اطلاعات پایه محصول</span>
                                 </h2>
                             </div>
-                            <div class="p-6">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="card-content p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div class="form-group">
-                                        <label class="form-label" for="title">
+                                        <label class="form-label required-field" for="title">
                                             عنوان محصول
-                                            <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text"
                                                id="title"
                                                name="title"
-                                               class="form-control @(ViewData.ModelState["title"]?.Errors.Any() == true ? "field-validation-error" : "")"
+                                               class="input @(ViewData.ModelState["title"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                                placeholder="عنوان محصول را وارد کنید"
                                                required
                                                value="@Model.title">
                                         @if (ViewData.ModelState["title"]?.Errors.Any() == true)
                                         {
                                             <div class="validation-error">
+                                                <i class="fas fa-exclamation-circle"></i>
                                                 @ViewData.ModelState["title"].Errors.First().ErrorMessage
                                             </div>
                                         }
@@ -570,20 +671,20 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="form-label" for="slug">
+                                        <label class="form-label required-field" for="slug">
                                             اسلاگ
-                                            <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text"
                                                id="slug"
                                                name="slug"
-                                               class="form-control @(ViewData.ModelState["slug"]?.Errors.Any() == true ? "field-validation-error" : "")"
+                                               class="input @(ViewData.ModelState["slug"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                                placeholder="اسلاگ محصول را وارد کنید"
                                                required
                                                value="@Model.slug">
                                         @if (ViewData.ModelState["slug"]?.Errors.Any() == true)
                                         {
                                             <div class="validation-error">
+                                                <i class="fas fa-exclamation-circle"></i>
                                                 @ViewData.ModelState["slug"].Errors.First().ErrorMessage
                                             </div>
                                         }
@@ -592,19 +693,19 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="description">
+                                    <label class="form-label required-field" for="description">
                                         توضیحات محصول
-                                        <span class="text-red-500">*</span>
                                     </label>
                                     <textarea id="description"
                                               name="description"
-                                              class="form-control @(ViewData.ModelState["description"]?.Errors.Any() == true ? "field-validation-error" : "")"
-                                              rows="6"
+                                              class="w-full @(ViewData.ModelState["description"]?.Errors.Any() == true ? "field-validation-error" : "")"
+                                              rows="4"
                                               placeholder="توضیحات کامل محصول را وارد کنید"
                                               required>@Model.description</textarea>
                                     @if (ViewData.ModelState["description"]?.Errors.Any() == true)
                                     {
                                         <div class="validation-error">
+                                            <i class="fas fa-exclamation-circle"></i>
                                             @ViewData.ModelState["description"].Errors.First().ErrorMessage
                                         </div>
                                     }
@@ -612,13 +713,12 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="form-label" for="status">
+                                    <label class="form-label required-field" for="status">
                                         وضعیت محصول
-                                        <span class="text-red-500">*</span>
                                     </label>
                                     <select id="status"
                                             name="status"
-                                            class="form-control @(ViewData.ModelState["status"]?.Errors.Any() == true ? "field-validation-error" : "")"
+                                            class="input @(ViewData.ModelState["status"]?.Errors.Any() == true ? "field-validation-error" : "")"
                                             required>
                                         <option value="">انتخاب وضعیت</option>
                                         <option value="IsActive" selected="@(Model.status == MedicalProject.Models.Product.ProductStatus.IsActive)">فعال</option>
@@ -628,6 +728,7 @@
                                     @if (ViewData.ModelState["status"]?.Errors.Any() == true)
                                     {
                                         <div class="validation-error">
+                                            <i class="fas fa-exclamation-circle"></i>
                                             @ViewData.ModelState["status"].Errors.First().ErrorMessage
                                         </div>
                                     }
@@ -638,20 +739,20 @@
 
                         <!-- SEO Settings Card -->
                         <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h2 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-search ml-2 text-green-500"></i>
-                                    تنظیمات سئو
+                            <div class="card-header p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-search text-green-500"></i>
+                                    <span>تنظیمات سئو</span>
                                 </h2>
                             </div>
-                            <div class="p-6">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="card-content p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div class="form-group">
                                         <label class="form-label" for="MetaTitle">عنوان متا</label>
                                         <input type="text"
                                                id="MetaTitle"
                                                name="MetaTitle"
-                                               class="form-control"
+                                               class="input"
                                                placeholder="عنوان متا برای موتورهای جستجو"
                                                value="@Model.MetaTitle">
                                         <div class="form-text">عنوانی که در نتایج جستجو نمایش داده می‌شود</div>
@@ -662,7 +763,7 @@
                                         <input type="text"
                                                id="MetaKeyWords"
                                                name="MetaKeyWords"
-                                               class="form-control"
+                                               class="input"
                                                placeholder="کلمات کلیدی جدا شده با کاما"
                                                value="@Model.MetaKeyWords">
                                         <div class="form-text">کلمات کلیدی مرتبط با محصول را وارد کنید</div>
@@ -673,19 +774,19 @@
                                     <label class="form-label" for="MetaDescription">توضیحات متا</label>
                                     <textarea id="MetaDescription"
                                               name="MetaDescription"
-                                              class="form-control"
+                                              class="w-full"
                                               rows="3"
                                               placeholder="توضیحات متا برای موتورهای جستجو">@Model.MetaDescription</textarea>
                                     <div class="form-text">توضیح مختصر و جذاب برای نمایش در نتایج جستجو</div>
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                     <div class="form-group">
                                         <label class="form-label" for="Canonical">Canonical URL</label>
                                         <input type="text"
                                                id="Canonical"
                                                name="Canonical"
-                                               class="form-control"
+                                               class="input"
                                                placeholder="آدرس کانونیکال"
                                                value="@Model.Canonical">
                                         <div class="form-text">در صورت نیاز به مشخص کردن آدرس کانونیکال</div>
@@ -695,7 +796,7 @@
                                         <label class="form-label" for="Schema">اسکیما</label>
                                         <textarea id="Schema"
                                                   name="Schema"
-                                                  class="form-control"
+                                                  class="w-full"
                                                   rows="2"
                                                   placeholder="کد اسکیما">@Model.Schema</textarea>
                                         <div class="form-text">کد اسکیما برای ساختاردهی بهتر اطلاعات</div>
@@ -703,11 +804,11 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="checkbox-label">
+                                    <label class="flex items-center gap-2 cursor-pointer">
                                         <input type="checkbox"
                                                id="IndexPage"
                                                name="IndexPage"
-                                               class="checkbox-input"
+                                               class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                                                value="true"
                                                @(Model.IndexPage ? "checked" : "")>
                                         <input type="hidden" name="IndexPage" value="false">
@@ -719,35 +820,38 @@
                         </div>
 
                         <!-- Image Upload Card -->
+                        <!-- قسمت مربوط به آپلود تصویر در HTML -->
                         <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h2 class="text-lg font-semibold text-gray-900">
-                                    <i class="fas fa-image ml-2 text-purple-500"></i>
-                                    تصویر محصول
+                            <div class="card-header p-6 border-b border-gray-200">
+                                <h2 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                    <i class="fas fa-image text-purple-500"></i>
+                                    <span>تصویر محصول</span>
                                 </h2>
                             </div>
-                            <div class="p-6">
+                            <div class="card-content p-6">
                                 <div class="form-group">
                                     <label class="form-label">تصویر شاخص محصول</label>
-                                    <div class="image-upload" id="imageUploadArea">
-                                        <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3"></i>
+                                    <div class="image-upload" id="imageUploadArea" role="button" tabindex="0">
+                                        <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl md:text-3xl mb-3"></i>
                                         <p class="text-sm text-gray-600 mb-2">تصویر محصول را اینجا رها کنید یا برای آپلود کلیک کنید</p>
-                                        <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('productImage').click()">
+                                        <!-- تغییر نوع دکمه از button به div یا span -->
+                                        <div class="btn btn-outline btn-sm mt-2" id="uploadButton">
                                             <i class="fas fa-upload ml-2"></i>
                                             انتخاب فایل
-                                        </button>
+                                        </div>
                                         <input type="file" class="hidden" id="productImage" name="productImage" accept="image/*">
                                     </div>
-                                    <div id="imagePreview" class="mt-3 hidden">
-                                        <img id="previewImage" class="max-w-xs rounded-lg shadow-md" alt="پیش‌نمایش تصویر">
-                                        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeImage()">
+                                    <div id="imagePreview" class="image-preview hidden">
+                                        <img id="previewImage" class="preview-image" alt="پیش‌نمایش تصویر">
+                                        <button type="button" class="btn btn-danger btn-sm mt-3" onclick="removeImage()">
                                             <i class="fas fa-trash ml-2"></i>
                                             حذف تصویر
                                         </button>
                                     </div>
                                     @if (ViewData.ModelState["productImage"]?.Errors.Any() == true)
                                     {
-                                        <div class="validation-error">
+                                        <div class="validation-error mt-2">
+                                            <i class="fas fa-exclamation-circle"></i>
                                             @ViewData.ModelState["productImage"].Errors.First().ErrorMessage
                                         </div>
                                     }
@@ -756,14 +860,14 @@
                         </div>
 
                         <!-- Form Actions -->
-                        <div class="flex justify-end space-x-3 space-x-reverse">
-                            <a href="/Admin/Product" class="btn btn-outline">
+                        <div class="form-actions flex flex-col sm:flex-row justify-end gap-3 pt-6">
+                            <a href="/Admin/Product" class="btn btn-outline order-2 sm:order-1">
                                 <i class="fas fa-times ml-2"></i>
-                                انصراف
+                                <span class="btn-text">انصراف</span>
                             </a>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary order-1 sm:order-2">
                                 <i class="fas fa-save ml-2"></i>
-                                ذخیره محصول
+                                <span class="btn-text">ذخیره محصول</span>
                             </button>
                         </div>
                     </form>
@@ -773,13 +877,15 @@
     </div>
 
     <script>
-        // توابع مدیریت پنل ادمین
+        // مدیریت ریسپانسیو
         function toggleSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
+            if (window.innerWidth >= 992) {
+                document.body.classList.toggle('sidebar-collapsed');
+            }
         }
 
         function toggleMobileSidebar() {
-            document.body.classList.toggle('sidebar-mobile-open');
+            document.body.classList.toggle('sidebar-open');
         }
 
         function toggleProfileDropdown() {
@@ -787,13 +893,11 @@
             dropdown.classList.toggle('hidden');
         }
 
-        // مدیریت منوی سایدبار
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            } else {
-                toggleSidebar();
-            }
+        // مدیریت سایدبار
+        document.getElementById('sidebarToggle')?.addEventListener('click', toggleSidebar);
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', toggleMobileSidebar);
+        document.getElementById('mobileOverlay')?.addEventListener('click', () => {
+            document.body.classList.remove('sidebar-open');
         });
 
         // بستن منوها هنگام کلیک خارج
@@ -804,30 +908,93 @@
             if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
                 profileDropdown.classList.add('hidden');
             }
-
-            // بستن سایدبار موبایل هنگام کلیک خارج
-            if (window.innerWidth < 768 &&
-                !event.target.closest('.admin-sidebar') &&
-                !event.target.closest('#sidebarToggle')) {
-                document.body.classList.remove('sidebar-mobile-open');
-            }
         });
 
         // مدیریت فرم اسلاگ
-        document.getElementById('title').addEventListener('input', function() {
-            const title = this.value;
-            const slug = title
-                .replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, '')
-                .replace(/\s+/g, '-')
-                .toLowerCase();
-            document.getElementById('slug').value = slug;
-        });
+        const titleInput = document.getElementById('title');
+        const slugInput = document.getElementById('slug');
 
-        // مدیریت آپلود تصویر
+        if (titleInput && slugInput) {
+            titleInput.addEventListener('input', function() {
+                const title = this.value;
+                // تبدیل متن فارسی به اسلاگ انگلیسی
+                const persianToEnglish = {
+                    'آ': 'a', 'ا': 'a', 'ب': 'b', 'پ': 'p', 'ت': 't', 'ث': 's',
+                    'ج': 'j', 'چ': 'ch', 'ح': 'h', 'خ': 'kh', 'د': 'd', 'ذ': 'z',
+                    'ر': 'r', 'ز': 'z', 'ژ': 'zh', 'س': 's', 'ش': 'sh', 'ص': 's',
+                    'ض': 'z', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f',
+                    'ق': 'gh', 'ک': 'k', 'گ': 'g', 'ل': 'l', 'م': 'm', 'ن': 'n',
+                    'و': 'v', 'ه': 'h', 'ی': 'y', 'ئ': 'e', 'ء': 'a', 'أ': 'a',
+                    'ؤ': 'o', 'إ': 'e', 'ي': 'y', 'ة': 'h'
+                };
+
+                let slug = title
+                    .replace(/[^\u0600-\u06FFa-zA-Z0-9\s]/g, '') // حذف کاراکترهای غیرمجاز
+                    .replace(/\s+/g, '-') // جایگزینی فاصله با خط تیره
+                    .toLowerCase();
+
+                // تبدیل حروف فارسی به انگلیسی
+                slug = slug.split('').map(char => persianToEnglish[char] || char).join('');
+
+                // حذف خط تیره‌های تکراری
+                slug = slug.replace(/--+/g, '-');
+
+                // حذف خط تیره از ابتدا و انتها
+                slug = slug.replace(/^-+|-+$/g, '');
+
+                slugInput.value = slug;
+            });
+        }
+
+               // مدیریت آپلود تصویر - نسخه تصحیح شده
         const imageUploadArea = document.getElementById('imageUploadArea');
+        const uploadButton = document.getElementById('uploadButton'); // دکمه جدید
         const productImage = document.getElementById('productImage');
         const imagePreview = document.getElementById('imagePreview');
         const previewImage = document.getElementById('previewImage');
+
+        function handleFiles(files) {
+            if (files && files.length > 0) {
+                const file = files[0];
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        imageUploadArea.classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا',
+                        text: 'لطفاً یک فایل تصویری انتخاب کنید',
+                        confirmButtonText: 'متوجه شدم'
+                    });
+                }
+            }
+        }
+
+        // راه حل ۱: استفاده از stopPropagation
+        uploadButton.addEventListener('click', function(e) {
+            e.stopPropagation(); // جلوگیری از انتشار رویداد به والد
+            productImage.click();
+        });
+
+        // راه حل ۲: غیرفعال کردن کلیک روی کل imageUploadArea
+        // یا تغییر آن به فقط برای درگ و دراپ
+        imageUploadArea.addEventListener('click', function(e) {
+            // فقط اگر روی دکمه کلیک نشده، اجرا شود
+            if (!e.target.closest('#uploadButton')) {
+                productImage.click();
+            }
+        });
+
+        // یا راه حل ساده‌تر: حذف کلیک از imageUploadArea و فقط برای درگ و دراپ بگذاریم
+        // imageUploadArea.addEventListener('click', function(e) {
+        //     // این خط را کامنت یا حذف کنید
+        //     // productImage.click();
+        // });
 
         // Drag and Drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -855,135 +1022,182 @@
             imageUploadArea.classList.remove('dragover');
         }
 
-        imageUploadArea.addEventListener('drop', handleDrop, false);
-
-        function handleDrop(e) {
+        imageUploadArea.addEventListener('drop', function(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
             handleFiles(files);
-        }
+        });
+
+        // مدیریت کیبورد برای دسترسی‌پذیری
+        imageUploadArea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                productImage.click();
+            }
+        });
 
         productImage.addEventListener('change', function() {
             handleFiles(this.files);
         });
 
-        function handleFiles(files) {
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImage.src = e.target.result;
-                        imagePreview.classList.remove('hidden');
-                        imageUploadArea.classList.add('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('لطفاً یک فایل تصویری انتخاب کنید');
-                }
-            }
-        }
-
         function removeImage() {
             productImage.value = '';
+            previewImage.src = '';
             imagePreview.classList.add('hidden');
             imageUploadArea.classList.remove('hidden');
-            previewImage.src = '';
         }
 
         // مدیریت ارسال فرم
         document.querySelector('form').addEventListener('submit', function(e) {
-            // اعتبارسنجی‌های لازم
-            const title = document.getElementById('title').value;
-            const slug = document.getElementById('slug').value;
-            const description = document.getElementById('description').value;
-            const status = document.getElementById('status').value;
+            const title = document.getElementById('title');
+            const slug = document.getElementById('slug');
+            const description = document.getElementById('description');
+            const status = document.getElementById('status');
 
-            if (!title || !slug || !description || !status) {
-                e.preventDefault();
-                alert('لطفاً فیلدهای ضروری را پر کنید');
-                return;
-            }
+            let hasError = false;
+
+            // اعتبارسنجی فیلدهای ضروری
+            [title, slug, description, status].forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('field-validation-error');
+                    hasError = true;
+                } else {
+                    field.classList.remove('field-validation-error');
+                }
+            });
 
             // اعتبارسنجی اسلاگ
-            const slugRegex = /^[a-z0-9-]+$/;
-            if (!slugRegex.test(slug)) {
-                e.preventDefault();
-                alert('اسلاگ فقط می‌تواند شامل حروف کوچک، اعداد و خط تیره باشد');
-                return;
+            if (slug.value) {
+                const slugRegex = /^[a-z0-9-]+$/;
+                if (!slugRegex.test(slug.value)) {
+                    slug.classList.add('field-validation-error');
+                    hasError = true;
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطا در اسلاگ',
+                        text: 'اسلاگ فقط می‌تواند شامل حروف کوچک انگلیسی، اعداد و خط تیره باشد',
+                        confirmButtonText: 'متوجه شدم'
+                    });
+                }
             }
 
-            // اگر همه چیز درست بود، فرم ارسال می‌شود
+            if (hasError) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'لطفاً فیلدهای ضروری را پر کنید',
+                    text: 'فیلدهای علامت‌دار شده با * ضروری هستند',
+                    confirmButtonText: 'متوجه شدم'
+                });
+                return false;
+            }
+
+            // نمایش لودینگ
+            Swal.fire({
+                title: 'در حال ذخیره محصول...',
+                text: 'لطفاً صبر کنید',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            return true;
+        });
+
+        // مدیریت ریسایز ویندو
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.innerWidth >= 992) {
+                    document.body.classList.remove('sidebar-open');
+                }
+                if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                    document.body.classList.add('sidebar-collapsed');
+                } else {
+                    document.body.classList.remove('sidebar-collapsed');
+                }
+            }, 250);
+        });
+
+        // مقداردهی اولیه بر اساس سایز صفحه
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.innerWidth < 992) {
+                document.body.classList.remove('sidebar-open');
+            }
+            if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+
+            // بهبود UX برای موبایل
+            document.querySelectorAll('a, button, input[type="text"], input[type="email"], input[type="password"], textarea, select').forEach(element => {
+                if (!element.classList.contains('touch-friendly')) {
+                    element.classList.add('touch-friendly');
+                }
+            });
+
+            // فاکوس روی اولین فیلد
+            const firstInput = document.querySelector('input:not([type="hidden"]), textarea, select');
+            if (firstInput && firstInput.type !== 'file') {
+                setTimeout(() => firstInput.focus(), 100);
+            }
         });
     </script>
+
     <script src="~/Alert.js"></script>
 
     <script>
         // نمایش خودکار پیام‌های TempData
-        function showTempDataMessages() {
-        // موفقیت
-        @if (TempData["Success"] != null)
-        {
-                    <text>
-                        Alert.success(decodePersianText('@TempData["Success"]'));
-                    </text>
-        }
-
-        // خطا
-        @if (TempData["Error"] != null)
-        {
-                    <text>
-                        const errorMsg = decodePersianText('@TempData["Error"]');
-                        if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
-                        Alert.notFound(errorMsg);
-                        } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
-                        Alert.serverError(errorMsg);
-                        } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
-                        Alert.badRequest(errorMsg);
-                        } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
-                        Alert.unauthorized(errorMsg);
-                        } else {
-                        Alert.error(errorMsg);
-                        }
-                    </text>
-        }
-
-        // هشدار
-        @if (TempData["Warning"] != null)
-        {
-                    <text>
-                        const warningMsg = decodePersianText('@TempData["Warning"]');
-                        if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
-                        Alert.validationWarning(warningMsg);
-                        } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
-                        Alert.financialWarning(warningMsg);
-                        } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
-                        Alert.securityWarning(warningMsg);
-                        } else {
-                        Alert.warning(warningMsg);
-                        }
-                    </text>
-        }
-
-        // اطلاعیه
-        @if (TempData["Info"] != null)
-        {
-                    <text>
-                        const infoMsg = decodePersianText('@TempData["Info"]');
-                        if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
-                        Alert.systemInfo(infoMsg);
-                        } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
-                        Alert.financialInfo(infoMsg);
-                        } else {
-                        Alert.info(infoMsg);
-                        }
-                    </text>
-        }
-        }
-
-        // نمایش پیام‌ها پس از لود صفحه
         document.addEventListener('DOMContentLoaded', function() {
-            showTempDataMessages();
+            // پیام‌های موفقیت
+            @if (TempData["Success"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        if (typeof Alert !== 'undefined' && typeof Alert.success === 'function') {
+                            Alert.success('@Html.Raw(TempData["Success"])');
+                        }
+                    }, 300);
+                    </text>
+            }
+
+            // پیام‌های خطا
+            @if (TempData["Error"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        if (typeof Alert !== 'undefined' && typeof Alert.error === 'function') {
+                            Alert.error('@Html.Raw(TempData["Error"])');
+                        }
+                    }, 500);
+                    </text>
+            }
+
+            // پیام‌های هشدار
+            @if (TempData["Warning"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        if (typeof Alert !== 'undefined' && typeof Alert.warning === 'function') {
+                            Alert.warning('@Html.Raw(TempData["Warning"])');
+                        }
+                    }, 700);
+                    </text>
+            }
+
+            // پیام‌های اطلاعات
+            @if (TempData["Info"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        if (typeof Alert !== 'undefined' && typeof Alert.info === 'function') {
+                            Alert.info('@Html.Raw(TempData["Info"])');
+                        }
+                    }, 900);
+                    </text>
+            }
         });
     </script>
 

@@ -11,7 +11,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>مدیریت محصولات - پلتفرم دنگ</title>
 
     <!-- فونت‌ها -->
@@ -19,22 +19,23 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
-    <!-- jQuery اول (اگر استفاده می‌کنی) -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- سپس SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
         /* استایل‌های سفارشی */
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+        }
+
         html {
             direction: rtl;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
@@ -44,17 +45,7 @@
             background-color: #f9fafb;
             color: #111827;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
-        }
-
-        * {
-            border-color: #e5e7eb;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: #3b82f6;
-            border-color: #3b82f6;
+            overflow-x: hidden;
         }
 
         /* کامپوننت‌های سفارشی */
@@ -70,19 +61,13 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: all 0.2s;
             cursor: pointer;
+            white-space: nowrap;
         }
 
-            .btn:focus {
-                outline: 2px solid transparent;
-                outline-offset: 2px;
-                ring: 2px;
-                ring-offset: 2px;
-            }
-
-            .btn:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
 
         .btn-primary {
             background-color: #2563eb;
@@ -101,15 +86,6 @@
 
             .btn-secondary:hover {
                 background-color: #f9fafb;
-            }
-
-        .btn-success {
-            background-color: #059669;
-            color: white;
-        }
-
-            .btn-success:hover {
-                background-color: #047857;
             }
 
         .btn-danger {
@@ -139,15 +115,6 @@
             overflow: hidden;
         }
 
-        .card-hover {
-            transition: all 0.3s;
-        }
-
-            .card-hover:hover {
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-                transform: translateY(-0.25rem);
-            }
-
         .input {
             display: block;
             width: 100%;
@@ -157,24 +124,11 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-            .input::placeholder {
-                color: #9ca3af;
-            }
-
             .input:focus {
                 outline: none;
-                ring: 2px;
-                ring-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                 border-color: #3b82f6;
             }
-
-        .label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 0.25rem;
-        }
 
         .badge {
             display: inline-flex;
@@ -183,11 +137,6 @@
             border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 500;
-        }
-
-        .badge-primary {
-            background-color: #dbeafe;
-            color: #1e40af;
         }
 
         .badge-success {
@@ -210,36 +159,32 @@
             color: #6b7280;
         }
 
-        .text-gradient {
-            background: linear-gradient(to right, #2563eb, #1e40af);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
         /* استایل‌های مخصوص پنل ادمین */
         .admin-sidebar {
-            width: 260px;
+            width: var(--sidebar-width);
             background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
             color: white;
             transition: all 0.3s;
+            height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 40;
+            overflow-y: auto;
         }
 
         .admin-main {
-            margin-right: 260px;
+            margin-right: var(--sidebar-width);
             transition: all 0.3s;
-        }
-
-        .admin-content {
-            min-height: calc(100vh - 64px);
+            min-height: 100vh;
         }
 
         .sidebar-collapsed .admin-sidebar {
-            width: 70px;
+            width: var(--sidebar-collapsed);
         }
 
         .sidebar-collapsed .admin-main {
-            margin-right: 70px;
+            margin-right: var(--sidebar-collapsed);
         }
 
         .sidebar-link {
@@ -250,40 +195,36 @@
             border-radius: 0.5rem;
             margin: 0.25rem 0.5rem;
             transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
         }
-
-            .sidebar-link:hover, .sidebar-link.active {
-                background-color: rgba(255, 255, 255, 0.1);
-                color: white;
-            }
-
-            .sidebar-link i {
-                width: 24px;
-                text-align: center;
-            }
 
             .sidebar-link span {
                 margin-right: 0.75rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                transition: all 0.3s;
             }
 
         .sidebar-collapsed .sidebar-link span {
-            display: none;
+            opacity: 0;
+            width: 0;
+            margin: 0;
         }
 
-        .table-responsive {
+        /* جدول ریسپانسیو */
+        .table-container {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 800px; /* حداقل عرض برای حفظ ساختار */
         }
 
-            .table th, .table td {
-                padding: 0.75rem 1rem;
+            .table th,
+            .table td {
+                padding: 0.75rem 0.5rem;
                 text-align: right;
                 border-bottom: 1px solid #e5e7eb;
             }
@@ -292,54 +233,49 @@
                 background-color: #f9fafb;
                 font-weight: 600;
                 color: #374151;
+                white-space: nowrap;
             }
 
-            .table tbody tr:hover {
-                background-color: #f9fafb;
+        /* فیلترهای ریسپانسیو */
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+            .filter-form .input {
+                min-width: 150px;
             }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        /* استایل‌های موبایل */
+        .mobile-menu-btn {
+            display: none;
         }
 
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #374151;
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 35;
         }
 
-        .form-control {
-            display: block;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: all 0.2s;
-        }
-
-            .form-control:focus {
-                outline: none;
-                box-shadow: 0 0 0 2px #3b82f6;
-                border-color: #3b82f6;
+        /* Media Queries */
+        @@media (max-width: 1200px) {
+            .table th, .table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.875rem;
             }
 
-        .form-text {
-            display: block;
-            margin-top: 0.25rem;
-            font-size: 0.875rem;
-            color: #6b7280;
-        }
-
-        /* Responsive */
-        @@media (max-width: 1024px) {
             .admin-sidebar {
-                width: 70px;
+                width: var(--sidebar-collapsed);
             }
 
             .admin-main {
-                margin-right: 70px;
+                margin-right: var(--sidebar-collapsed);
             }
 
             .sidebar-link span {
@@ -347,54 +283,208 @@
             }
         }
 
-        @@media (max-width: 768px) {
+        @@media (max-width: 992px) {
             .admin-sidebar {
-                position: fixed;
-                right: -260px;
-                z-index: 50;
-                height: 100vh;
+                transform: translateX(100%);
+                width: 280px;
             }
 
             .admin-main {
-                margin-right: 0;
+                margin-right: 0 !important;
             }
 
-            .sidebar-mobile-open .admin-sidebar {
-                right: 0;
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .sidebar-open .admin-sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-open .mobile-overlay {
+                display: block;
             }
 
             .sidebar-link span {
                 display: block;
             }
         }
+
+        @@media (max-width: 768px) {
+            .header-container {
+                padding: 0.5rem;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .filter-form {
+                width: 100%;
+                flex-direction: column;
+            }
+
+                .filter-form .input,
+                .filter-form select,
+                .filter-form button {
+                    width: 100%;
+                }
+
+            .table {
+                min-width: 1000px;
+            }
+
+                .table td:nth-child(2),
+                .table td:nth-child(3),
+                .table td:nth-child(4) {
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+            .pagination-container {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+
+            .pagination-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+
+                .btn i {
+                    margin-left: 0.25rem !important;
+                    margin-right: 0.25rem !important;
+                }
+
+            .table {
+                font-size: 0.75rem;
+            }
+
+                .table th, .table td {
+                    padding: 0.375rem 0.25rem;
+                }
+
+            .product-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .product-actions {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+                .product-actions .btn {
+                    padding: 0.25rem 0.5rem;
+                }
+        }
+
+        @@media (max-width: 400px) {
+            .logo-text {
+                display: none;
+            }
+
+            .user-name {
+                display: none;
+            }
+
+            .table {
+                font-size: 0.7rem;
+            }
+
+            .badge {
+                padding: 0.125rem 0.375rem;
+                font-size: 0.65rem;
+            }
+        }
+
+        /* استایل‌های بهبود یافته برای موبایل */
+        .touch-friendly {
+            min-height: 44px;
+            min-width: 44px;
+        }
+
+        /* متن‌های کوتاه شده */
+        .truncate-text {
+            max-width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        @@media (hover: none) and (pointer: coarse) {
+            .btn {
+                padding: 0.75rem 1rem;
+            }
+
+            .input {
+                font-size: 16px; /* جلوگیری از زوم در iOS */
+            }
+        }
+
+        /* حالت پرینت */
+        @@media print {
+            .admin-sidebar,
+            .mobile-menu-btn,
+            .user-actions,
+            .filter-form,
+            .btn {
+                display: none !important;
+            }
+
+            .admin-main {
+                margin: 0 !important;
+            }
+
+            .table {
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body class="admin-layout">
+    <!-- Overlay برای موبایل -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
     <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+        <div class="header-container px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo and Toggle -->
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                <div class="flex items-center gap-2">
+                    <button id="mobileMenuToggle" class="mobile-menu-btn p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-bars text-lg"></i>
+                    </button>
+                    <button id="sidebarToggle" class="hidden md:block p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <a href="/">
-                        <div class="flex items-center space-x-2 space-x-reverse">
-                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">د</span>
-                            </div>
-                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                    <a href="/" class="flex items-center gap-2">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">د</span>
                         </div>
+                        <span class="logo-text text-xl font-bold text-gray-900">پلتفرم دنگ</span>
                     </a>
                 </div>
 
                 <!-- User Actions -->
-                <div class="flex items-center space-x-4 space-x-reverse">
+                <div class="user-actions flex items-center gap-2 sm:gap-4">
                     <!-- Notifications -->
-                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors touch-friendly">
                         <i class="fas fa-bell"></i>
-                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center text-xs">
                             3
                         </span>
                     </a>
@@ -402,11 +492,11 @@
                     <!-- Profile Dropdown -->
                     <div class="relative">
                         <button onclick="toggleProfileDropdown()"
-                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                                class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors touch-friendly">
                             <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-user text-blue-600"></i>
                             </div>
-                            <span class="hidden sm:block font-medium text-gray-700">
+                            <span class="user-name hidden sm:block font-medium text-gray-700">
                                 ادمین
                             </span>
                         </button>
@@ -414,18 +504,18 @@
                         <!-- Dropdown Menu -->
                         <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
                             <a href="/Admin/Dashboard"
-                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                               class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-tachometer-alt ml-3"></i>
                                 داشبورد
                             </a>
                             <a href="/Profile"
-                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                               class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-user ml-3"></i>
                                 پروفایل
                             </a>
                             <form asp-page="/Logout" method="post" class="w-full">
                                 <button type="submit"
-                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                        class="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-right">
                                     <i class="fas fa-sign-out-alt ml-3"></i>
                                     خروج
                                 </button>
@@ -437,43 +527,43 @@
         </div>
     </header>
 
-    <div class="flex">
+    <div class="flex relative">
         <!-- Sidebar -->
-        <div class="admin-sidebar fixed h-full z-30">
+        <div class="admin-sidebar">
             <div class="flex flex-col h-full">
                 <!-- Sidebar Header -->
                 <div class="p-4 border-b border-blue-700">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-2 space-x-reverse">
+                        <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                                 <span class="text-blue-600 font-bold text-sm">د</span>
                             </div>
-                            <span class="text-white font-bold">پنل مدیریت</span>
+                            <span class="text-white font-bold whitespace-nowrap">پنل مدیریت</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Sidebar Menu -->
                 <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
-
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="admin-main flex-1">
+        <div class="admin-main flex-1 w-full">
             <div class="admin-content">
                 <!-- Page Header -->
                 <div class="bg-white border-b border-gray-200">
-                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h1 class="text-2xl font-bold text-gray-900">مدیریت محصولات</h1>
-                                <p class="mt-1 text-sm text-gray-600">ایجاد، ویرایش و مدیریت محصولات پلتفرم</p>
+                    <div class="max-w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                        <div class="page-header flex justify-between items-center">
+                            <div class="flex-1 min-w-0">
+                                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 ">مدیریت محصولات</h1>
+                                <p class="mt-1 text-xs sm:text-sm text-gray-600 ">ایجاد، ویرایش و مدیریت محصولات پلتفرم</p>
                             </div>
-                            <div class="flex items-center space-x-3 space-x-reverse">
-                                <a asp-page="Add" class="btn btn-primary">
-                                    <i class="fas fa-plus ml-2"></i>
-                                    افزودن محصول جدید
+                            <div class="flex items-center gap-2 sm:gap-3">
+                                <a asp-page="Add" class="btn btn-primary text-xs sm:text-sm">
+                                    <i class="fas fa-plus ml-1 sm:ml-2"></i>
+                                    <span class="hidden sm:inline">افزودن محصول جدید</span>
+                                    <span class="sm:hidden">افزودن</span>
                                 </a>
                             </div>
                         </div>
@@ -481,52 +571,54 @@
                 </div>
 
                 <!-- Main Content Area -->
-                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="max-w-full px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
                     <!-- Products List -->
                     <div class="card">
-                        <div class="p-6">
-                            <div class="flex justify-between items-center mb-6">
-                                <h2 class="text-lg font-semibold text-gray-900">لیست محصولات</h2>
+                        <div class="p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                                <h2 class="text-lg font-semibold text-gray-900 whitespace-nowrap">لیست محصولات</h2>
 
                                 <!-- Search and Filters -->
-                                <form method="get" class="flex items-center space-x-3 space-x-reverse">
-                                    <div class="relative">
-                                        <input type="text"
-                                               name="Title"
-                                               value="@Model.FilterParams.Title"
-                                               placeholder="جستجو بر اساس عنوان..."
-                                               class="input pl-10">
-                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <i class="fas fa-search text-gray-400"></i>
+                                <form method="get" class="filter-form w-full sm:w-auto">
+                                    <div class="flex flex-col sm:flex-row gap-2 w-full">
+                                        <div class="relative flex-1">
+                                            <input type="text"
+                                                   name="Title"
+                                                   value="@Model.FilterParams.Title"
+                                                   placeholder="جستجو..."
+                                                   class="input pl-9 sm:pl-10 text-sm">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fas fa-search text-gray-400 text-sm"></i>
+                                            </div>
                                         </div>
+
+                                        <select name="Status" class="input text-sm min-w-[120px]">
+                                            <option value="">همه وضعیت‌ها</option>
+                                            <option value="IsActive" selected="@(Model.FilterParams.Status?.ToString() == "Active")">فعال</option>
+                                            <option value="NotActive" selected="@(Model.FilterParams.Status?.ToString() == "Inactive")">غیرفعال</option>
+                                            <option value="IsDone" selected="@(Model.FilterParams.Status?.ToString() == "Draft")">تکمیل شده</option>
+                                        </select>
+
+                                        <button type="submit" class="btn btn-primary text-sm whitespace-nowrap">
+                                            <i class="fas fa-filter ml-2"></i>
+                                            فیلتر
+                                        </button>
                                     </div>
-
-                                    <select name="Status" class="input">
-                                        <option value="">همه وضعیت‌ها</option>
-                                        <option value="IsActive" selected="@(Model.FilterParams.Status?.ToString() == "Active")">فعال</option>
-                                        <option value="NotActive" selected="@(Model.FilterParams.Status?.ToString() == "Inactive")">غیرفعال</option>
-                                        <option value="IsDone" selected="@(Model.FilterParams.Status?.ToString() == "Draft")">تکمیل شده</option>
-                                    </select>
-
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-filter ml-2"></i>
-                                        فیلتر
-                                    </button>
                                 </form>
                             </div>
 
                             <!-- Products Table -->
-                            <div class="table-responsive">
+                            <div class="table-container">
                                 <table class="table">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>عنوان</th>
-                                            <th>توضیحات</th>
-                                            <th>اسلاگ</th>
+                                            <th class="hidden md:table-cell">توضیحات</th>
+                                            <th class="hidden sm:table-cell">اسلاگ</th>
                                             <th>وضعیت</th>
-                                            <th>اطلاعات مالی</th>
-                                            <th>تاریخ ایجاد</th>
+                                            <th class="hidden lg:table-cell">اطلاعات مالی</th>
+                                            <th class="hidden md:table-cell">تاریخ ایجاد</th>
                                             <th>عملیات</th>
                                         </tr>
                                     </thead>
@@ -537,34 +629,42 @@
                                             foreach (var item in Model.Result.Data)
                                             {
                                                 <tr>
-                                                    <td>@(number += 1)</td>
+                                                    <td class="font-medium">@(number += 1)</td>
                                                     <td>
-                                                        <div class="flex items-center space-x-3 space-x-reverse">
+                                                        <div class="product-info flex items-center gap-2 sm:gap-3">
                                                             @if (!string.IsNullOrEmpty(item.ImageName))
                                                             {
-                                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                                    <image src="@Directories.GetProductImagePathPath(item.ImageName)" class="fas fa-box text-blue-600"></image>
+                                                                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                                    <img src="@Directories.GetProductImagePathPath(item.ImageName)"
+                                                                         alt="@item.Title"
+                                                                         class="w-full h-full object-cover rounded-lg">
                                                                 </div>
                                                             }
                                                             else
                                                             {
-                                                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                                    <i class="fas fa-box text-blue-600"></i>
+                                                                <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                                    <i class="fas fa-box text-blue-600 text-sm sm:text-base"></i>
                                                                 </div>
                                                             }
-                                                            <div>
-                                                                <div class="font-medium text-gray-900">@item.Title</div>
-                                                                <div class="text-sm text-gray-500">@item.Id.ToString().Substring(0, 8)...</div>
+                                                            <div class="min-w-0">
+                                                                <div class="font-medium text-gray-900 truncate-text max-w-[120px] sm:max-w-[200px]">
+                                                                    @item.Title
+                                                                </div>
+                                                                <div class="text-xs text-gray-500 truncate-text">
+                                                                    ID: @item.Id.ToString().Substring(0, Math.Min(8, item.Id.ToString().Length))...
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <div class="max-w-xs truncate" title="@item.Description">
+                                                    <td class="hidden md:table-cell">
+                                                        <div class="truncate-text max-w-[200px]" title="@item.Description">
                                                             @item.Description
                                                         </div>
                                                     </td>
-                                                    <td>
-                                                        <code class="text-xs bg-gray-100 px-2 py-1 rounded">@item.Slug</code>
+                                                    <td class="hidden sm:table-cell">
+                                                        <code class="text-xs bg-gray-100 px-2 py-1 rounded truncate-text inline-block max-w-[100px]">
+                                                            @item.Slug
+                                                        </code>
                                                     </td>
                                                     <td>
                                                         @switch (item.Status)
@@ -583,34 +683,39 @@
                                                                 break;
                                                         }
                                                     </td>
-                                                    <td>
+                                                    <td class="hidden lg:table-cell">
                                                         @if (item.InventoryDto != null)
                                                         {
                                                             <div class="text-xs space-y-1">
-                                                                <div>قیمت کل: @item.InventoryDto.TotalPrice ریال</div>
-                                                                <div>تعداد دانگ: @item.InventoryDto.Dong</div>
-                                                                <div>قیمت هر دانگ: @item.InventoryDto.PricePerDong ریال</div>
-                                                                <div>سود: @item.InventoryDto.Profit ریال</div>
-                                                                <div>زمان سود: @item.InventoryDto.ProfitableTime</div>
+                                                                <div class="truncate-text">قیمت: @item.InventoryDto.TotalPrice ریال</div>
+                                                                <div class="truncate-text">دانگ: @item.InventoryDto.Dong</div>
+                                                                <div class="truncate-text">قیمت/دانگ: @item.InventoryDto.PricePerDong ریال</div>
                                                             </div>
                                                         }
                                                         else
                                                         {
-                                                            <span class="text-gray-400 text-xs">اطلاعات مالی ثبت نشده</span>
+                                                            <span class="text-gray-400 text-xs">بدون اطلاعات</span>
                                                         }
                                                     </td>
-                                                    <td>@item.CreationDate.ToPersianDate()</td>
+                                                    <td class="hidden md:table-cell">
+                                                        <div class="text-sm">@item.CreationDate.ToPersianDate()</div>
+                                                    </td>
                                                     <td>
-                                                        <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <a asp-page="Edit" asp-route-productId="@item.Id" class="btn btn-outline btn-sm">
-                                                                <i class="fas fa-edit"></i>
+                                                        <div class="product-actions flex items-center gap-1 sm:gap-2">
+                                                            <a asp-page="Edit" asp-route-productId="@item.Id"
+                                                               class="btn btn-outline btn-sm" title="ویرایش">
+                                                                <i class="fas fa-edit text-xs sm:text-sm"></i>
                                                             </a>
-                                                            <a asp-page="Details" asp-route-productId="@item.Id" class="btn btn-outline btn-sm">
-                                                                <i class="fas fa-eye"></i>
+                                                            <a asp-page="Details" asp-route-productId="@item.Id"
+                                                               class="btn btn-outline btn-sm" title="جزئیات">
+                                                                <i class="fas fa-eye text-xs sm:text-sm"></i>
                                                             </a>
                                                             <form method="post" asp-page-handler="Delete" asp-route-productId="@item.Id" class="inline">
-                                                                <button type="button" class="btn btn-danger btn-sm delete-btn" data-product-id="@item.Id" data-product-title="@item.Title">
-                                                                    <i class="fas fa-trash"></i>
+                                                                <button type="button" class="btn btn-danger btn-sm delete-btn"
+                                                                        data-product-id="@item.Id"
+                                                                        data-product-title="@item.Title"
+                                                                        title="حذف">
+                                                                    <i class="fas fa-trash text-xs sm:text-sm"></i>
                                                                 </button>
                                                             </form>
                                                         </div>
@@ -622,9 +727,9 @@
                                         {
                                             <tr>
                                                 <td colspan="8" class="text-center py-8 text-gray-500">
-                                                    <i class="fas fa-box-open text-4xl mb-4 text-gray-300"></i>
-                                                    <p>محصولی یافت نشد</p>
-                                                    <a asp-page="Add" class="btn btn-primary mt-4">
+                                                    <i class="fas fa-box-open text-3xl sm:text-4xl mb-4 text-gray-300"></i>
+                                                    <p class="text-sm sm:text-base">محصولی یافت نشد</p>
+                                                    <a asp-page="Add" class="btn btn-primary mt-4 text-sm sm:text-base">
                                                         <i class="fas fa-plus ml-2"></i>
                                                         افزودن اولین محصول
                                                     </a>
@@ -638,16 +743,17 @@
                             <!-- Pagination -->
                             @if (Model.Result?.Data != null && Model.Result.Data.Any())
                             {
-                                <div class="flex items-center justify-between mt-6">
-                                    <div class="text-sm text-gray-700">
+                                <div class="pagination-container flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+                                    <div class="text-xs sm:text-sm text-gray-700 text-center sm:text-right">
                                         نمایش @((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) تا
                                         @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)
                                         از @Model.Result.EntityCount محصول
                                     </div>
-                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                    <div class="pagination-buttons flex items-center gap-1 sm:gap-2">
                                         @if (Model.Result.CurrentPage > 1)
                                         {
-                                            <a href="?PageId=@(Model.Result.CurrentPage - 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">
+                                            <a href="?PageId=@(Model.Result.CurrentPage - 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status"
+                                               class="btn btn-outline btn-sm">
                                                 <i class="fas fa-chevron-right"></i>
                                             </a>
                                         }
@@ -658,7 +764,12 @@
                                             </button>
                                         }
 
-                                        @for (int i = 1; i <= Model.Result.PageCount; i++)
+                                        @{
+                                            int startPage = Math.Max(1, Model.Result.CurrentPage - 2);
+                                            int endPage = Math.Min(Model.Result.PageCount, Model.Result.CurrentPage + 2);
+                                        }
+
+                                        @for (int i = startPage; i <= endPage; i++)
                                         {
                                             if (i == Model.Result.CurrentPage)
                                             {
@@ -666,13 +777,15 @@
                                             }
                                             else
                                             {
-                                                <a href="?PageId=@i&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">@i</a>
+                                                <a href="?PageId=@i&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status"
+                                                   class="btn btn-outline btn-sm">@i</a>
                                             }
                                         }
 
                                         @if (Model.Result.CurrentPage < Model.Result.PageCount)
                                         {
-                                            <a href="?PageId=@(Model.Result.CurrentPage + 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status" class="btn btn-outline btn-sm">
+                                            <a href="?PageId=@(Model.Result.CurrentPage + 1)&Title=@Model.FilterParams.Title&Status=@Model.FilterParams.Status"
+                                               class="btn btn-outline btn-sm">
                                                 <i class="fas fa-chevron-left"></i>
                                             </a>
                                         }
@@ -693,13 +806,15 @@
     </div>
 
     <script>
-        // توابع مدیریت پنل ادمین
+        // مدیریت ریسپانسیو
         function toggleSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
+            if (window.innerWidth >= 992) {
+                document.body.classList.toggle('sidebar-collapsed');
+            }
         }
 
         function toggleMobileSidebar() {
-            document.body.classList.toggle('sidebar-mobile-open');
+            document.body.classList.toggle('sidebar-open');
         }
 
         function toggleProfileDropdown() {
@@ -707,13 +822,11 @@
             dropdown.classList.toggle('hidden');
         }
 
-        // مدیریت منوی سایدبار
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            } else {
-                toggleSidebar();
-            }
+        // مدیریت سایدبار
+        document.getElementById('sidebarToggle')?.addEventListener('click', toggleSidebar);
+        document.getElementById('mobileMenuToggle')?.addEventListener('click', toggleMobileSidebar);
+        document.getElementById('mobileOverlay')?.addEventListener('click', () => {
+            document.body.classList.remove('sidebar-open');
         });
 
         // بستن منوها هنگام کلیک خارج
@@ -724,18 +837,12 @@
             if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
                 profileDropdown.classList.add('hidden');
             }
-
-            // بستن سایدبار موبایل هنگام کلیک خارج
-            if (window.innerWidth < 768 &&
-                !event.target.closest('.admin-sidebar') &&
-                !event.target.closest('#sidebarToggle')) {
-                document.body.classList.remove('sidebar-mobile-open');
-            }
         });
 
         // مدیریت حذف محصول
         document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
                 const productId = this.getAttribute('data-product-id');
                 const productTitle = this.getAttribute('data-product-title');
 
@@ -744,105 +851,103 @@
                     text: `محصول "${productTitle}" حذف خواهد شد`,
                     icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'بله، حذف کن',
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'حذف',
                     cancelButtonText: 'لغو',
-                    reverseButtons: true
+                    reverseButtons: true,
+                    customClass: {
+                        container: 'swal-rtl'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // ارسال درخواست حذف
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = `?handler=Delete&productId=${productId}`;
-
-                        const csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
-                        const csrfInput = document.createElement('input');
-                        csrfInput.type = 'hidden';
-                        csrfInput.name = '__RequestVerificationToken';
-                        csrfInput.value = csrfToken;
-                        form.appendChild(csrfInput);
-
-                        document.body.appendChild(form);
-                        form.submit();
+                        const form = this.closest('form');
+                        if (form) {
+                            form.submit();
+                        }
                     }
                 });
             });
         });
 
-        // مدیریت فرم فیلتر
-        document.querySelector('form').addEventListener('submit', function(e) {
-            // اعتبارسنجی‌های لازم در اینجا اضافه شود
+        // مدیریت ریسایز ویندو
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                if (window.innerWidth >= 992) {
+                    document.body.classList.remove('sidebar-open');
+                }
+                if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                    document.body.classList.add('sidebar-collapsed');
+                } else {
+                    document.body.classList.remove('sidebar-collapsed');
+                }
+            }, 250);
+        });
+
+        // مقداردهی اولیه بر اساس سایز صفحه
+        window.addEventListener('DOMContentLoaded', function() {
+            if (window.innerWidth < 992) {
+                document.body.classList.remove('sidebar-open');
+            }
+            if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                document.body.classList.add('sidebar-collapsed');
+            }
+        });
+
+        // بهبود UX برای موبایل
+        document.querySelectorAll('a, button').forEach(element => {
+            if (!element.classList.contains('touch-friendly')) {
+                element.classList.add('touch-friendly');
+            }
         });
     </script>
+
     <script src="~/Alert.js"></script>
 
     <script>
         // نمایش خودکار پیام‌های TempData
-        function showTempDataMessages() {
-        // موفقیت
-        @if (TempData["Success"] != null)
-        {
-                    <text>
-                        Alert.success(decodePersianText('@TempData["Success"]'));
-                    </text>
-        }
-
-        // خطا
-        @if (TempData["Error"] != null)
-        {
-                    <text>
-                        const errorMsg = decodePersianText('@TempData["Error"]');
-                        if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
-                        Alert.notFound(errorMsg);
-                        } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
-                        Alert.serverError(errorMsg);
-                        } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
-                        Alert.badRequest(errorMsg);
-                        } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
-                        Alert.unauthorized(errorMsg);
-                        } else {
-                        Alert.error(errorMsg);
-                        }
-                    </text>
-        }
-
-        // هشدار
-        @if (TempData["Warning"] != null)
-        {
-                    <text>
-                        const warningMsg = decodePersianText('@TempData["Warning"]');
-                        if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
-                        Alert.validationWarning(warningMsg);
-                        } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
-                        Alert.financialWarning(warningMsg);
-                        } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
-                        Alert.securityWarning(warningMsg);
-                        } else {
-                        Alert.warning(warningMsg);
-                        }
-                    </text>
-        }
-
-        // اطلاعیه
-        @if (TempData["Info"] != null)
-        {
-                    <text>
-                        const infoMsg = decodePersianText('@TempData["Info"]');
-                        if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
-                        Alert.systemInfo(infoMsg);
-                        } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
-                        Alert.financialInfo(infoMsg);
-                        } else {
-                        Alert.info(infoMsg);
-                        }
-                    </text>
-        }
-        }
-
-        // نمایش پیام‌ها پس از لود صفحه
         document.addEventListener('DOMContentLoaded', function() {
-            showTempDataMessages();
+            // پیام‌های موفقیت
+            @if (TempData["Success"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        Alert.success('@Html.Raw(TempData["Success"])');
+                    }, 300);
+                    </text>
+            }
+
+            // پیام‌های خطا
+            @if (TempData["Error"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        Alert.error('@Html.Raw(TempData["Error"])');
+                    }, 500);
+                    </text>
+            }
+
+            // پیام‌های هشدار
+            @if (TempData["Warning"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        Alert.warning('@Html.Raw(TempData["Warning"])');
+                    }, 700);
+                    </text>
+            }
+
+            // پیام‌های اطلاعات
+            @if (TempData["Info"] != null)
+            {
+                    <text>
+                    setTimeout(() => {
+                        Alert.info('@Html.Raw(TempData["Info"])');
+                    }, 900);
+                    </text>
+            }
         });
     </script>
 
