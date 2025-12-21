@@ -45,7 +45,7 @@ namespace MedicalProject.Pages
                     FullName = ContactForm.Name,
                     Status = Models.Contact.ContactStatus.New,
                 });
-                Message = "پیام شما با موفقیت ارسال شد. به زودی با شما تماس خواهیم گرفت.";
+                TempData["Success"] = "پیام شما با موفقیت ارسال شد. به زودی با شما تماس خواهیم گرفت.";
                 IsSuccess = true;
 
                 // ریست کردن فرم
@@ -55,7 +55,7 @@ namespace MedicalProject.Pages
             }
             catch (Exception ex)
             {
-                Message = "متاسفانه در ارسال پیام خطایی رخ داد. لطفاً دوباره تلاش کنید.";
+                TempData["Error"] = "متاسفانه در ارسال پیام خطایی رخ داد. لطفاً دوباره تلاش کنید.";
                 IsSuccess = false;
             }
 

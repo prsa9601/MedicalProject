@@ -530,14 +530,14 @@
             }
             
             // نمایش پیام موفقیت
-            @if (!string.IsNullOrEmpty(Model.Message) && Model.IsSuccess)
-            {
-                <text>
-                setTimeout(() => {
-                    Alert.success('@Model.Message');
-                }, 500);
-                </text>
-            }
+            // if (!string.IsNullOrEmpty(Model.Message) && Model.IsSuccess)
+            // {
+            //     <text>
+            //     setTimeout(() => {
+            //         Alert.success('@Model.Message');
+            //     }, 500);
+            //     </text>
+            // }
             
             // انیمیشن برای آیتم‌ها
             const contactItems = document.querySelectorAll('.contact-detail, .social-link');
