@@ -1,4 +1,1486 @@
 ﻿@page
+@using MedicalProject.Infrastructure
+@using MedicalProject.Infrastructure.Extensions
+@using MedicalProject.Infrastructure.Utils
+@using MedicalProject.Models.Order
 @model MedicalProject.Pages.Admin.Order.IndexModel
 @{
+    Layout = null;
+
+    // تعریف متغیرهای ایمن
+    var orders = Model?.Order?.Data ?? new List<OrderFilterData>();
+    var filterResult = Model?.Order;
+    var hasOrders = orders.Any();
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>مدیریت سفارشات - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی مشابه قالب ادمین */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        * {
+            border-color: #e5e7eb;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* کامپوننت‌های سفارشی */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+            .btn:focus {
+                outline: 2px solid transparent;
+                outline-offset: 2px;
+                ring: 2px;
+                ring-offset: 2px;
+            }
+
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+        .btn-primary {
+            background-color: #2563eb;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #1d4ed8;
+            }
+
+        .btn-secondary {
+            background-color: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+
+            .btn-secondary:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-success {
+            background-color: #059669;
+            color: white;
+        }
+
+            .btn-success:hover {
+                background-color: #047857;
+            }
+
+        .btn-danger {
+            background-color: #dc2626;
+            color: white;
+        }
+
+            .btn-danger:hover {
+                background-color: #b91c1c;
+            }
+
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+            }
+
+        .btn-warning {
+            background-color: #d97706;
+            color: white;
+        }
+
+            .btn-warning:hover {
+                background-color: #b45309;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+        }
+
+        .card-hover {
+            transition: all 0.3s;
+        }
+
+            .card-hover:hover {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+                transform: translateY(-0.25rem);
+            }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .input::placeholder {
+                color: #9ca3af;
+            }
+
+            .input:focus {
+                outline: none;
+                ring: 2px;
+                ring-color: #3b82f6;
+                border-color: #3b82f6;
+            }
+
+        .label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.625rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .badge-primary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-info {
+            background-color: #d1f5f9;
+            color: #0e7490;
+        }
+
+        /* استایل‌های مخصوص پنل ادمین */
+        .admin-sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+            color: white;
+            transition: all 0.3s;
+            z-index: 40;
+        }
+
+        .admin-main {
+            margin-right: 260px;
+            transition: all 0.3s;
+            width: calc(100% - 260px);
+        }
+
+        .admin-content {
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar-collapsed .admin-sidebar {
+            width: 70px;
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: 70px;
+            width: calc(100% - 70px);
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #d1d5db;
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+        }
+
+            .sidebar-link:hover, .sidebar-link.active {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link i {
+                width: 24px;
+                text-align: center;
+                flex-shrink: 0;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+        .sidebar-collapsed .sidebar-link span {
+            display: none;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+            .table th, .table td {
+                padding: 0.5rem 0.75rem;
+                text-align: right;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 0.875rem;
+            }
+
+            .table th {
+                background-color: #f9fafb;
+                font-weight: 600;
+                color: #374151;
+                white-space: nowrap;
+            }
+
+            .table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+        /* استایل‌های مخصوص صفحه سفارشات */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .mobile-order-card {
+            display: none;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Responsive */
+        @@media (max-width: 1024px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+
+            .admin-main {
+                margin-right: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .admin-sidebar {
+                position: fixed;
+                right: -260px;
+                z-index: 50;
+                height: 100vh;
+                width: 260px;
+            }
+
+            .admin-main {
+                margin-right: 0;
+                width: 100%;
+            }
+
+            .sidebar-mobile-open .admin-sidebar {
+                right: 0;
+            }
+
+            .sidebar-link span {
+                display: block;
+            }
+            /* مخفی کردن جدول در موبایل */
+            .table-responsive {
+                display: none;
+            }
+
+            .mobile-order-card {
+                display: block;
+            }
+            /* مدال در موبایل */
+            .modal-content {
+                margin: 1rem;
+                max-width: calc(100% - 2rem);
+            }
+        }
+
+        @@media (max-width: 640px) {
+            .admin-content {
+                padding: 0.5rem;
+            }
+
+            .card {
+                border-radius: 0.5rem;
+            }
+
+            .badge {
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .modal-content {
+                padding: 0.75rem;
+            }
+        }
+
+        /* بهبود قابلیت لمس در موبایل */
+        @@media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+            }
+
+            .sidebar-link {
+                min-height: 44px;
+            }
+
+            .table th, .table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            input, select, textarea {
+                font-size: 16px;
+            }
+        }
+
+        /* کلاس‌های کمکی */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="admin-layout">
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <a href="/">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                                <span class="text-white font-bold text-lg">د</span>
+                            </div>
+                            <span class="text-xl font-bold text-gray-900 hidden sm:inline">پلتفرم دنگ</span>
+                            <span class="text-xl font-bold text-gray-900 sm:hidden">دنگ</span>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <!-- Notifications -->
+                    <a href="/Notifications" class="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge badge-danger absolute -top-1 -left-1 min-w-[1.25rem] h-5 flex items-center justify-center">
+                            3
+                        </span>
+                    </a>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleProfileDropdown()"
+                                class="flex items-center space-x-2 space-x-reverse p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-blue-600"></i>
+                            </div>
+                            <span class="hidden sm:block font-medium text-gray-700">
+                                ادمین
+                            </span>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                            <a href="/Admin/Dashboard"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-tachometer-alt ml-3"></i>
+                                داشبورد
+                            </a>
+                            <a href="/Profile"
+                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user ml-3"></i>
+                                پروفایل
+                            </a>
+                            <form asp-page="/Logout" method="post" class="w-full">
+                                <button type="submit"
+                                        class="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt ml-3"></i>
+                                    خروج
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="admin-sidebar fixed h-full z-30">
+            <div class="flex flex-col h-full">
+                <!-- Sidebar Header -->
+                <div class="p-4 border-b border-blue-700">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+                                <span class="text-blue-600 font-bold text-sm">د</span>
+                            </div>
+                            <span class="text-white font-bold">پنل مدیریت</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <partial name="~/Pages/Shared/_adminSidebar.cshtml" />
+
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-main flex-1">
+            <div class="admin-content">
+                <!-- Main Content Area -->
+                <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
+                    <!-- Page Header -->
+                    <div class="card mb-6">
+                        <div class="p-4 sm:p-6">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <h1 class="text-xl sm:text-2xl font-bold text-gray-900">مدیریت سفارشات</h1>
+                                    <p class="mt-1 text-sm text-gray-600">مدیریت و پیگیری تمام سفارشات سیستم</p>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse w-full sm:w-auto">
+                                    <button onclick="window.location.href='/Admin/Order/Add'"
+                                            class="btn btn-success w-full sm:w-auto">
+                                        <i class="fas fa-plus ml-2"></i>
+                                        سفارش جدید
+                                    </button>
+                                    <button onclick="exportOrders()"
+                                            class="btn btn-outline w-full sm:w-auto">
+                                        <i class="fas fa-download ml-2"></i>
+                                        خروجی اکسل
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="card mb-6">
+                        <div class="p-4 sm:p-6">
+                            <form method="get" id="filterForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <!-- Search by Phone Number -->
+                                <div class="relative">
+                                    <input type="text"
+                                           name="PhoneNumber"
+                                           id="phoneNumberInput"
+                                           placeholder="جستجو با شماره تلفن..."
+                                           value="@Model.FilterParams.PhoneNumber"
+                                           class="input pl-10">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fas fa-phone text-gray-400"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Order Filter (Price) -->
+                                <select name="OrderFilter" id="orderFilter" class="input">
+                                    <option value="">مرتب سازی بر اساس قیمت</option>
+                                    <option value="HightPrice" selected="@(Model.FilterParams.OrderFilter == OrderFilter.HightPrice)">بالاترین قیمت</option>
+                                    <option value="LowPrice" selected="@(Model.FilterParams.OrderFilter == OrderFilter.LowPrice)">پایین‌ترین قیمت</option>
+                                    <option value="None" selected="@(Model.FilterParams.OrderFilter == OrderFilter.None)">بدون مرتب‌سازی</option>
+                                </select>
+
+                                <!-- Date Range -->
+                                <input type="date"
+                                       name="StartDate"
+                                       id="startDate"
+                                       value="@(Model.FilterParams.StartDate?.ToString("yyyy-MM-dd"))"
+                                       class="input"
+                                       placeholder="از تاریخ">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter ml-2"></i>
+                                    اعمال فیلتر
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    @*     <div class="card">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-500">کل سفارشات</p>
+                                        <p class="text-2xl font-bold text-gray-900">@(filterResult?.EntityCount.ToString("N0") ?? "0")</p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-shopping-cart text-blue-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> *@
+
+                        <div class="card">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-500">پرداخت شده</p>
+                                        <p class="text-2xl font-bold text-yellow-600">
+                                            @(orders.Count(o => o.status == OrderStatus.AwaitingPayment).ToString("N0"))
+                                        </p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-clock text-yellow-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-500">تکمیل شده</p>
+                                        <p class="text-2xl font-bold text-green-600">
+                                            @(orders.Count(o => o.status == OrderStatus.paid).ToString("N0"))
+                                        </p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-check-circle text-green-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                       @*  <div class="card">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm text-gray-500">لغو شده</p>
+                                        <p class="text-2xl font-bold text-red-600">
+                                            @(orders.Count(o => o.status == OrderStatus.Cancelled).ToString("N0"))
+                                        </p>
+                                    </div>
+                                    <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-times-circle text-red-600"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> *@
+                    </div>
+
+                    <!-- Orders Table -->
+                    <div class="card">
+                        <div class="p-4 sm:p-6">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>شماره سفارش</th>
+                                            <th>کاربر</th>
+                                            <th>تاریخ خرید</th>
+                                            <th>محصولات</th>
+                                            <th>وضعیت</th>
+                                            <th>عملیات</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (!hasOrders)
+                                        {
+                                            <tr>
+                                                <td colspan="7" class="text-center py-8 text-gray-500">
+                                                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                                                    <p>هیچ سفارشی یافت نشد</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                        else
+                                        {
+                                            var startNumber = ((filterResult?.CurrentPage ?? 1) - 1) * (filterResult?.Take ?? 10) + 1;
+                                            foreach (var order in orders)
+                                            {
+                                                <tr>
+                                                    <td>@(startNumber++)</td>
+                                                    <td class="font-medium">@order.Id.ToString().Substring(0, 8)...</td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                                <i class="fas fa-user text-blue-600 text-sm"></i>
+                                                            </div>
+                                                            <div>
+                                                                <div class="font-medium">کاربر @order.UserId.ToString().Substring(0, 8)</div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>@order.DateOfPurchase.ToPersianDate()</td>
+                                                    <td>
+                                                        @if (order.OrderItems != null)
+                                                        {
+                                                            var firstProduct = order.OrderItems;
+                                                            <div class="text-sm">
+                                                                <div class="font-medium">@firstProduct.ProductId</div>
+                                                                <div class="text-gray-500">
+                                                                    @if (order.OrderItems != null)
+                                                                    {
+                                                                        <span>1 محصول</span>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="text-gray-400">بدون محصول</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @{
+                                                            var statusClass = GetStatusClass(order.status);
+                                                            var statusText = GetStatusText(order.status);
+                                                        }
+                                                        <span class="badge @statusClass">@statusText</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="flex items-center space-x-2 space-x-reverse">
+                                                            <button onclick="showOrderDetails('@order.Id')"
+                                                                    class="btn btn-outline btn-sm" title="مشاهده جزئیات">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button onclick="editOrder('@order.Id')"
+                                                                    class="btn btn-warning btn-sm" title="ویرایش">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button onclick="deleteOrder('@order.Id')"
+                                                                    class="btn btn-danger btn-sm" title="حذف">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Mobile Orders List -->
+                            <div class="mobile-order-card">
+                                @if (!hasOrders)
+                                {
+                                    <div class="text-center py-8 text-gray-500">
+                                        <i class="fas fa-inbox text-4xl mb-2"></i>
+                                        <p>هیچ سفارشی یافت نشد</p>
+                                    </div>
+                                }
+                                else
+                                {
+                                    var startNumber = ((filterResult?.CurrentPage ?? 1) - 1) * (filterResult?.Take ?? 10) + 1;
+                                    foreach (var order in orders)
+                                    {
+                                        var statusClass = GetStatusClass(order.status);
+                                        var statusText = GetStatusText(order.status);
+                                        var orderIdShort = order.Id.ToString().Substring(0, 8);
+                                        var userIdShort = order.UserId.ToString().Substring(0, 8);
+
+                                        <div class="mb-4 border border-gray-200 rounded-lg p-4">
+                                            <div class="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <div class="font-bold text-gray-900">#@(startNumber++)</div>
+                                                    <div class="text-xs text-gray-500">شناسه: @orderIdShort...</div>
+                                                </div>
+                                                <span class="badge @statusClass">@statusText</span>
+                                            </div>
+
+                                            <div class="space-y-2 mb-4">
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 text-sm">کاربر:</span>
+                                                    <span class="font-medium text-sm">کاربر @userIdShort</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 text-sm">تاریخ خرید:</span>
+                                                    <span class="text-sm">@order.DateOfPurchase.ToPersianDate()</span>
+                                                </div>
+                                                <div class="flex justify-between">
+                                                    <span class="text-gray-600 text-sm">تعداد محصولات:</span>
+                                                    <span class="font-medium text-sm">@(order.OrderItems != null ? 1 : 0)</span>
+                                                </div>
+                                                @if (order.OrderItems != null)
+                                                {
+                                                    var firstProduct = order.OrderItems;
+                                                    <div class="flex justify-between">
+                                                        <span class="text-gray-600 text-sm">محصول اول:</span>
+                                                        <span class="text-sm text-truncate max-w-[150px]">@firstProduct.ProductId</span>
+                                                    </div>
+                                                }
+                                            </div>
+
+                                            <div class="flex space-x-2 space-x-reverse">
+                                                <button onclick="showOrderDetails('@order.Id')"
+                                                        class="btn btn-outline btn-sm flex-1">
+                                                    <i class="fas fa-eye ml-1 text-xs"></i>
+                                                    مشاهده
+                                                </button>
+                                                <button onclick="editOrder('@order.Id')"
+                                                        class="btn btn-warning btn-sm flex-1">
+                                                    <i class="fas fa-edit ml-1 text-xs"></i>
+                                                    ویرایش
+                                                </button>
+                                                <button onclick="deleteOrder('@order.Id')"
+                                                        class="btn btn-danger btn-sm flex-1">
+                                                    <i class="fas fa-trash ml-1 text-xs"></i>
+                                                    حذف
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            <!-- Pagination -->
+                            @if (filterResult != null && filterResult.EntityCount > 0)
+                            {
+                                <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
+                                    <div class="text-sm text-gray-700">
+                                        نمایش
+                                        <span>@((filterResult.CurrentPage - 1) * filterResult.Take + 1) - @Math.Min(filterResult.CurrentPage * filterResult.Take, filterResult.EntityCount)</span>
+                                        از
+                                        <span>@filterResult.EntityCount</span>
+                                        سفارش
+                                    </div>
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        @if (filterResult.CurrentPage > 1)
+                                        {
+                                            <button type="button"
+                                                    onclick="changePage(@filterResult.CurrentPage - 1)"
+                                                    class="btn btn-outline btn-sm">
+                                                <i class="fas fa-chevron-right"></i>
+                                                قبلی
+                                            </button>
+                                        }
+
+                                        @for (int i = filterResult.StartPage; i <= filterResult.EndPage; i++)
+                                        {
+                                            <button type="button"
+                                                    onclick="changePage(@i)"
+                                                    class="btn btn-sm @(i == filterResult.CurrentPage ? "btn-primary" : "btn-outline")">
+                                                @i
+                                            </button>
+                                        }
+
+                                        @if (filterResult.CurrentPage < filterResult.PageCount)
+                                        {
+                                            <button type="button"
+                                                    onclick="changePage(@filterResult.CurrentPage + 1)"
+                                                    class="btn btn-outline btn-sm">
+                                                بعدی
+                                                <i class="fas fa-chevron-left"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderDetailsModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="p-4 sm:p-6">
+                <div class="flex justify-between items-center mb-4 sm:mb-6">
+                    <h3 class="text-lg sm:text-xl font-semibold text-gray-900">جزئیات سفارش</h3>
+                    <button onclick="hideOrderDetails()" class="text-gray-400 hover:text-gray-600 p-1">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div id="orderDetailsContent">
+                    <!-- Order details will be loaded here -->
+                    <div class="text-center py-8">
+                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <p class="mt-2">در حال بارگذاری جزئیات...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Form (hidden) -->
+    <form id="deleteOrderForm" method="post" asp-page-handler="Delete" style="display: none;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" id="deleteOrderId" name="orderId" />
+    </form>
+
+    <script>
+        // تابع تغییر صفحه
+        function changePage(pageNumber) {
+            const form = document.getElementById('filterForm');
+            const pageInput = document.createElement('input');
+            pageInput.type = 'hidden';
+            pageInput.name = 'PageId';
+            pageInput.value = pageNumber;
+            form.appendChild(pageInput);
+            form.submit();
+        }
+
+        // تابع نمایش جزئیات سفارش
+        async function showOrderDetails(orderId) {
+            try {
+                document.getElementById('orderDetailsModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+
+                // بارگذاری جزئیات از API
+                const response = await fetch(`/Admin/Order/Details/${orderId}`);
+                if (!response.ok) {
+                    throw new Error('خطا در بارگذاری جزئیات');
+                }
+
+                const order = await response.json();
+
+                // ایجاد HTML برای جزئیات سفارش
+                let orderItemsHtml = '';
+                if (order.orderItems && order.orderItems.length > 0) {
+                    orderItemsHtml = `
+                        <div class="card">
+                            <div class="p-4 border-b border-gray-200">
+                                <h4 class="font-semibold text-gray-900">محصولات (@{
+                                                                }
+ عدد)</h4>
+                            </div>
+                            <div class="p-4">
+                                <div class="space-y-3">
+                    `;
+
+                    order.orderItems.forEach((item, index) => {
+                        orderItemsHtml += `
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center space-x-3 space-x-reverse">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-box text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium">${item.productName || 'نامشخص'}</div>
+                                        <div class="text-sm text-gray-500">
+                                            ${item.dongAmount || 0} دانگ - ${(item.totalPrice || 0).toLocaleString()} ریال
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    #${index + 1}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    orderItemsHtml += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const statusClass = getStatusClass(order.status);
+                const statusText = getStatusText(order.status);
+
+                document.getElementById('orderDetailsContent').innerHTML = `
+                    <div class="space-y-6">
+                        <!-- Order Header -->
+                        <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                            <div>
+                                <div class="text-sm text-gray-500">شناسه سفارش</div>
+                                <div class="text-xl font-bold">${order.id.substring(0, 8)}...</div>
+                            </div>
+                            <span class="badge ${statusClass} text-lg px-4 py-2">${statusText}</span>
+                        </div>
+
+                        <!-- Order Information -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Customer Info -->
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-200">
+                                    <h4 class="font-semibold text-gray-900">اطلاعات مشتری</h4>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">شناسه کاربر:</span>
+                                        <span class="font-medium">${order.userId.substring(0, 8)}...</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">تاریخ خرید:</span>
+                                        <span>${new Date(order.dateOfPurchase).toLocaleDateString('fa-IR')}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Status -->
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-200">
+                                    <h4 class="font-semibold text-gray-900">وضعیت سفارش</h4>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">وضعیت:</span>
+                                        <span class="badge ${statusClass}">${statusText}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">تاریخ ایجاد:</span>
+                                        <span>${new Date(order.creationDate).toLocaleDateString('fa-IR')}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Order Items -->
+                        ${orderItemsHtml}
+
+                        <!-- Price Summary -->
+                        ${order.orderItems && order.orderItems.length > 0 ? `
+                        <div class="card">
+                            <div class="p-4 border-b border-gray-200">
+                                <h4 class="font-semibold text-gray-900">خلاصه مالی</h4>
+                            </div>
+                            <div class="p-4 space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">تعداد محصولات:</span>
+                                    <span>${order.orderItems.length} عدد</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">مجموع دانگ‌ها:</span>
+                                    <span>${order.orderItems.reduce((sum, item) => sum + (item.dongAmount || 0), 0)} دانگ</span>
+                                </div>
+                                <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-3">
+                                    <span>مبلغ کل:</span>
+                                    <span class="text-blue-600">
+                                        ${order.orderItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0).toLocaleString()} ریال
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Actions -->
+                        <div class="flex justify-end space-x-3 space-x-reverse pt-4 border-t border-gray-200">
+                            <button onclick="hideOrderDetails()" class="btn btn-outline">
+                                بستن
+                            </button>
+                            <button onclick="editOrder('${order.id}')" class="btn btn-warning">
+                                <i class="fas fa-edit ml-2"></i>
+                                ویرایش سفارش
+                            </button>
+                            <button onclick="printOrder('${order.id}')" class="btn btn-primary">
+                                <i class="fas fa-print ml-2"></i>
+                                چاپ رسید
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('خطا در بارگذاری جزئیات:', error);
+                document.getElementById('orderDetailsContent').innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-triangle text-4xl mb-2"></i>
+                        <p>خطا در بارگذاری جزئیات سفارش</p>
+                        <button onclick="hideOrderDetails()" class="btn btn-outline mt-4">
+                            بستن
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function hideOrderDetails() {
+            document.getElementById('orderDetailsModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // تابع ویرایش سفارش
+        function editOrder(orderId) {
+            window.location.href = `/Admin/Order/Edit/${orderId}`;
+        }
+
+        // تابع حذف سفارش
+        function deleteOrder(orderId) {
+            Swal.fire({
+                title: 'حذف سفارش',
+                html: `
+                    <div class="text-right">
+                        <p>آیا از حذف این سفارش مطمئن هستید؟</p>
+                        <div class="mt-4 p-4 bg-red-50 rounded-lg">
+                            <div class="font-semibold">شناسه سفارش: ${orderId.substring(0, 8)}...</div>
+                            <p class="mt-4 text-sm text-red-500">این عمل قابل بازگشت نیست!</p>
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'بله، حذف شود',
+                cancelButtonText: 'لغو',
+                reverseButtons: true,
+                confirmButtonColor: '#dc2626'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ارسال فرم حذف
+                    document.getElementById('deleteOrderId').value = orderId;
+                    document.getElementById('deleteOrderForm').submit();
+                }
+            });
+        }
+
+        // تابع چاپ سفارش
+        function printOrder(orderId) {
+            // درخواست به API برای دریافت اطلاعات چاپ
+            fetch(`/Admin/Order/Print/${orderId}`)
+                .then(response => response.json())
+                .then(order => {
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`
+                        <html dir="rtl">
+                        <head>
+                            <title>رسید سفارش ${order.id.substring(0, 8)}</title>
+                            <style>
+                                body { font-family: 'Vazir', sans-serif; padding: 20px; }
+                                .header { text-align: center; margin-bottom: 30px; }
+                                .order-info { margin-bottom: 20px; }
+                                .section { margin-bottom: 20px; }
+                                .section-title { font-weight: bold; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px; }
+                                .row { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                                .total { font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 10px; margin-top: 20px; }
+                                .product-row { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="header">
+                                <h1>پلتفرم دنگ</h1>
+                                <h2>رسید سفارش</h2>
+                            </div>
+
+                            <div class="order-info">
+                                <div class="row">
+                                    <span>شناسه سفارش:</span>
+                                    <span>${order.id.substring(0, 8)}...</span>
+                                </div>
+                                <div class="row">
+                                    <span>تاریخ خرید:</span>
+                                    <span>${new Date(order.dateOfPurchase).toLocaleDateString('fa-IR')}</span>
+                                </div>
+                                <div class="row">
+                                    <span>وضعیت:</span>
+                                    <span>${getStatusText(order.status)}</span>
+                                </div>
+                            </div>
+
+                            <div class="section">
+                                <div class="section-title">مشتری</div>
+                                <div class="row">
+                                    <span>شناسه کاربر:</span>
+                                    <span>${order.userId.substring(0, 8)}...</span>
+                                </div>
+                            </div>
+
+                            <div class="section">
+                                <div class="section-title">محصولات (${order.orderItems?.length || 0} عدد)</div>
+                    `);
+
+                    if (order.orderItems && order.orderItems.length > 0) {
+                        order.orderItems.forEach((item, index) => {
+                            printWindow.document.write(`
+                                <div class="product-row">
+                                    <div class="row">
+                                        <span>${index + 1}. ${item.productName || 'نامشخص'}</span>
+                                        <span>${item.dongAmount || 0} دانگ</span>
+                                    </div>
+                                    <div class="row">
+                                        <span>قیمت:</span>
+                                        <span>${(item.totalPrice || 0).toLocaleString()} ریال</span>
+                                    </div>
+                                </div>
+                            `);
+                        });
+
+                        const totalAmount = order.orderItems.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
+                        const totalDang = order.orderItems.reduce((sum, item) => sum + (item.dongAmount || 0), 0);
+
+                        printWindow.document.write(`
+                            <div class="total">
+                                <div class="row">
+                                    <span>مجموع دانگ‌ها:</span>
+                                    <span>${totalDang} دانگ</span>
+                                </div>
+                                <div class="row">
+                                    <span>مبلغ کل:</span>
+                                    <span>${totalAmount.toLocaleString()} ریال</span>
+                                </div>
+                            </div>
+                        `);
+                    }
+
+                    printWindow.document.write(`
+                            </div>
+
+                            <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #666;">
+                                با تشکر از اعتماد شما<br>
+                                پشتیبانی: ۰۲۱-۱۲۳۴۵۶۷۸
+                            </div>
+                        </body>
+                        </html>
+                    `);
+                    printWindow.document.close();
+                    printWindow.print();
+                })
+                .catch(error => {
+                    console.error('خطا در چاپ سفارش:', error);
+                    showAlert('error', 'خطا در چاپ سفارش');
+                });
+        }
+
+        // تابع خروجی اکسل
+        function exportOrders() {
+            // ساخت URL با پارامترهای فیلتر فعلی
+            const form = document.getElementById('filterForm');
+            const params = new URLSearchParams(new FormData(form));
+
+            // اضافه کردن پارامتر خروجی
+            params.append('export', 'excel');
+
+            // هدایت به URL خروجی
+            window.location.href = `/Admin/Order/Export?${params.toString()}`;
+
+            showAlert('info', 'گزارش در حال آماده‌سازی و دانلود است...');
+        }
+
+        // توابع کمکی
+        function getStatusClass(status) {
+            if (!status) return 'badge-secondary';
+
+            switch(status) {
+                case 0: // Pending
+                case 'Pending': return 'status-pending';
+                case 1: // Processing
+                case 'Processing': return 'status-processing';
+                case 2: // Completed
+                case 'Completed': return 'status-completed';
+                case 3: // Cancelled
+                case 'Cancelled': return 'status-cancelled';
+                default: return 'badge-secondary';
+            }
+        }
+
+        function getStatusText(status) {
+            if (!status) return 'نامشخص';
+
+            switch(status) {
+                case 0: // Pending
+                case 'Pending': return 'در انتظار';
+                case 1: // Processing
+                case 'Processing': return 'در حال پردازش';
+                case 2: // Completed
+                case 'Completed': return 'تکمیل شده';
+                case 3: // Cancelled
+                case 'Cancelled': return 'لغو شده';
+                default: return 'نامشخص';
+            }
+        }
+
+        // تابع نمایش آلرت
+        function showAlert(type, message) {
+            Swal.fire({
+                title: type === 'success' ? 'موفقیت' : type === 'error' ? 'خطا' : 'اطلاعیه',
+                text: message,
+                icon: type,
+                confirmButtonText: 'باشه',
+                timer: type === 'success' ? 3000 : undefined
+            });
+        }
+
+        // توابع مدیریت پنل ادمین
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
+        }
+
+        function toggleMobileSidebar() {
+            document.body.classList.toggle('sidebar-mobile-open');
+        }
+
+        function toggleProfileDropdown() {
+            const dropdown = document.getElementById('profileDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // اجرای اولیه
+        document.addEventListener('DOMContentLoaded', function() {
+            // بارگذاری وضعیت سایدبار
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.body.classList.add('sidebar-collapsed');
+            }
+
+            // بستن منوها با کلیک خارج
+            document.addEventListener('click', function(event) {
+                // بستن منوی پروفایل
+                const profileDropdown = document.getElementById('profileDropdown');
+                const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
+                if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
+                    profileDropdown.classList.add('hidden');
+                }
+
+                // بستن سایدبار موبایل
+                if (window.innerWidth < 768 &&
+                    !event.target.closest('.admin-sidebar') &&
+                    !event.target.closest('#sidebarToggle')) {
+                    document.body.classList.remove('sidebar-mobile-open');
+                }
+
+                // بستن مدال جزئیات
+                const modal = document.getElementById('orderDetailsModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    if (!event.target.closest('.modal-content')) {
+                        hideOrderDetails();
+                    }
+                }
+            });
+
+            // مدیریت منوی سایدبار
+            document.getElementById('sidebarToggle').addEventListener('click', function() {
+                if (window.innerWidth < 768) {
+                    toggleMobileSidebar();
+                } else {
+                    toggleSidebar();
+                }
+            });
+
+            // تطبیق با صفحه‌نمایش
+            function handleResize() {
+                if (window.innerWidth >= 768 && document.body.classList.contains('sidebar-mobile-open')) {
+                    document.body.classList.remove('sidebar-mobile-open');
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize();
+
+            // نمایش پیام‌های TempData
+            showTempDataMessages();
+        });
+
+        // نمایش خودکار پیام‌های TempData
+        function showTempDataMessages() {
+            // موفقیت
+            @if (TempData["Success"] != null)
+            {
+                    <text>
+                        setTimeout(() => {
+                            Swal.fire({
+                                title: 'موفقیت',
+                                text: decodePersianText('@TempData["Success"]'),
+                                icon: 'success',
+                                confirmButtonText: 'باشه',
+                                timer: 3000
+                            });
+                        }, 500);
+                    </text>
+            }
+
+            // خطا
+            @if (TempData["Error"] != null)
+            {
+                    <text>
+                        setTimeout(() => {
+                            const errorMsg = decodePersianText('@TempData["Error"]');
+                            Swal.fire({
+                                title: 'خطا',
+                                text: errorMsg,
+                                icon: 'error',
+                                confirmButtonText: 'باشه'
+                            });
+                        }, 500);
+                    </text>
+            }
+
+            // هشدار
+            @if (TempData["Warning"] != null)
+            {
+                    <text>
+                        setTimeout(() => {
+                            const warningMsg = decodePersianText('@TempData["Warning"]');
+                            Swal.fire({
+                                title: 'هشدار',
+                                text: warningMsg,
+                                icon: 'warning',
+                                confirmButtonText: 'باشه',
+                                timer: 4000
+                            });
+                        }, 500);
+                    </text>
+            }
+        }
+
+        // تابع decode برای فارسی
+        function decodePersianText(text) {
+            return text.replace(/&#x([0-9A-F]+);/gi, function(match, hex) {
+                return String.fromCharCode(parseInt(hex, 16));
+            });
+        }
+    </script>
+
+    <script src="~/Alert.js"></script>
+</body>
+</html>
+
+@functions {
+    // تابع کمکی برای کلاس وضعیت
+    string GetStatusClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.paid => "status-pending",
+            OrderStatus.AwaitingPayment => "status-processing",
+            _ => "badge-secondary"
+        };
+    }
+
+    // تابع کمکی برای متن وضعیت
+    string GetStatusText(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.paid => "پرداخت شده",
+            OrderStatus.AwaitingPayment => "در حال پردازش",
+            _ => "نامشخص"
+        };
+    }
 }
