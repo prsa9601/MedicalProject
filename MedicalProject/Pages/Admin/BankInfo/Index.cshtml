@@ -161,18 +161,320 @@
     </style>
 
 
-
     <style>
-        /* استایل‌های مخصوص پنل ادمین */
+        :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed: 70px;
+        }
+
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* سایدبار دسکتاپ */
         .admin-sidebar {
-            width: 260px;
+            width: var(--sidebar-width);
             background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
             color: white;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease;
             height: 100vh;
+            position: fixed;
+            right: 0;
+            top: 0;
+            z-index: 100;
             overflow-y: auto;
-            z-index: 40;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        .admin-main {
+            margin-right: var(--sidebar-width);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        /* حالت جمع شده در دسکتاپ */
+        .sidebar-collapsed .admin-sidebar {
+            width: var(--sidebar-collapsed);
+        }
+
+        .sidebar-collapsed .admin-main {
+            margin-right: var(--sidebar-collapsed);
+        }
+
+        /* لینک‌های سایدبار */
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(209, 213, 219, 0.9);
+            border-radius: 0.5rem;
+            margin: 0.25rem 0.5rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+            .sidebar-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .sidebar-link.active {
+                background-color: rgba(37, 99, 235, 0.2);
+                color: white;
+                border-right: 3px solid #3b82f6;
+            }
+
+            .sidebar-link i {
+                min-width: 20px;
+                text-align: center;
+                font-size: 1.125rem;
+            }
+
+            .sidebar-link span {
+                margin-right: 0.75rem;
+                transition: all 0.3s;
+                font-size: 0.875rem;
+            }
+
+        /* حالت جمع شده */
+        .sidebar-collapsed .sidebar-link span {
+            opacity: 0;
+            width: 0;
+            margin: 0;
+        }
+
+        .sidebar-collapsed .sidebar-link {
+            justify-content: center;
+            padding: 0.75rem;
+        }
+
+        /* Overlay برای موبایل */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
+        }
+
+        /* تبلت و موبایل (کمتر از 992px) */
+        @@media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(100%);
+                width: 280px;
+                transition: transform 0.3s ease;
+            }
+
+            .admin-main {
+                margin-right: 0 !important;
+            }
+
+            .mobile-menu-btn {
+                display: block !important;
+            }
+
+            .desktop-toggle-btn {
+                display: none !important;
+            }
+            /* حالت باز در موبایل */
+            .sidebar-open .admin-sidebar {
+                transform: translateX(0);
+                box-shadow: -2px 0 20px rgba(0, 0, 0, 0.25);
+            }
+
+            .sidebar-open .mobile-overlay {
+                display: block;
+                animation: fadeIn 0.3s ease;
+            }
+        }
+
+        /* دسکتاپ متوسط (1200px-992px) */
+        @@media (max-width: 1200px) and (min-width: 992px) {
+            .admin-sidebar {
+                width: var(--sidebar-collapsed);
+            }
+
+            .admin-main {
+                margin-right: var(--sidebar-collapsed);
+            }
+
+            .sidebar-link span {
+                display: none;
+            }
+
+            .sidebar-link {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+        }
+
+        /* انیمیشن‌ها */
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* استایل‌های دکمه‌ها */
+    /*     .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: none;
+        } */
+
+        /* هدر */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* اسکرول بار سفارشی */
+        .admin-sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+        }
+    </style>
+    <script>
+
+        // مدیریت سایدبار ریسپانسیو
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuToggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            const body = document.body;
+
+            // تابع toggle برای دسکتاپ
+            function toggleDesktopSidebar() {
+                body.classList.toggle('sidebar-collapsed');
+                localStorage.setItem('sidebarCollapsed', body.classList.contains('sidebar-collapsed'));
+            }
+
+            // تابع toggle برای موبایل
+            function toggleMobileSidebar() {
+                body.classList.toggle('sidebar-open');
+                if (body.classList.contains('sidebar-open')) {
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    document.body.style.overflow = '';
+                }
+            }
+
+            // تابع بستن سایدبار موبایل
+            function closeMobileSidebar() {
+                body.classList.remove('sidebar-open');
+                document.body.style.overflow = '';
+            }
+
+            // رویدادها
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', toggleMobileSidebar);
+            }
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    if (window.innerWidth >= 992) {
+                        toggleDesktopSidebar();
+                    } else {
+                        toggleMobileSidebar();
+                    }
+                });
+            }
+
+            if (mobileOverlay) {
+                mobileOverlay.addEventListener('click', closeMobileSidebar);
+            }
+
+            // بارگذاری وضعیت ذخیره شده
+            const savedState = localStorage.getItem('sidebarCollapsed');
+            if (savedState === 'true' && window.innerWidth >= 992) {
+                body.classList.add('sidebar-collapsed');
+            }
+
+            // تنظیم اولیه برای تبلت
+            if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                body.classList.add('sidebar-collapsed');
+            }
+
+            // مدیریت ریسایز
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 992) {
+                    // بستن منوی موبایل در دسکتاپ
+                    closeMobileSidebar();
+                    // نمایش دکمه دسکتاپ
+                    document.querySelector('.desktop-toggle-btn').style.display = 'flex';
+                    document.querySelector('.mobile-menu-btn').style.display = 'none';
+                } else {
+                    // نمایش دکمه موبایل
+                    document.querySelector('.desktop-toggle-btn').style.display = 'none';
+                    document.querySelector('.mobile-menu-btn').style.display = 'flex';
+                    // باز کردن سایدبار اگر قبلاً جمع شده بود
+                    body.classList.remove('sidebar-collapsed');
+                }
+
+                // تنظیم برای تبلت
+                if (window.innerWidth < 1200 && window.innerWidth >= 992) {
+                    body.classList.add('sidebar-collapsed');
+                }
+            });
+
+            // تنظیم اولیه نمایش دکمه‌ها
+            if (window.innerWidth >= 992) {
+                document.querySelector('.desktop-toggle-btn').style.display = 'flex';
+                document.querySelector('.mobile-menu-btn').style.display = 'none';
+            } else {
+                document.querySelector('.desktop-toggle-btn').style.display = 'none';
+                document.querySelector('.mobile-menu-btn').style.display = 'flex';
+            }
+
+            // بستن سایدبار با کلیک روی لینک‌ها در موبایل
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        closeMobileSidebar();
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        /* استایل‌های مخصوص پنل ادمین */
+       
 
         .admin-main {
             margin-right: 260px;
@@ -184,31 +486,7 @@
             min-height: calc(100vh - 64px);
         }
 
-        .sidebar-collapsed .admin-sidebar {
-            width: 70px;
-        }
-
-        .sidebar-collapsed .admin-main {
-            margin-right: 70px;
-        }
-
-        /* افزودن overlay برای موبایل */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 35;
-            transition: opacity 0.3s ease-in-out;
-        }
-
-        .sidebar-mobile-open .sidebar-overlay {
-            display: block;
-            animation: fadeIn 0.3s ease-in-out;
-        }
+      
 
         @@keyframes fadeIn {
             from {
@@ -222,33 +500,17 @@
 
         /* Responsive برای تبلت‌ها */
         @@media (max-width: 1024px) {
-            .admin-sidebar {
-                width: 70px;
-                position: fixed;
-                right: 0;
-                top: 0;
-            }
-
+       
             .admin-main {
                 margin-right: 70px;
             }
 
-            .sidebar-link span {
-                display: none;
-            }
+    
         }
 
         /* Responsive برای موبایل‌ها */
         @@media (max-width: 768px) {
-            .admin-sidebar {
-                position: fixed;
-                right: -260px;
-                z-index: 40;
-                height: 100vh;
-                width: 260px;
-                transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            }
-
+         
             .admin-main {
                 margin-right: 0;
                 width: 100%;
@@ -260,13 +522,6 @@
                 box-shadow: -2px 0 15px rgba(0, 0, 0, 0.1);
             }
 
-            .sidebar-mobile-open .admin-main {
-                transform: translateX(-260px);
-            }
-
-            .sidebar-link span {
-                display: block !important;
-            }
             /* جلوگیری از اسکرول بدنه هنگام باز بودن سایدبار */
             body.sidebar-mobile-open {
                 overflow: hidden;
@@ -275,123 +530,30 @@
 
         /* برای موبایل‌های کوچکتر */
         @@media (max-width: 480px) {
-            .admin-sidebar {
-                width: 240px;
-                right: -240px;
-            }
-
-            .sidebar-mobile-open .admin-main {
-                transform: translateX(-240px);
-            }
+         
         }
     </style>
-    <script>
-                // توابع مدیریت پنل ادمین
-        function toggleSidebar() {
-            document.body.classList.toggle('sidebar-collapsed');
-        }
 
-        function toggleMobileSidebar() {
-            const body = document.body;
-            body.classList.toggle('sidebar-mobile-open');
-
-            // جلوگیری از اسکرول بدنه هنگام باز بودن سایدبار
-            if (body.classList.contains('sidebar-mobile-open')) {
-                document.body.style.overflow = 'hidden';
-            } else {
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        function closeMobileSidebar() {
-            document.body.classList.remove('sidebar-mobile-open');
-            document.body.style.overflow = 'auto';
-        }
-
-        function toggleProfileDropdown() {
-            const dropdown = document.getElementById('profileDropdown');
-            dropdown.classList.toggle('hidden');
-        }
-
-        // مدیریت منوی سایدبار
-        document.getElementById('sidebarToggle').addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (window.innerWidth < 768) {
-                toggleMobileSidebar();
-            } else {
-                toggleSidebar();
-            }
-        });
-
-        // بستن سایدبار هنگام کلیک روی overlay
-        document.getElementById('sidebarOverlay')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-            closeMobileSidebar();
-        });
-
-        // بستن سایدبار هنگام کلیک روی لینک‌های سایدبار در موبایل (اصلاح شده)
-        document.querySelectorAll('.sidebar-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                // بررسی می‌کنیم آیا این یک لینک واقعی است یا دکمه/عنصر دیگر
-                const href = this.getAttribute('href');
-                const tagName = this.tagName.toLowerCase();
-
-                if (window.innerWidth < 768) {
-                    // اگر یک لینک واقعی نیست (مثلاً button یا span) یا لینک خاصی نیست
-                    if (tagName !== 'a' || !href || href === '#' || href === 'javascript:void(0)') {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        closeMobileSidebar();
-                    } else {
-                        // اگر لینک واقعی است، سایدبار را با تأخیر ببندید تا کاربر بتواند کلیک کند
-                        setTimeout(() => {
-                            closeMobileSidebar();
-                        }, 300);
-                    }
-                }
-            });
-        });
-
-        // بستن سایدبار موبایل هنگام تغییر سایز صفحه به بزرگتر از 768px
-        window.addEventListener('resize', function() {
-            if (window.innerWidth >= 768) {
-                closeMobileSidebar();
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        // جلوگیری از بستن سایدبار هنگام کلیک روی خود سایدبار
-        document.querySelector('.admin-sidebar')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-
-        // بستن منوها هنگام کلیک خارج
-        document.addEventListener('click', function(event) {
-            const profileDropdown = document.getElementById('profileDropdown');
-            const profileButton = event.target.closest('button[onclick="toggleProfileDropdown()"]');
-
-            if (profileDropdown && !profileDropdown.contains(event.target) && !profileButton) {
-                profileDropdown.classList.add('hidden');
-            }
-        });
-    </script>
 </head>
 <body class="admin-layout">
     <!-- Header -->
     <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
         <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <button id="sidebarToggle" class="p-2 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-2">
-                        <i class="fas fa-bars"></i>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button id="mobileMenuToggle" class="mobile-menu-btn btn" style="display: none;">
+                        <i class="fas fa-bars" style="font-size: 1.25rem; color: #6b7280;"></i>
                     </button>
-                    <a href="/">
-                        <div class="flex items-center space-x-2 space-x-reverse">
-                            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <span class="text-white font-bold text-lg">د</span>
-                            </div>
-                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+
+                    <button id="sidebarToggle" class="desktop-toggle-btn btn">
+                        <i class="fas fa-bars" style="font-size: 1.125rem; color: #6b7280;"></i>
+                    </button>
+
+                    <a href="/" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                        <div style="width: 32px; height: 32px; background-color: #2563eb; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                            <span style="color: white; font-weight: bold; font-size: 1rem;">د</span>
                         </div>
+                        <span style="font-size: 1.25rem; font-weight: bold; color: #111827;">پلتفرم دنگ</span>
                     </a>
                 </div>
 

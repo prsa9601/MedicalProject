@@ -21,7 +21,7 @@ namespace MedicalProject.Pages.Admin.Finance
 
         [BindProperty(SupportsGet = true)]
         public UserPurchaseReportDto Result { get; set; }
-       
+
         [BindProperty(SupportsGet = true)]
         public UserProfitPurchaseReportDto ReportDto { get; set; }
 
@@ -39,9 +39,14 @@ namespace MedicalProject.Pages.Admin.Finance
         {
             Result = await _service.GetById(id);
             ReportDto = await _service.GetProfitById(id);
+            if (Result == null && ReportDto == null || ReportDto.OrderDtos.Count() == 0)
+            {
+                TempData["Error"] = "کاربر سرمایه گزاری نکرده است";
+                return Redirect("/Admin/Finance");
+            }
             return Page();
         }
-      
+
         public async Task<IActionResult> OnPostProfitPayed()
         {
             var result = await _profitService.Create(new Models.Profit.CreateProfitCommand

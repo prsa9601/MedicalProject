@@ -12,7 +12,7 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>مدیریت مالی و سود - پلتفرم دنگ</title>
 
     <!-- فونت‌ها -->
@@ -41,6 +41,7 @@
             background-color: #f9fafb;
             color: #111827;
             font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            overflow-x: hidden;
         }
 
         * {
@@ -67,6 +68,7 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             transition: all 0.2s;
             cursor: pointer;
+            white-space: nowrap;
         }
 
             .btn:focus {
@@ -234,11 +236,13 @@
             background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
             color: white;
             transition: all 0.3s;
+            z-index: 40;
         }
 
         .admin-main {
             margin-right: 260px;
             transition: all 0.3s;
+            width: calc(100% - 260px);
         }
 
         .admin-content {
@@ -251,6 +255,7 @@
 
         .sidebar-collapsed .admin-main {
             margin-right: 70px;
+            width: calc(100% - 70px);
         }
 
         .sidebar-link {
@@ -271,6 +276,7 @@
             .sidebar-link i {
                 width: 24px;
                 text-align: center;
+                flex-shrink: 0;
             }
 
             .sidebar-link span {
@@ -286,23 +292,27 @@
 
         .table-responsive {
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 600px;
         }
 
             .table th, .table td {
-                padding: 0.75rem 1rem;
+                padding: 0.75rem 0.5rem;
                 text-align: right;
                 border-bottom: 1px solid #e5e7eb;
+                font-size: 0.875rem;
             }
 
             .table th {
                 background-color: #f9fafb;
                 font-weight: 600;
                 color: #374151;
+                white-space: nowrap;
             }
 
             .table tbody tr:hover {
@@ -348,6 +358,7 @@
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .status-dot {
@@ -384,6 +395,7 @@
             padding: 1.5rem;
             position: relative;
             overflow: hidden;
+            min-height: 120px;
         }
 
             .stat-card::before {
@@ -407,6 +419,15 @@
             font-weight: 600;
         }
 
+        /* استایل‌های مخصوص موبایل */
+        .mobile-table-row {
+            display: none;
+        }
+
+        .mobile-actions {
+            display: none;
+        }
+
         /* Responsive */
         @@media (max-width: 1024px) {
             .admin-sidebar {
@@ -415,10 +436,16 @@
 
             .admin-main {
                 margin-right: 70px;
+                width: calc(100% - 70px);
             }
 
             .sidebar-link span {
                 display: none;
+            }
+
+            .table th, .table td {
+                padding: 0.5rem;
+                font-size: 0.8125rem;
             }
         }
 
@@ -428,10 +455,12 @@
                 right: -260px;
                 z-index: 50;
                 height: 100vh;
+                width: 260px;
             }
 
             .admin-main {
                 margin-right: 0;
+                width: 100%;
             }
 
             .sidebar-mobile-open .admin-sidebar {
@@ -441,6 +470,214 @@
             .sidebar-link span {
                 display: block;
             }
+            /* مخفی کردن جدول اصلی در موبایل */
+            .table {
+                display: none;
+            }
+            /* نمایش نسخه موبایل */
+            .mobile-table-row {
+                display: block;
+                border: 1px solid #e5e7eb;
+                border-radius: 0.75rem;
+                margin-bottom: 1rem;
+                background: white;
+                padding: 1rem;
+            }
+
+            .mobile-user-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+                padding-bottom: 1rem;
+                border-bottom: 1px solid #f3f4f6;
+            }
+
+            .mobile-user-details {
+                flex: 1;
+                margin-right: 1rem;
+            }
+
+            .mobile-stats {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .mobile-stat-item {
+                background: #f9fafb;
+                padding: 0.75rem;
+                border-radius: 0.5rem;
+            }
+
+            .mobile-stat-label {
+                font-size: 0.75rem;
+                color: #6b7280;
+                margin-bottom: 0.25rem;
+            }
+
+            .mobile-stat-value {
+                font-weight: 600;
+                color: #374151;
+                font-size: 0.875rem;
+            }
+
+            .mobile-actions {
+                display: flex;
+                justify-content: space-between;
+                gap: 0.5rem;
+            }
+
+                .mobile-actions .btn {
+                    flex: 1;
+                    padding: 0.5rem;
+                    font-size: 0.8125rem;
+                }
+            /* تنظیمات کارت‌های آماری */
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+                .stat-card p.text-2xl {
+                    font-size: 1.25rem;
+                }
+            /* تنظیمات هدر */
+            .page-header-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+                .page-header-actions .btn {
+                    width: 100%;
+                    justify-content: center;
+                }
+            /* تنظیمات فیلترها */
+            .filter-container {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+                .filter-container .input,
+                .filter-container select {
+                    width: 100%;
+                }
+            /* تنظیمات مدال */
+            #settlementModal > div {
+                margin: 1rem;
+                width: calc(100% - 2rem);
+            }
+        }
+
+        @@media (max-width: 640px) {
+            .stat-card {
+                min-height: 100px;
+                padding: 0.75rem;
+            }
+
+                .stat-card p.text-2xl {
+                    font-size: 1.125rem;
+                }
+
+            .mobile-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .header-buttons {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+
+                .header-buttons .btn {
+                    width: 100%;
+                }
+            /* متن کوچک‌تر برای موبایل */
+            .text-sm-mobile {
+                font-size: 0.75rem;
+            }
+
+            .text-lg-mobile {
+                font-size: 1rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .admin-content {
+                padding: 0.5rem;
+            }
+
+            .card {
+                border-radius: 0.5rem;
+            }
+
+            .stat-card {
+                border-radius: 0.75rem;
+            }
+
+            .mobile-user-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .mobile-user-details {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+                width: 100%;
+            }
+        }
+
+        /* بهبود قابلیت لمس در موبایل */
+        @@media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+            }
+
+            .sidebar-link {
+                min-height: 44px;
+            }
+
+            .table th, .table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            input, select, textarea {
+                font-size: 16px; /* جلوگیری از زوم در iOS */
+            }
+        }
+
+        /* برای دستگاه‌های بسیار کوچک */
+        @@media (max-width: 360px) {
+            .stat-card p.text-2xl {
+                font-size: 1rem;
+            }
+
+            .mobile-stat-item {
+                padding: 0.5rem;
+            }
+
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* کلاس‌های کمکی */
+        .text-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .flex-wrap-mobile {
+            flex-wrap: wrap;
+        }
+
+        .w-full-mobile {
+            width: 100%;
         }
     </style>
 </head>
@@ -459,7 +696,8 @@
                             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
                                 <span class="text-white font-bold text-lg">د</span>
                             </div>
-                            <span class="text-xl font-bold text-gray-900">پلتفرم دنگ</span>
+                            <span class="text-xl font-bold text-gray-900 hidden sm:inline">پلتفرم دنگ</span>
+                            <span class="text-xl font-bold text-gray-900 sm:hidden">دنگ</span>
                         </div>
                     </a>
                 </div>
@@ -539,20 +777,21 @@
             <div class="admin-content">
                 <!-- Page Header -->
                 <div class="bg-white border-b border-gray-200">
-                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                        <div class="flex justify-between items-center">
+                    <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h1 class="text-2xl font-bold text-gray-900">مدیریت مالی و سود</h1>
-                                <p class="mt-1 text-sm text-gray-600">مدیریت سود کلی سایت و سود کاربران</p>
+                                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">مدیریت مالی و سود</h1>
+                                <p class="mt-1 text-sm text-gray-600 text-sm-mobile">مدیریت سود کلی سایت و سود کاربران</p>
                             </div>
-                            <div class="flex items-center space-x-3 space-x-reverse">
-                                <button onclick="exportFinancialReport()" class="btn btn-outline">
+                            <div class="flex items-center space-x-3 space-x-reverse w-full sm:w-auto header-buttons">
+                                <button onclick="exportFinancialReport()" class="btn btn-outline flex-1 sm:flex-none">
                                     <i class="fas fa-download ml-2"></i>
-                                    خروجی گزارش
+                                    <span class="hidden sm:inline">خروجی گزارش</span>
+                                    <span class="sm:hidden">خروجی</span>
                                 </button>
-                                <button onclick="showSettlementModal()" class="btn btn-primary">
+                                <button onclick="showSettlementModal()" class="btn btn-primary flex-1 sm:flex-none">
                                     <i class="fas fa-calculator ml-2"></i>
-                                    تسویه حساب
+                                    <span>تسویه حساب</span>
                                 </button>
                             </div>
                         </div>
@@ -560,194 +799,134 @@
                 </div>
 
                 <!-- Main Content Area -->
-                <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="max-w-full mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6">
                     <!-- Statistics Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
                         <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز شده برای کاربران</p>
-                                <p class="text-2xl font-bold mt-2">
-                                    @*  @(Model.UserPurchaseReportResult.Data.Where(i => i.ProfitPurchases.
-                                    Where(i=>i.Status==Models.PurchaseReport.ProfitStatus.Success)
-                                                                        .Sum(p => p.AmountPaid)).ToString("N0")) *@
+                                <p class="text-lg sm:text-2xl font-bold mt-2">
                                     @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
-
                                 </p>
-                                <div class="flex items-center mt-2">
-                                    @* <i class="fas fa-arrow-up ml-1 text-green-300"></i> *@
-                                    @* <span class="text-green-300 text-sm">۸٪ رشد</span> *@
-                                </div>
                             </div>
                         </div>
 
                         <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
-                                <p class="text-2xl font-bold mt-2">
+                                <p class="text-lg sm:text-2xl font-bold mt-2">
                                     @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos).Count().ToString("N0")) <span class="text-sm">عدد</span>
-
                                 </p>
-                                <div class="flex items-center mt-2">
-                                    @* <i class="fas fa-arrow-up ml-1 text-green-300"></i> *@
-                                    @* <span class="text-green-300 text-sm">۱۵٪ رشد</span> *@
-                                </div>
                             </div>
                         </div>
 
-                        <!-- اضافه کردن کارت‌های آماری دیگر -->
                         <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز نشده برای کاربران</p>
-                                <p class="text-2xl font-bold mt-2">
-                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x=>x.OrderItems.Product.Unpaid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+                                <p class="text-lg sm:text-2xl font-bold mt-2">
+                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
                                 </p>
-                                <div class="flex items-center mt-2">
-                                    @* <i class="fas fa-chart-line ml-1 text-green-300"></i> *@
-                                    @* <span class="text-green-300 text-sm">پایدار</span> *@
-                                </div>
                             </div>
                         </div>
 
                         <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">کاربران فعال</p>
-                                <p class="text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
-                                <div class="flex items-center mt-2">
-                                    @* <i class="fas fa-users ml-1 text-green-300"></i> *@
-                                    @* <span class="text-green-300 text-sm">۱۰٪ رشد</span> *@
-                                </div>
+                                <p class="text-lg sm:text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Financial Summary -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                        <!-- Platform Summary -->
-                        @* <div class="card">
-                            <div class="p-6 border-b border-gray-200">
-                                <h3 class="text-lg font-semibold text-gray-900">خلاصه مالی پلتفرم</h3>
-                            </div>
-                            <div class="p-6">
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">درآمد کل:</span>
-                                        <span class="font-semibold text-green-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">هزینه‌ها:</span>
-                                        <span class="font-semibold text-red-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">سود خالص:</span>
-                                        <span class="font-semibold text-blue-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">نرخ سودآوری:</span>
-                                        <span class="font-semibold text-purple-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("P1")</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div> *@
-
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
                         <!-- User Profit Summary -->
-                        <div class="card">
-                            <div class="p-6 border-b border-gray-200">
+                        <div class="card col-span-1 lg:col-span-2">
+                            <div class="p-4 sm:p-6 border-b border-gray-200">
                                 <h3 class="text-lg font-semibold text-gray-900">سود کاربران</h3>
                             </div>
-                            <div class="p-6">
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">میانگین سرمایه گزاری کاربران:</span>
-                                        <span class="font-semibold text-green-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
+                            <div class="p-4 sm:p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span class="text-gray-600 text-sm">میانگین سرمایه‌گذاری:</span>
+                                        <span class="font-semibold text-green-600 text-sm">@((Model.ResultDto.Data.SafeSum(i => i.OrderDtos.Sum(x => x.OrderItems.TotalPrice)) / Model.ResultDto.Data.Select(i => i.OrderDtos).Count()).ToString("N0")) ریال</span>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">بیشترین سرمایه گزاری:</span>
-                                        <span class="font-semibold text-blue-600">
-                                            @{
-                                                // اگر TotalPrice از نوع decimal? (nullable) است:
-                                                var maxInvestment = Model.UserPurchaseReportResult.Data?
-                                                .OrderByDescending(d => d.PurchaseReport != null && d.PurchaseReport.Any()
-                                                ? d.PurchaseReport.Max(p => p.TotalPrice ?? "0")
-                                                : "0")
-                                                .FirstOrDefault();
-                                                string formattedProfit = decimal.Parse(maxInvestment?.PurchaseReport.FirstOrDefault().TotalPrice ?? "0").ToString("N0") ?? "0";
-                                            }
-                                            @formattedProfit ریال
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span class="text-gray-600 text-sm">بیشترین سرمایه‌گذاری:</span>
+                                        <span class="font-semibold text-blue-600 text-sm">
+
+                                            @(decimal.Parse(Model.Result.Data.OrderByDescending(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0") ?? "0") ریال
+
                                         </span>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کمترین سرمایه گزاری:</span>
-                                        <span class="font-semibold text-orange-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") ریال</span>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span class="text-gray-600 text-sm">کمترین سرمایه‌گذاری:</span>
+                                        <span class="font-semibold text-orange-600 text-sm">@decimal.Parse(Model.Result.Data.OrderBy(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0") ریال</span>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-600">کاربرانی که باید سود برایشان واریز بشود:</span>
-                                        <span class="font-semibold text-purple-600">@Model.Result.Data.SafeSum(i => i.TotalPrice).ToString("N0") نفر</span>
+                                    <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
+                                        <span class="text-gray-600 text-sm">کاربران نیازمند واریز:</span>
+                                        <span class="font-semibold text-purple-600 text-sm">@Model.ResultDto.Data.Where(i => i.OrderDtos.Any(i => i.OrderItems.Product.Unpaid.Count() >= 1)).Count().ToString("N0") نفر</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Quick Actions -->
-                        @*  <div class="card">
-                            <div class="p-6 border-b border-gray-200">
+                        <div class="card">
+                            <div class="p-4 sm:p-6 border-b border-gray-200">
                                 <h3 class="text-lg font-semibold text-gray-900">عملیات سریع</h3>
                             </div>
-                            <div class="p-6">
+                            <div class="p-4 sm:p-6">
                                 <div class="space-y-3">
                                     <button onclick="showSettlementModal()" class="btn btn-primary w-full justify-start">
                                         <i class="fas fa-calculator ml-2"></i>
-                                        تسویه حساب کاربران
+                                        <span class="text-truncate">تسویه حساب کاربران</span>
                                     </button>
                                     <button onclick="generateFinancialReport()" class="btn btn-success w-full justify-start">
                                         <i class="fas fa-file-excel ml-2"></i>
-                                        گزارش مالی
+                                        <span class="text-truncate">گزارش مالی</span>
                                     </button>
                                     <button onclick="showCommissionSettings()" class="btn btn-warning w-full justify-start">
                                         <i class="fas fa-cog ml-2"></i>
-                                        تنظیمات کارمزد
-                                    </button>
-                                    <button onclick="showProfitAnalysis()" class="btn btn-info w-full justify-start">
-                                        <i class="fas fa-chart-pie ml-2"></i>
-                                        تحلیل سودآوری
+                                        <span class="text-truncate">تنظیمات کارمزد</span>
                                     </button>
                                 </div>
                             </div>
-                        </div> *@
+                        </div>
                     </div>
 
                     <!-- User Profit List -->
                     <div class="card">
-                        <div class="p-6">
-                            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-4 lg:space-y-0">
+                        <div class="p-4 sm:p-6">
+                            <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-4 sm:mb-6 space-y-4 lg:space-y-0">
                                 <h2 class="text-lg font-semibold text-gray-900">لیست سود کاربران</h2>
 
                                 <!-- Search and Filters -->
-                                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse">
-                                    <div class="relative w-full sm:w-64">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse w-full sm:w-auto filter-container">
+                                    <div class="relative w-full sm:w-48 lg:w-64">
                                         <input type="text"
                                                id="searchInput"
-                                               placeholder="جستجو بر اساس نام کاربر..."
+                                               placeholder="جستجو..."
                                                class="input pl-10">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <i class="fas fa-search text-gray-400"></i>
                                         </div>
                                     </div>
 
-                                    <select id="profitFilter" class="input w-full sm:w-auto">
+                                    <select id="profitFilter" class="input w-full sm:w-40">
                                         <option value="">همه وضعیت‌ها</option>
                                         <option value="positive">سود باید واریز شود</option>
-                                        <option value="negative">تمامی سود ها واریز شده</option>
+                                        <option value="negative">تمامی سودها واریز شده</option>
                                     </select>
 
                                     <button onclick="applyProfitFilters()" class="btn btn-primary w-full sm:w-auto">
-                                        <i class="fas fa-filter ml-2"></i>
-                                        اعمال فیلتر
+                                        <i class="fas fa-filter ml-2 hidden sm:inline"></i>
+                                        <span>اعمال فیلتر</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Users Profit Table -->
-                            <div class="table-responsive">
+                            <!-- Users Profit Table (Desktop) -->
+                            <div class="table-responsive hidden sm:block">
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -756,15 +935,14 @@
                                             <th>شماره تلفن</th>
                                             <th>سرمایه‌گذاری کل</th>
                                             <th>سود کل پرداخت شده</th>
-                                             <th>سود کل پرداخت نشده</th> 
-                                            @* <th>سود ماه جاری</th> *@
+                                            <th>سود کل پرداخت نشده</th>
                                             <th>وضعیت</th>
                                             <th>عملیات</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @{
-                                            int number = 1;
+                                            int number = 2;
                                             foreach (var item in Model.ResultDto.Data)
                                             {
                                                 <tr>
@@ -774,22 +952,19 @@
                                                             <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
                                                                  alt="@item.FirstName @item.Lastame"
                                                                  class="user-avatar">
-                                                            <div>
+                                                            <div class="text-truncate">
                                                                 <div class="font-medium text-gray-900">@item.FirstName @item.Lastame</div>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td>@item.PhoneNumber</td>
+                                                    <td class="text-truncate">@item.PhoneNumber</td>
                                                     <td>@item.OrderDtos.SafeSum(i => i.OrderItems.TotalPrice).ToString("N0") ریال</td>
-                                                    <td class="@item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? " profit-positive" : "profit-negative" )">
-                                                        @item.OrderDtos.SelectMany(i=>i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                    <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
                                                     </td>
-                                                    <td class="@item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? " profit-positive" : "profit-negative" )">
-                                                        @item.OrderDtos.SelectMany(i=>i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                    <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
                                                     </td>
-                                                    @*<td class="@(item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @item.PurchaseReport.SafeSum(i => i.PurchasePricePerDang).ToString("N0") ریال
-                                                    </td>*@
                                                     <td>
                                                         <span class="badge @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() == 0 ? "badge-success" : "badge-danger")">
                                                             @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() > 0 ? "واریز نشده" : "واریز شده")
@@ -814,18 +989,137 @@
                                 </table>
                             </div>
 
+                            <!-- Users Profit List (Mobile) -->
+                            <div class="sm:hidden">
+                                @{
+                                    int mobileNumber = 1;
+                                    foreach (var item in Model.ResultDto.Data)
+                                    {
+                                        <div class="mobile-table-row">
+                                            <div class="mobile-user-info">
+                                                <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
+                                                     alt="@item.FirstName @item.Lastame"
+                                                     class="user-avatar">
+                                                <div class="mobile-user-details">
+                                                    <div class="font-medium text-gray-900">@mobileNumber. @item.FirstName @item.Lastame</div>
+                                                    <div class="text-sm text-gray-500 mt-1">@item.PhoneNumber</div>
+                                                    <div class="mt-1">
+                                                        <span class="badge @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() == 0 ? "badge-success" : "badge-danger") text-xs">
+                                                            @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() > 0 ? "واریز نشده" : "واریز شده")
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobile-stats">
+                                                <div class="mobile-stat-item">
+                                                    <div class="mobile-stat-label">سرمایه‌گذاری کل</div>
+                                                    <div class="mobile-stat-value">@item.OrderDtos.SafeSum(i => i.OrderItems.TotalPrice).ToString("N0") ریال</div>
+                                                </div>
+                                                <div class="mobile-stat-item">
+                                                    <div class="mobile-stat-label">سود پرداخت شده</div>
+                                                    <div class="mobile-stat-value @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                    </div>
+                                                </div>
+                                                <div class="mobile-stat-item">
+                                                    <div class="mobile-stat-label">سود پرداخت نشده</div>
+                                                    <div class="mobile-stat-value @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mobile-actions">
+                                                <button onclick="location.href='Finance/UserReport/@item.Id'"
+                                                        class="btn btn-outline btn-sm">
+                                                    <i class="fas fa-eye ml-1"></i>
+                                                    مشاهده
+                                                </button>
+                                                <button onclick="showSettlementModal('@item.Id')"
+                                                        class="btn btn-success btn-sm">
+                                                    <i class="fas fa-money-bill-wave ml-1"></i>
+                                                    تسویه
+                                                </button>
+                                            </div>
+                                        </div>
+                                        mobileNumber++;
+                                    }
+                                }
+                            </div>
+
                             <!-- Pagination -->
-                            <div class="flex flex-col sm:flex-row items-center justify-between mt-6 space-y-4 sm:space-y-0">
-                                <div class="text-sm text-gray-700">
-                                    نمایش
-                                    <span>@((Model.Result.CurrentPage - 1) * Model.Result.Take + 1) - @Math.Min(Model.Result.CurrentPage * Model.Result.Take, Model.Result.EntityCount)</span>
-                                    از
-                                    <span>@Model.Result.EntityCount</span>
-                                    کاربر
-                                </div>
-                                <div class="flex items-center space-x-2 space-x-reverse">
-                                    <!-- Pagination buttons would go here -->
-                                </div>
+                            <div class="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-6 space-y-4 sm:space-y-0">
+                                @if (Model.ResultDto != null && Model.ResultDto.Data != null && Model.ResultDto.Data.Any())
+                                {
+                                    <div class="text-sm text-gray-700">
+                                        نمایش
+                                        @{
+                                            int start = (Model.ResultDto.CurrentPage - 1) * Model.ResultDto.Take + 1;
+                                            long end = Math.Min(Model.ResultDto.CurrentPage * Model.ResultDto.Take, Model.ResultDto.EntityCount);
+                                        }
+                                        <span>@start - @end</span>
+                                        از
+                                        <span>@Model.ResultDto.EntityCount</span>
+                                        کاربر
+                                    </div>
+                                    <div class="flex items-center space-x-2 space-x-reverse">
+                                        <!-- Previous Button -->
+                                        @if (Model.ResultDto.CurrentPage > 1)
+                                        {
+                                            <a asp-route-FilterParams.Take="@Model.FilterParams.Take" asp-route-FilterParams.PageId="@(Model.ResultDto.CurrentPage - 1)" @* onclick="changePage()" *@ class="btn btn-outline btn-sm flex items-center">
+                                                <i class="fas fa-chevron-right text-xs ml-1"></i>
+                                                <span class="text-xs">قبلی</span>
+                                            </a>
+                                        }
+
+                                        <!-- Page Numbers -->
+                                        @if (Model.ResultDto.StartPage > 1)
+                                        {
+                                            <a asp-route-FilterParams.Take="@Model.FilterParams.Take" asp-route-FilterParams.PageId="1" class="btn btn-outline btn-sm px-2">
+                                                1
+                                            </a>
+                                            @if (Model.ResultDto.StartPage > 2)
+                                            {
+                                                <span class="px-2 text-gray-400">...</span>
+                                            }
+                                        }
+
+                                        @for (int i = Model.ResultDto.StartPage; i <= Model.ResultDto.EndPage; i++)
+                                        {
+                                            <a asp-route-FilterParams.Take="@Model.FilterParams.Take" asp-route-FilterParams.PageId="@i" class="btn btn-sm px-3 @(i == Model.ResultDto.CurrentPage ? "btn-primary" : "btn-outline")">
+                                                @i
+                                            </a>
+                                        }
+
+                                        @if (Model.ResultDto.EndPage < Model.ResultDto.PageCount)
+                                        {
+                                            @if (Model.ResultDto.EndPage < Model.ResultDto.PageCount - 1)
+                                            {
+                                                <span class="px-2 text-gray-400">...</span>
+                                            }
+                                            <a asp-route-FilterParams.Take="@Model.FilterParams.Take" asp-route-FilterParams.PageId="@Model.ResultDto.PageCount" class="btn btn-outline btn-sm px-2">
+                                                @Model.ResultDto.PageCount
+                                            </a>
+                                        }
+
+                                        <!-- Next Button -->
+                                        @if (Model.ResultDto.CurrentPage < Model.ResultDto.PageCount)
+                                        {
+                                            <a asp-route-FilterParams.Take="@Model.FilterParams.Take" asp-route-FilterParams.PageId="@(Model.ResultDto.CurrentPage + 1)" class="btn btn-outline btn-sm flex items-center">
+                                                <span class="text-xs">بعدی</span>
+                                                <i class="fas fa-chevron-left text-xs mr-1"></i>
+                                            </a>
+                                        }
+                                    </div>
+                                }
+
+                                else
+                                {
+                                    <div class="text-sm text-gray-700 text-center w-full">
+                                        هیچ کاربری یافت نشد
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -836,10 +1130,10 @@
 
     <!-- Settlement Modal -->
     <div id="settlementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+        <div class="relative top-4 sm:top-20 mx-auto p-4 sm:p-5 border w-full max-w-md sm:max-w-lg shadow-lg rounded-lg bg-white m-2 sm:m-auto">
             <div class="flex justify-between items-center pb-3 border-b">
-                <h3 class="text-xl font-semibold text-gray-900">تسویه حساب</h3>
-                <button onclick="closeSettlementModal()" class="text-gray-400 hover:text-gray-600">
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-900">تسویه حساب</h3>
+                <button onclick="closeSettlementModal()" class="text-gray-400 hover:text-gray-600 p-1">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -848,27 +1142,27 @@
                 <form id="settlementForm">
                     <div class="space-y-4">
                         <div>
-                            <label class="form-label">کاربر</label>
-                            <select id="userSelect" class="input" required>
+                            <label class="form-label text-sm-mobile">کاربر</label>
+                            <select id="userSelect" class="input text-sm-mobile" required>
                                 <option value="">انتخاب کاربر</option>
                                 <!-- Users would be populated here -->
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">مبلغ تسویه (ریال)</label>
-                            <input type="number" id="settlementAmount" class="input" placeholder="مبلغ را وارد کنید" required>
+                            <label class="form-label text-sm-mobile">مبلغ تسویه (ریال)</label>
+                            <input type="number" id="settlementAmount" class="input text-sm-mobile" placeholder="مبلغ را وارد کنید" required>
                         </div>
                         <div>
-                            <label class="form-label">توضیحات</label>
-                            <textarea id="settlementDescription" class="input" rows="3" placeholder="توضیحات تسویه حساب"></textarea>
+                            <label class="form-label text-sm-mobile">توضیحات</label>
+                            <textarea id="settlementDescription" class="input text-sm-mobile" rows="3" placeholder="توضیحات تسویه حساب"></textarea>
                         </div>
                     </div>
 
-                    <div class="flex justify-end space-x-3 space-x-reverse mt-6">
-                        <button type="button" onclick="closeSettlementModal()" class="btn btn-outline">
+                    <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 space-x-reverse mt-6">
+                        <button type="button" onclick="closeSettlementModal()" class="btn btn-outline order-2 sm:order-1">
                             لغو
                         </button>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary order-1 sm:order-2">
                             <i class="fas fa-check ml-2"></i>
                             تایید تسویه
                         </button>
@@ -882,6 +1176,7 @@
         // توابع مدیریت پنل ادمین
         function toggleSidebar() {
             document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed'));
         }
 
         function toggleMobileSidebar() {
@@ -899,28 +1194,40 @@
                 document.getElementById('userSelect').value = userId;
             }
             document.getElementById('settlementModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeSettlementModal() {
             document.getElementById('settlementModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
         function showitemDetails(userId) {
-            // Implementation for showing user profit details
-            alert('جزئیات سود کاربر: ' + userId);
+            window.location.href = 'Finance/UserReport/' + userId;
         }
 
         function generateUserReport(userId) {
-            // Implementation for generating user report
             alert('گزارش کاربر: ' + userId);
         }
 
         function exportFinancialReport() {
-            alert('گزارش مالی در حال آماده‌سازی است...');
+            Swal.fire({
+                title: 'در حال آماده‌سازی گزارش',
+                text: 'لطفاً چند لحظه صبر کنید...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 2000
+            });
         }
 
         function generateFinancialReport() {
-            alert('گزارش مالی جامع در حال تولید است...');
+            Swal.fire({
+                title: 'تولید گزارش مالی',
+                text: 'گزارش مالی جامع در حال تولید است...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 1500
+            });
         }
 
         function showCommissionSettings() {
@@ -934,9 +1241,29 @@
         function applyProfitFilters() {
             const search = document.getElementById('searchInput').value;
             const filter = document.getElementById('profitFilter').value;
-            // Implementation for applying filters
-            console.log('اعمال فیلترهای سود:', { search, filter });
+
+            Swal.fire({
+                title: 'اعمال فیلترها',
+                text: 'در حال اعمال فیلترهای انتخاب شده...',
+                icon: 'info',
+                showConfirmButton: false,
+                timer: 1000
+            });
+
+            // شبیه‌سازی اعمال فیلتر
+            setTimeout(() => {
+                const rows = document.querySelectorAll('.mobile-table-row, .table tbody tr');
+                rows.forEach(row => {
+                    if (search || filter) {
+                        row.style.display = 'none';
+                    } else {
+                        row.style.display = '';
+                    }
+                });
+            }, 1000);
         }
+
+
 
         // مدیریت فرم تسویه حساب
         document.getElementById('settlementForm').addEventListener('submit', function(e) {
@@ -945,10 +1272,42 @@
             const amount = document.getElementById('settlementAmount').value;
             const description = document.getElementById('settlementDescription').value;
 
-            // Implementation for settlement submission
-            console.log('تسویه حساب:', { userId, amount, description });
-            alert('تسویه حساب با موفقیت انجام شد');
-            closeSettlementModal();
+            if (!userId || !amount) {
+                Swal.fire({
+                    title: 'خطا',
+                    text: 'لطفاً همه فیلدهای ضروری را پر کنید',
+                    icon: 'error',
+                    confirmButtonText: 'باشه'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'آیا مطمئن هستید؟',
+                text: `تسویه حساب به مبلغ ${amount} ریال انجام شود؟`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'بله، انجام شود',
+                cancelButtonText: 'لغو'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Implementation for settlement submission
+                    console.log('تسویه حساب:', { userId, amount, description });
+
+                    Swal.fire({
+                        title: 'موفق',
+                        text: 'تسویه حساب با موفقیت انجام شد',
+                        icon: 'success',
+                        confirmButtonText: 'باشه',
+                        timer: 2000
+                    });
+
+                    closeSettlementModal();
+
+                    // ریست فرم
+                    document.getElementById('settlementForm').reset();
+                }
+            });
         });
 
         // مدیریت منوی سایدبار
@@ -959,6 +1318,11 @@
                 toggleSidebar();
             }
         });
+
+        // بارگذاری وضعیت سایدبار
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.body.classList.add('sidebar-collapsed');
+        }
 
         // بستن منوها هنگام کلیک خارج
         document.addEventListener('click', function(event) {
@@ -978,98 +1342,134 @@
         });
 
         // جستجوی لحظه‌ای
+        let searchTimeout;
         document.getElementById('searchInput').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
             const searchTerm = this.value.toLowerCase();
-            // شبیه‌سازی جستجوی لحظه‌ای
-            if (searchTerm.length >= 3) {
-                console.log('جستجو برای:', searchTerm);
+
+            searchTimeout = setTimeout(() => {
+                if (searchTerm.length >= 2 || searchTerm.length === 0) {
+                    // شبیه‌سازی جستجوی لحظه‌ای
+                    const rows = document.querySelectorAll('.mobile-table-row, .table tbody tr');
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        row.style.display = text.includes(searchTerm) ? '' : 'none';
+                    });
+                }
+            }, 300);
+        });
+
+        // تطبیق با صفحه‌نمایش
+        function handleResize() {
+            if (window.innerWidth >= 768 && document.body.classList.contains('sidebar-mobile-open')) {
+                document.body.classList.remove('sidebar-mobile-open');
             }
+        }
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // اجرای اولیه
+
+        // بهبود قابلیت لمس در موبایل
+        document.querySelectorAll('.btn, .sidebar-link').forEach(element => {
+            element.addEventListener('touchstart', function() {
+                this.classList.add('active');
+            });
+
+            element.addEventListener('touchend', function() {
+                this.classList.remove('active');
+            });
         });
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- سپس SweetAlert -->
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/Alert.js"></script>
 
     <script>
         // نمایش خودکار پیام‌های TempData
         function showTempDataMessages() {
-        // موفقیت
-        @if (TempData["Success"] != null)
-        {
-                        <text>
-                            Alert.success(decodePersianText('@TempData["Success"]'));
-                        </text>
+            // موفقیت
+            @if (TempData["Success"] != null)
+            {
+                                <text>
+                                    setTimeout(() => {
+                                        Swal.fire({
+                                            title: 'موفقیت',
+                                            text: decodePersianText('@TempData["Success"]'),
+                                            icon: 'success',
+                                            confirmButtonText: 'باشه',
+                                            timer: 3000
+                                        });
+                                    }, 500);
+                                </text>
+            }
+
+            // خطا
+            @if (TempData["Error"] != null)
+            {
+                                <text>
+                                    setTimeout(() => {
+                                        const errorMsg = decodePersianText('@TempData["Error"]');
+                                        Swal.fire({
+                                            title: 'خطا',
+                                            text: errorMsg,
+                                            icon: 'error',
+                                            confirmButtonText: 'باشه'
+                                        });
+                                    }, 500);
+                                </text>
+            }
+
+            // هشدار
+            @if (TempData["Warning"] != null)
+            {
+                                <text>
+                                    setTimeout(() => {
+                                        const warningMsg = decodePersianText('@TempData["Warning"]');
+                                        Swal.fire({
+                                            title: 'هشدار',
+                                            text: warningMsg,
+                                            icon: 'warning',
+                                            confirmButtonText: 'باشه',
+                                            timer: 4000
+                                        });
+                                    }, 500);
+                                </text>
+            }
+
+            // اطلاعیه
+            @if (TempData["Info"] != null)
+            {
+                                <text>
+                                    setTimeout(() => {
+                                        const infoMsg = decodePersianText('@TempData["Info"]');
+                                        Swal.fire({
+                                            title: 'اطلاعیه',
+                                            text: infoMsg,
+                                            icon: 'info',
+                                            confirmButtonText: 'باشه',
+                                            timer: 3000
+                                        });
+                                    }, 500);
+                                </text>
+            }
         }
 
-        // خطا
-        @if (TempData["Error"] != null)
-        {
-                        <text>
-                            const errorMsg = decodePersianText('@TempData["Error"]');
-                            if (errorMsg.includes('404') || errorMsg.includes('یافت نشد')) {
-                            Alert.notFound(errorMsg);
-                            } else if (errorMsg.includes('500') || errorMsg.includes('سرور')) {
-                            Alert.serverError(errorMsg);
-                            } else if (errorMsg.includes('400') || errorMsg.includes('نامعتبر')) {
-                            Alert.badRequest(errorMsg);
-                            } else if (errorMsg.includes('401') || errorMsg.includes('دسترسی')) {
-                            Alert.unauthorized(errorMsg);
-                            } else {
-                            Alert.error(errorMsg);
-                            }
-                        </text>
+        // تابع decode برای فارسی
+        function decodePersianText(text) {
+            return text.replace(/&#x([0-9A-F]+);/gi, function(match, hex) {
+                return String.fromCharCode(parseInt(hex, 16));
+            });
         }
 
-        // هشدار
-        @if (TempData["Warning"] != null)
-        {
-                        <text>
-                            const warningMsg = decodePersianText('@TempData["Warning"]');
-                            if (warningMsg.includes('اعتبارسنجی') || warningMsg.includes('بررسی')) {
-                            Alert.validationWarning(warningMsg);
-                            } else if (warningMsg.includes('مالی') || warningMsg.includes('موجودی')) {
-                            Alert.financialWarning(warningMsg);
-                            } else if (warningMsg.includes('امنیتی') || warningMsg.includes('غیرامن')) {
-                            Alert.securityWarning(warningMsg);
-                            } else {
-                            Alert.warning(warningMsg);
-                            }
-                        </text>
-        }
+        // اجرا هنگام لود صفحه
+        document.addEventListener('DOMContentLoaded', function() {
+            showTempDataMessages();
 
-        // اطلاعیه
-        @if (TempData["Info"] != null)
-        {
-                        <text>
-                            const infoMsg = decodePersianText('@TempData["Info"]');
-                            if (infoMsg.includes('سیستم') || infoMsg.includes('بروزرسانی')) {
-                            Alert.systemInfo(infoMsg);
-                            } else if (infoMsg.includes('مالی') || infoMsg.includes('تراکنش')) {
-                            Alert.financialInfo(infoMsg);
-                            } else {
-                            Alert.info(infoMsg);
-                            }
-                        </text>
-        }
-        }
+            // اضافه کردن padding-bottom برای موبایل
+            if (window.innerWidth < 768) {
+                document.body.style.paddingBottom = '60px';
+            }
+        });
     </script>
 </body>
 </html>
-<!-- اضافه کردن این بخش در <body> -->
-@*    @if (TempData["Success"] != null)
-                {
-                    <input type="hidden" id="tempdata-success" value="@TempData["Success"]" />
-                }
-                @if (TempData["Error"] != null)
-                {
-                    <input type="hidden" id="tempdata-error" value="@TempData["Error"]" />
-                }
-                @if (TempData["Warning"] != null)
-                {
-                    <input type="hidden" id="tempdata-warning" value="@TempData["Warning"]" />
-                }
-                @if (TempData["Info"] != null)
-                {
-                    <input type="hidden" id="tempdata-info" value="@TempData["Info"]" />
-                } *@

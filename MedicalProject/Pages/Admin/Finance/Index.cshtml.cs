@@ -26,8 +26,16 @@ namespace MedicalProject.Pages.Admin.Finance
         [BindProperty(SupportsGet = true)]
         public UserProfitPurchaseReportDtoFilterResult ResultDto { get; set; }
 
-        public async Task OnGet(CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGet()
         {
+            
+            ResultDto = await _service.GetProfitFilter(new UserProfitPurchaseReportDtoFilterParam
+            {
+                Take = FilterParams.Take,
+                PageId = FilterParams.PageId,
+                //search = FilterParams.
+            });
+            
             Result = await _service.GetFilterForAdmin(new PurchaseReportFilterParam
             {
                 EndDate = FilterParams.EndDate,
@@ -38,15 +46,11 @@ namespace MedicalProject.Pages.Admin.Finance
                 ProductId = FilterParams.ProductId,
                 PurchaseReportFilter = FilterParams.PurchaseReportFilter,
                     
-            }, cancellationToken);
+            }, CancellationToken.None);
 
-            ResultDto = await _service.GetProfitFilter(new UserProfitPurchaseReportDtoFilterParam
-            {
-                Take = FilterParams.Take,
-                PageId = FilterParams.PageId,
-                //search = FilterParams.
-            });
-            UserPurchaseReportResult = await _service.GetFilterUserForAdmin(FilterParams, cancellationToken);
+          
+            UserPurchaseReportResult = await _service.GetFilterUserForAdmin(FilterParams, CancellationToken.None);
+            return Page();
         }
     }
 }
