@@ -38,6 +38,26 @@ namespace MedicalProject.Pages.Auth
             Action = action;
             Path = path ?? "/Index";
         }
+        public async Task OnGetRetrySendOtpCode(string phoneNumber, string path, ForAuthAction action)
+        {
+            var result = await _service.GenerateAndSendOtpCode(new Models.Auth.GenerateAndSendOtpCodeCommand
+            {
+                phoneNumber = phoneNumber,
+            });
+            if (!result.IsSuccess)
+            {
+                TempData["Error"] = "خطای سمت سرور رخ داده است لطفا مجددا تلاش نمایید.";
+                //return Page();
+            }
+            if (string.IsNullOrWhiteSpace(PhoneNumber) && action == null)
+            {
+                TempData["Error"] = "اول برای کد تایید درخواست بدهید.";
+                Redirect("VerificationPhoneNumber");
+            }
+            PhoneNumber = phoneNumber;
+            Action = action;
+            Path = path ?? "/Index";
+        }
         public async Task<IActionResult> OnPost()
         {
             var forwardedHeader = Request.Headers["X-Forwarded-For"].FirstOrDefault();
