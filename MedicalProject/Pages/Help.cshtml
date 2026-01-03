@@ -1,0 +1,1857 @@
+﻿@page
+@model MedicalProject.Pages.HelpModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>راهنمای استفاده - پلتفرم دنگ</title>
+
+    <!-- فونت‌ها -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* استایل‌های سفارشی مشابه layout */
+        html {
+            direction: rtl;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f9fafb;
+            color: #111827;
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid transparent;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        @@media (max-width: 640px) {
+            .btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.8125rem;
+            }
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            }
+
+        .btn-outline {
+            border: 1.5px solid #d1d5db;
+            color: #374151;
+            background-color: white;
+        }
+
+            .btn-outline:hover {
+                background-color: #f9fafb;
+                border-color: #2563eb;
+                color: #2563eb;
+            }
+
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f3f4f6;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        @@media (max-width: 768px) {
+            .card {
+                border-radius: 0.75rem;
+            }
+        }
+
+        .input {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+            .input:focus {
+                outline: none;
+                border-color: #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.375rem 0.875rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        @@media (max-width: 640px) {
+            .badge {
+                padding: 0.25rem 0.625rem;
+                font-size: 0.6875rem;
+            }
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+        }
+
+        /* استایل‌های مخصوص صفحه راهنما */
+        .guide-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e5e7eb;
+            scroll-margin-top: 100px;
+        }
+
+        @@media (max-width: 768px) {
+            .guide-section {
+                margin-bottom: 2rem;
+                padding-bottom: 1.5rem;
+            }
+        }
+
+        .guide-step {
+            counter-reset: step-counter;
+        }
+
+        .guide-step-item {
+            position: relative;
+            padding-right: 3.5rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @@media (max-width: 768px) {
+            .guide-step-item {
+                padding-right: 2.5rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .guide-step-item {
+                padding-right: 2rem;
+                margin-bottom: 1.25rem;
+            }
+        }
+
+        .guide-step-item::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        @@media (max-width: 768px) {
+            .guide-step-item::before {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .guide-step-item::before {
+                width: 1.75rem;
+                height: 1.75rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        .guide-video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        @@media (max-width: 768px) {
+            .guide-video-container {
+                border-radius: 0.75rem;
+            }
+        }
+
+        .guide-video-container iframe {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Accordion Styles */
+        .accordion-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        @@media (max-width: 768px) {
+            .accordion-item {
+                border-radius: 0.75rem;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        .accordion-header {
+            padding: 1.25rem 1.5rem;
+            background-color: #f9fafb;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        @@media (max-width: 768px) {
+            .accordion-header {
+                padding: 1rem 1.25rem;
+            }
+        }
+
+        .accordion-header:hover {
+            background-color: #f3f4f6;
+        }
+
+        .accordion-header.active {
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+        }
+
+        .accordion-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0;
+        }
+
+            .accordion-content.show {
+                padding: 1.5rem;
+                max-height: 1000px;
+                opacity: 1;
+            }
+
+        @@media (max-width: 768px) {
+            .accordion-content.show {
+                padding: 1rem 1.25rem;
+            }
+        }
+
+        /* Search and Quick Links */
+        .search-highlight {
+            background-color: #ffed99;
+            padding: 0 0.25rem;
+            border-radius: 0.375rem;
+            animation: pulseHighlight 2s infinite;
+        }
+
+        .quick-links {
+            position: sticky;
+            top: 6rem;
+        }
+
+        @@media (max-width: 1024px) {
+            .quick-links {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+
+        .quick-link-item {
+            padding: 0.875rem 1rem;
+            border-right: 4px solid transparent;
+            color: #374151;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            margin-bottom: 0.25rem;
+            border-radius: 0.5rem;
+        }
+
+            .quick-link-item:hover {
+                background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+                border-right-color: #2563eb;
+                color: #2563eb;
+                transform: translateX(-5px);
+            }
+
+            .quick-link-item.active {
+                background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+                border-right-color: #2563eb;
+                color: #1e40af;
+                font-weight: 600;
+                box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+            }
+
+        /* انیمیشن‌ها */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        @@keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+            }
+        }
+
+        .animate-pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+
+        @@keyframes pulseHighlight {
+            0%, 100% {
+                background-color: #ffed99;
+            }
+
+            50% {
+                background-color: #ffe066;
+            }
+        }
+
+        @@keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-slide-in-right {
+            animation: slideInRight 0.4s ease-out forwards;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            z-index: 100;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        @@media (max-width: 1024px) {
+            .mobile-menu-toggle {
+                display: flex;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .mobile-menu-toggle {
+                width: 3rem;
+                height: 3rem;
+                bottom: 1.5rem;
+                left: 1.5rem;
+            }
+        }
+
+        .mobile-quick-links {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 85%;
+            max-width: 320px;
+            height: 100vh;
+            background: white;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+            .mobile-quick-links.active {
+                right: 0;
+            }
+
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+
+        /* Responsive Typography */
+        h1 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+
+        @@media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        h2 {
+            font-size: 2rem;
+            line-height: 1.3;
+        }
+
+        @@media (max-width: 768px) {
+            h2 {
+                font-size: 1.75rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            line-height: 1.4;
+        }
+
+        @@media (max-width: 768px) {
+            h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            h3 {
+                font-size: 1.125rem;
+            }
+        }
+
+        /* Responsive Spacing */
+        .responsive-padding {
+            padding: 1.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .responsive-padding {
+                padding: 1rem;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .responsive-padding {
+                padding: 0.75rem;
+            }
+        }
+
+        /* Responsive Grid */
+        .responsive-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        @@media (max-width: 768px) {
+            .responsive-grid {
+                gap: 1rem;
+            }
+        }
+
+        /* Touch-friendly elements */
+        .touch-target {
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Responsive Table */
+        .responsive-table {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+            .responsive-table table {
+                min-width: 600px;
+            }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 0.5rem;
+        }
+
+        @@keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 0.5rem;
+            background: linear-gradient(90deg, #2563eb, #60a5fa);
+            border-radius: 9999px;
+            transition: width 0.6s ease;
+        }
+
+        /* Print Styles */
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+                color: black;
+                font-size: 12pt;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Mobile Quick Links Menu -->
+    <div class="mobile-quick-links" id="mobileQuickLinks">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-lg font-semibold text-gray-900">منوی راهنما</h3>
+            <button class="text-gray-500 hover:text-gray-700" onclick="closeMobileMenu()">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="space-y-1">
+            <a href="#getting-started" class="quick-link-item active" onclick="closeMobileMenu()">
+                <i class="fas fa-play-circle ml-2"></i>
+                شروع به کار
+            </a>
+            <a href="#registration" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-user-plus ml-2"></i>
+                ثبت‌نام و احراز هویت
+            </a>
+            <a href="#investment" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-chart-line ml-2"></i>
+                سرمایه‌گذاری
+            </a>
+            <a href="#profile" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-user-circle ml-2"></i>
+                مدیریت پروفایل
+            </a>
+            <a href="#financial" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-wallet ml-2"></i>
+                مدیریت مالی
+            </a>
+            <a href="#security" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-shield-alt ml-2"></i>
+                امنیت و حریم خصوصی
+            </a>
+            <a href="#faq" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-question-circle ml-2"></i>
+                سوالات متداول
+            </a>
+            <a href="#contact" class="quick-link-item" onclick="closeMobileMenu()">
+                <i class="fas fa-headset ml-2"></i>
+                پشتیبانی
+            </a>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="mobile-menu-toggle no-print" onclick="toggleMobileMenu()">
+        <i class="fas fa-bars text-xl"></i>
+    </button>
+
+    <!-- Header مشابه layout اصلی -->
+    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Toggle -->
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center space-x-2 space-x-reverse">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">د</span>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900 hidden sm:block">پلتفرم دنگ</span>
+                    </a>
+                </div>
+
+                <!-- User Actions -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <!-- Mobile Search Toggle -->
+                    <button class="sm:hidden text-gray-600 hover:text-gray-900" onclick="toggleMobileSearch()">
+                        <i class="fas fa-search"></i>
+                    </button>
+
+                    <!-- Back to Home -->
+                    <a href="/" class="btn btn-outline hidden sm:inline-flex">
+                        <i class="fas fa-home ml-2"></i>
+                        <span class="hidden md:inline">بازگشت به صفحه اصلی</span>
+                        <span class="md:hidden">صفحه اصلی</span>
+                    </a>
+
+                    <!-- Mobile Back to Home -->
+                    <a href="/" class="sm:hidden btn btn-outline px-3">
+                        <i class="fas fa-home"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="sm:hidden mt-2 pb-2 hidden" id="mobileSearch">
+                <div class="relative">
+                    <input type="text"
+                           id="mobileSearchInput"
+                           placeholder="جستجو در راهنما..."
+                           class="input pr-10">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
+            <!-- Sidebar for Quick Links (Desktop) -->
+            <div class="lg:col-span-1 hidden lg:block">
+                <div class="card quick-links">
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="font-semibold text-gray-900">دسترسی سریع</h3>
+                    </div>
+                    <div class="p-2">
+                        <a href="#getting-started" class="quick-link-item active">
+                            <i class="fas fa-play-circle ml-2"></i>
+                            شروع به کار
+                        </a>
+                        <a href="#registration" class="quick-link-item">
+                            <i class="fas fa-user-plus ml-2"></i>
+                            ثبت‌نام و احراز هویت
+                        </a>
+                        <a href="#investment" class="quick-link-item">
+                            <i class="fas fa-chart-line ml-2"></i>
+                            سرمایه‌گذاری
+                        </a>
+                        <a href="#profile" class="quick-link-item">
+                            <i class="fas fa-user-circle ml-2"></i>
+                            مدیریت پروفایل
+                        </a>
+                        <a href="#financial" class="quick-link-item">
+                            <i class="fas fa-wallet ml-2"></i>
+                            مدیریت مالی
+                        </a>
+                        <a href="#security" class="quick-link-item">
+                            <i class="fas fa-shield-alt ml-2"></i>
+                            امنیت و حریم خصوصی
+                        </a>
+                        <a href="#faq" class="quick-link-item">
+                            <i class="fas fa-question-circle ml-2"></i>
+                            سوالات متداول
+                        </a>
+                        <a href="#contact" class="quick-link-item">
+                            <i class="fas fa-headset ml-2"></i>
+                            پشتیبانی
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Search Box -->
+                <div class="card mt-6">
+                    <div class="p-4">
+                        <h4 class="font-semibold text-gray-900 mb-3">جستجو در راهنما</h4>
+                        <div class="relative">
+                            <input type="text"
+                                   id="searchGuide"
+                                   placeholder="چه چیزی را جستجو می‌کنید؟"
+                                   class="input pr-10">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Support Card -->
+                <div class="card mt-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+                    <div class="p-4">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center ml-3 flex-shrink-0">
+                                <i class="fas fa-headset text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">نیاز به کمک دارید؟</h4>
+                                <p class="text-sm text-gray-600">تیم پشتیبانی آماده پاسخگویی است</p>
+                            </div>
+                        </div>
+                        <a href="#contact" class="btn btn-primary w-full mt-2">
+                            <i class="fas fa-comment-dots ml-2"></i>
+                            تماس با پشتیبانی
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="lg:col-span-3">
+                <!-- Page Header -->
+                <div class="mb-8 animate-fade-in-up">
+                 @*    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                        <div>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">راهنمای جامع پلتفرم دنگ</h1>
+                            <p class="text-gray-600 text-sm sm:text-base">
+                                در این راهنما تمامی مراحل استفاده از پلتفرم سرمایه‌گذاری دنگ را به صورت کامل آموزش داده‌ایم
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-3 space-x-reverse">
+                            <button onclick="printGuide()" class="btn btn-outline">
+                                <i class="fas fa-print ml-2"></i>
+                                <span class="hidden sm:inline">چاپ راهنما</span>
+                            </button>
+                            <button onclick="shareGuide()" class="btn btn-outline">
+                                <i class="fas fa-share-alt ml-2"></i>
+                                <span class="hidden sm:inline">اشتراک‌گذاری</span>
+                            </button>
+                        </div>
+                    </div> *@
+                    <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-clock ml-2"></i>
+                            <span>زمان مطالعه: ۱۵ دقیقه</span>
+                        </div>
+                       @*  <div class="flex items-center">
+                            <i class="fas fa-book-open mr-4 ml-2"></i>
+                            <span>آخرین بروزرسانی: ۱۴۰۲/۱۰/۱۵</span>
+                        </div> *@
+                    </div>
+                </div>
+
+                <!-- Introduction -->
+                <div class="card mb-8 bg-gradient-to-r from-blue-50 to-white border-blue-100">
+                    <div class="p-4 sm:p-6">
+                        <div class="flex flex-col sm:flex-row items-start gap-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center ml-0 sm:ml-4 flex-shrink-0">
+                                <i class="fas fa-lightbulb text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-2">قبل از شروع</h3>
+                                <p class="text-gray-600">
+                                    پلتفرم دنگ یک سامانه سرمایه‌گذاری جمعی در تجهیزات صنعتی و پزشکی است. در این پلتفرم شما می‌توانید با هر بودجه‌ای در پروژه‌های سودآور سرمایه‌گذاری کنید.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Getting Started -->
+                <div id="getting-started" class="guide-section">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                            <i class="fas fa-play text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">شروع به کار</h2>
+                    </div>
+
+                    <div class="guide-step">
+                        <!-- Step 1 -->
+                        <div class="guide-step-item">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">آشنایی با محیط پلتفرم</h3>
+                            <p class="text-gray-600 mb-3">
+                                پس از ورود به سایت، با بخش‌های مختلف زیر آشنا می‌شوید:
+                            </p>
+                            <ul class="list-disc pr-6 text-gray-600 mb-4 space-y-2">
+                                <li><strong>منوی اصلی:</strong> دسترسی به بخش‌های مختلف سایت</li>
+                                <li><strong>پروژه‌ها:</strong> لیست پروژه‌های در حال سرمایه‌گذاری</li>
+                                <li><strong>داشبورد کاربری:</strong> مدیریت حساب کاربری و سرمایه‌گذاری‌ها</li>
+                                <li><strong>جستجو:</strong> یافتن پروژه‌های مورد علاقه</li>
+                            </ul>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="guide-step-item">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">آموزش تصویری</h3>
+                            <p class="text-gray-600 mb-3">
+                                برای درک بهتر محیط پلتفرم، ویدیوی زیر را مشاهده کنید:
+                            </p>
+                            <div class="guide-video-container mb-4">
+                                <!-- Placeholder for video -->
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <div class="text-center p-4">
+                                        <i class="fas fa-play-circle text-4xl sm:text-5xl text-blue-600 mb-2 animate-pulse-slow"></i>
+                                        <p class="text-gray-600">پخش ویدیوی آموزشی</p>
+                                        <p class="text-sm text-gray-500 mt-1">(دکمه پخش را فشار دهید)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration & Authentication -->
+                <div id="registration" class="guide-section">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                            <i class="fas fa-user-check text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">ثبت‌نام و احراز هویت</h2>
+                    </div>
+
+                    <div class="mb-6">
+                        <div class="card bg-gradient-to-r from-blue-50 to-white border-blue-200">
+                            <div class="p-4">
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                        <i class="fas fa-info-circle text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-2">نکته مهم</h4>
+                                        <p class="text-gray-600">
+                                            احراز هویت در پلتفرم دنگ در <strong class="text-blue-600">دو مرحله</strong> انجام می‌شود. مرحله اول برای فعال‌سازی حساب و مرحله دوم برای فعال‌سازی قابلیت سرمایه‌گذاری.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مرحله اول: احراز هویت اولیه -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <span class="badge badge-primary ml-2">مرحله ۱</span>
+                            احراز هویت اولیه (فعال‌سازی حساب)
+                        </h3>
+
+                        <div class="card mb-6">
+                            <div class="p-4 border-b border-gray-200">
+                                <h4 class="font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-mobile-alt ml-2 text-blue-600"></i>
+                                    ثبت‌نام اولیه با شماره موبایل
+                                </h4>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <span class="text-2xl font-bold text-blue-600">۱</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">وارد کردن شماره موبایل</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <span class="text-2xl font-bold text-blue-600">۲</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">دریافت و وارد کردن کد تأیید</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <span class="text-2xl font-bold text-blue-600">۳</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600">تکمیل اطلاعات اولیه</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مرحله دوم: احراز هویت کامل -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                            <span class="badge badge-primary ml-2">مرحله ۲</span>
+                            احراز هویت کامل (برای سرمایه‌گذاری)
+                        </h3>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- مدارک هویتی -->
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-id-card ml-2 text-blue-600"></i>
+                                        مدارک هویتی مورد نیاز
+                                    </h4>
+                                </div>
+                                <div class="p-4">
+                                    <div class="space-y-6">
+                                        <!-- کد ملی -->
+                                        <div class="flex items-start">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-hashtag text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900 mb-1">کد ملی</h5>
+                                                <p class="text-gray-600 text-sm mb-2">کد ملی ۱۰ رقمی خود را وارد کنید</p>
+                                                <div class="p-2 bg-gray-50 rounded text-sm font-mono text-center">۱۲۳۴۵۶۷۸۹۰</div>
+                                            </div>
+                                        </div>
+
+                                        <!-- کارت ملی -->
+                                        <div class="flex items-start">
+                                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-id-card-alt text-green-600"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900 mb-1">تصویر کارت ملی</h5>
+                                                <p class="text-gray-600 text-sm mb-2">آپلود تصویر واضح از کارت ملی</p>
+                                                <div class="grid grid-cols-2 gap-2">
+                                                    <div class="text-center">
+                                                        <div class="w-16 h-16 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mx-auto mb-1">
+                                                            <i class="fas fa-image text-gray-400"></i>
+                                                        </div>
+                                                        <span class="text-xs text-gray-500"></span>
+                                                    </div>
+                                                   
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-2">• تصویر باید واضح و خوانا باشد<br>• تمام اطلاعات قابل مشاهده باشد<br>• سایز حداکثر ۶ مگابایت</p>
+                                            </div>
+                                        </div>
+
+                                        <!-- شناسنامه -->
+                                        <!-- کامنت شده در کد اصلی -->
+                                        
+                                        <div class="flex items-start">
+                                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-file-alt text-purple-600"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="font-semibold text-gray-900 mb-1">تصویر شناسنامه</h5>
+                                                <p class="text-gray-600 text-sm mb-2">آپلود تصویر واضح از صفحه شناسنامه</p>
+                                                <div class="grid grid-cols-3 gap-1">
+                                                    <div class="text-center">
+                                                        <div class="w-12 h-12 border-2 border-dashed border-gray-300 rounded flex items-center justify-center mx-auto">
+                                                            <span class="text-xs text-gray-500"></span>
+                                                        </div>
+                                                    </div>
+                                                 
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-2">• صفحه دارای اطلاعات را آپلود کنید<br>• تصویر باید کاملاً واضح باشند</p>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- اطلاعات کارت بانکی -->
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
+                                    <h4 class="font-semibold text-gray-900 flex items-center">
+                                        <i class="fas fa-credit-card ml-2 text-green-600"></i>
+                                        اطلاعات کارت بانکی
+                                    </h4>
+                                </div>
+                                <div class="p-4">
+                                    <div class="space-y-6">
+                                        <!-- اهمیت اطلاعات بانکی -->
+                                        <div class="p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 ml-2"></i>
+                                                <div>
+                                                    <p class="text-sm text-yellow-700">
+                                                        اطلاعات کارت بانکی <strong>فقط برای واریز سود</strong> استفاده می‌شود. تمامی تراکنش‌ها امن و مطمئن هستند.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- فرم اطلاعات بانکی -->
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">شماره کارت بانکی</label>
+                                                <div class="relative">
+                                                    <input disabled type="text"
+                                                           maxlength="16"
+                                                           placeholder="6037-XXXX-XXXX-XXXX"
+                                                           class="input text-center tracking-widest font-mono"
+                                                           dir="ltr">
+                                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                                        <i class="fas fa-credit-card text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                                <p class="text-xs text-gray-500 mt-1">شماره ۱۶ رقمی روی کارت بانکی</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">شماره شبا</label>
+                                                <div class="relative">
+                                                    <input disabled type="password"
+                                                           maxlength="4"
+                                                           placeholder="XXXX-XXXX-XXXX-XXXX"
+                                                           class="input text-center"
+                                                           dir="ltr">
+                                                    <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                                        <i class="fas fa-lock text-gray-400"></i>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                           @*  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-1">تاریخ انقضا</label>
+                                                    <div class="relative">
+                                                        <input disabled type="text"
+                                                               maxlength="5"
+                                                               placeholder="MM/YY"
+                                                               class="input text-center"
+                                                               dir="ltr">
+                                                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2">
+                                                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div> *@
+
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-1">نام دارنده کارت</label>
+                                                <input disabled type="text"
+                                                       placeholder="نام به فارسی همانند روی کارت"
+                                                       class="input">
+                                                <p class="text-xs text-gray-500 mt-1">نام باید دقیقاً مطابق با نام روی کارت باشد</p>
+                                            </div>
+
+                                            <!-- بانک‌های معتبر -->
+                                            <!-- کامنت شده در کد اصلی -->
+                                            <!--
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">بانک‌های معتبر</label>
+                                                <div class="grid grid-cols-3 gap-2">
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-blue-600">م</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">ملت</span>
+                                                    </div>
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-green-600">ص</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">صادرات</span>
+                                                    </div>
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-red-600">م</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">ملی</span>
+                                                    </div>
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-purple-600">پ</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">پارسیان</span>
+                                                    </div>
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-yellow-600">س</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">سامان</span>
+                                                    </div>
+                                                    <div class="text-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                                        <div class="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-1">
+                                                            <span class="text-xs font-bold text-teal-600">ش</span>
+                                                        </div>
+                                                        <span class="text-xs text-gray-600">شهر</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- مراحل زمانبندی -->
+                        <div class="card bg-gradient-to-r from-blue-50 to-white border-blue-100">
+                            <div class="p-4 sm:p-6">
+                                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-clock ml-2 text-blue-600"></i>
+                                    زمان‌بندی تأیید احراز هویت
+                                </h4>
+                                <div class="relative">
+                                    <!-- Timeline -->
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                                        <div class="text-center relative mb-4 sm:mb-0">
+                                            <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <i class="fas fa-upload text-white"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">آپلود مدارک</span>
+                                            <span class="text-xs text-gray-500 block">بلافاصله</span>
+                                        </div>
+
+                                        <div class="hidden sm:block flex-1 h-1 bg-blue-200"></div>
+
+                                        <div class="text-center relative mb-4 sm:mb-0">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <i class="fas fa-search text-blue-600"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">بررسی اولیه</span>
+                                            <span class="text-xs text-gray-500 block">۲ ساعت</span>
+                                        </div>
+
+                                        <div class="hidden sm:block flex-1 h-1 bg-blue-200"></div>
+
+                                        <div class="text-center relative mb-4 sm:mb-0">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <i class="fas fa-user-shield text-blue-600"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">احراز هویت</span>
+                                            <span class="text-xs text-gray-500 block">۲۴ ساعت</span>
+                                        </div>
+
+                                        <div class="hidden sm:block flex-1 h-1 bg-blue-200"></div>
+
+                                        <div class="text-center relative">
+                                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                <i class="fas fa-check-circle text-green-600"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-900">تأیید نهایی</span>
+                                            <span class="text-xs text-gray-500 block">۴۸ ساعت</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- کامنت شده در کد اصلی -->
+                                <!--
+                                <div class="mt-6 p-4 bg-green-50 rounded-lg border border-green-100">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-bell text-green-600 mt-1 ml-2"></i>
+                                        <div>
+                                            <h5 class="font-medium text-green-800 mb-1">اطلاع‌رسانی</h5>
+                                            <p class="text-sm text-green-700">
+                                                وضعیت احراز هویت شما از طریق پیامک و نوتیفیکیشن در پنل کاربری اطلاع‌رسانی می‌شود. در صورت نیاز به اطلاعات بیشتر، تیم پشتیبانی با شما تماس خواهد گرفت.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- نکات مهم احراز هویت -->
+                    <div class="mt-8">
+                        <h4 class="font-semibold text-gray-900 mb-4">نکات مهم احراز هویت</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="card border-blue-100">
+                                <div class="p-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                                        <i class="fas fa-camera text-blue-600"></i>
+                                    </div>
+                                    <h5 class="font-semibold text-gray-900 mb-2">کیفیت تصاویر</h5>
+                                    <p class="text-sm text-gray-600">تصاویر باید واضح، خوانا و با نور مناسب باشند. از ارسال تصاویر تار یا کم‌نور خودداری کنید.</p>
+                                </div>
+                            </div>
+
+                            <div class="card border-green-100">
+                                <div class="p-4">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                                        <i class="fas fa-shield-alt text-green-600"></i>
+                                    </div>
+                                    <h5 class="font-semibold text-gray-900 mb-2">امنیت اطلاعات</h5>
+                                    <p class="text-sm text-gray-600">تمامی اطلاعات شما با بالاترین استانداردهای امنیتی محافظت می‌شوند.</p>
+                                </div>
+                            </div>
+
+                            <div class="card border-purple-100">
+                                <div class="p-4">
+                                    <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                                        <i class="fas fa-user-clock text-purple-600"></i>
+                                    </div>
+                                    <h5 class="font-semibold text-gray-900 mb-2">تأیید سریع</h5>
+                                    <p class="text-sm text-gray-600">در صورتی که مدارک را به درستی آپلود کنید، احراز هویت شما سریع‌تر انجام می‌شود.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Investment Guide -->
+                <div id="investment" class="guide-section">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">راهنمای سرمایه‌گذاری</h2>
+                    </div>
+
+                    <div class="card mb-6">
+                        <div class="p-4 border-b border-gray-200">
+                            <h3 class="font-semibold text-gray-900">مراحل سرمایه‌گذاری</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="space-y-6">
+                                <!-- Step 1 -->
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center ml-4 flex-shrink-0">
+                                        <span class="text-blue-600 font-bold">۱</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-1">انتخاب پروژه</h4>
+                                        <p class="text-gray-600">
+                                            از بخش "پروژه‌ها" پروژه مورد نظر خود را انتخاب کنید. هر پروژه شامل اطلاعات کامل، سود پیش‌بینی شده، میزان سرمایه مورد نیاز است.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2 -->
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center ml-4 flex-shrink-0">
+                                        <span class="text-blue-600 font-bold">۲</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-1">مطالعه مستندات</h4>
+                                        <p class="text-gray-600">
+                                            قبل از سرمایه‌گذاری، حتماً مستندات پروژه شامل طرح توجیهی، قرارداد را به دقت مطالعه کنید.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3 -->
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center ml-4 flex-shrink-0">
+                                        <span class="text-blue-600 font-bold">۳</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-1">تعیین مبلغ</h4>
+                                        <p class="text-gray-600">
+                                            مبلغ مورد نظر برای سرمایه‌گذاری را وارد کنید. حداقل سرمایه‌گذاری در هر پروژه متفاوت است.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4 -->
+                                <div class="flex items-start">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center ml-4 flex-shrink-0">
+                                        <span class="text-blue-600 font-bold">۴</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-900 mb-1">پرداخت</h4>
+                                        <p class="text-gray-600">
+                                            پس از تأیید نهایی، مبلغ را از طریق درگاه بانکی پرداخت کنید. رسید پرداخت برای شما ارسال می‌شود.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Tips -->
+                    <div class="card bg-gradient-to-r from-green-50 to-white border-green-100">
+                        <div class="p-4 sm:p-6">
+                            <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                <i class="fas fa-lightbulb text-green-600 ml-2"></i>
+                                نکات طلایی سرمایه‌گذاری
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 ml-2"></i>
+                                    <span class="text-gray-600">سرمایه‌گذاری خود را در چند پروژه متنوع کنید</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 ml-2"></i>
+                                    <span class="text-gray-600">فقط با مازاد درآمد خود سرمایه‌گذاری کنید</span>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-check-circle text-green-500 mt-1 ml-2"></i>
+                                    <span class="text-gray-600">مستندات هر پروژه را قبل از سرمایه‌گذاری کامل مطالعه کنید</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div id="faq" class="guide-section">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                            <i class="fas fa-question-circle text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">سوالات متداول</h2>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- FAQ 1 -->
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span>حداقل مبلغ سرمایه‌گذاری چقدر است؟</span>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-600">
+                                    حداقل مبلغ سرمایه‌گذاری در هر پروژه متفاوت است و در صفحه اطلاعات پروژه مشخص شده است.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 2 -->
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span>سود سرمایه‌گذاری چگونه پرداخت می‌شود؟</span>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-600">
+                                    سود سرمایه‌گذاری به صورت دوره‌ای به حساب بانکی شما واریز می‌شود. دوره پرداخت در قرارداد هر پروژه مشخص شده است.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <span>چگونه از امنیت سرمایه خود اطمینان حاصل کنم؟</span>
+                                <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                            <div class="accordion-content">
+                                <p class="text-gray-600">
+                                    پلتفرم دنگ با استفاده از آخرین استانداردهای امنیتی و رمزنگاری، امنیت اطلاعات و سرمایه شما را تضمین می‌کند. تمامی تراکنش‌ها از طریق درگاه‌های بانکی معتبر انجام می‌شود.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Section -->
+                <div id="contact" class="guide-section">
+                    <div class="flex items-center mb-6">
+                        <div class="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                            <i class="fas fa-headset text-white"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">پشتیبانی و تماس</h2>
+                    </div>
+
+                    <div class="card bg-gradient-to-r from-blue-50 to-white">
+                        <div class="p-4 sm:p-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Contact Info -->
+                                <div>
+                                    <h3 class="font-semibold text-gray-900 mb-4">راه‌های ارتباطی</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-phone text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-500">تلفن پشتیبانی</p>
+                                                <p class="font-semibold text-gray-900">۰۲۱-۱۲۳۴۵۶۷۸</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-envelope text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-500">ایمیل پشتیبانی</p>
+                                                <p class="font-semibold text-gray-900">support@dang-platform.ir</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center ml-3 flex-shrink-0">
+                                                <i class="fas fa-clock text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-gray-500">ساعات کاری</p>
+                                                <p class="font-semibold text-gray-900">شنبه تا چهارشنبه: ۹ صبح تا ۵ عصر</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Contact Form -->
+                               @*  <div>
+                                    <h3 class="font-semibold text-gray-900 mb-4">ارسال پیام سریع</h3>
+                                    <div class="space-y-3">
+                                        <input type="text" placeholder="نام و نام خانوادگی" class="input">
+                                        <input type="email" placeholder="ایمیل" class="input">
+                                        <select class="input">
+                                            <option value="">موضوع پیام</option>
+                                            <option value="support">پشتیبانی فنی</option>
+                                            <option value="investment">سوالات سرمایه‌گذاری</option>
+                                            <option value="account">مشکلات حساب کاربری</option>
+                                            <option value="other">سایر</option>
+                                        </select>
+                                        <textarea placeholder="متن پیام" rows="3" class="input"></textarea>
+                                        <button class="btn btn-primary w-full">
+                                            <i class="fas fa-paper-plane ml-2"></i>
+                                            ارسال پیام
+                                        </button>
+                                    </div>
+                                </div> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Helpful Resources -->
+               @*  <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">منابع مفید دیگر</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <a href="#" class="card card-hover">
+                            <div class="p-4">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                                    <i class="fas fa-file-contract text-blue-600"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-900 mb-2">قراردادهای نمونه</h4>
+                                <p class="text-sm text-gray-600">نمونه قراردادهای سرمایه‌گذاری</p>
+                            </div>
+                        </a>
+                        <a href="#" class="card card-hover">
+                            <div class="p-4">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mb-3">
+                                    <i class="fas fa-calculator text-green-600"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-900 mb-2">ماشین حساب سود</h4>
+                                <p class="text-sm text-gray-600">محاسبه سود سرمایه‌گذاری</p>
+                            </div>
+                        </a>
+                        <a href="#" class="card card-hover">
+                            <div class="p-4">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
+                                    <i class="fas fa-graduation-cap text-purple-600"></i>
+                                </div>
+                                <h4 class="font-semibold text-gray-900 mb-2">دوره آموزشی</h4>
+                                <p class="text-sm text-gray-600">آموزش سرمایه‌گذاری هوشمند</p>
+                            </div>
+                        </a>
+                    </div>
+                </div> *@
+            </div>
+        </div>
+    </main>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="fixed bottom-6 left-6 z-50 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all duration-300 opacity-0 invisible no-print touch-target">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Progress Bar -->
+    <div class="fixed top-0 left-0 right-0 h-1 bg-gray-200 z-50 no-print">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <script>
+        // Mobile Menu Functionality
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileQuickLinks');
+            const overlay = document.getElementById('mobileOverlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        function closeMobileMenu() {
+            const menu = document.getElementById('mobileQuickLinks');
+            const overlay = document.getElementById('mobileOverlay');
+            menu.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Mobile Search Toggle
+        function toggleMobileSearch() {
+            const search = document.getElementById('mobileSearch');
+            search.classList.toggle('hidden');
+            if (!search.classList.contains('hidden')) {
+                document.getElementById('mobileSearchInput').focus();
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    // Update active link
+                    document.querySelectorAll('.quick-link-item').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+
+                    // Close mobile menu if open
+                    closeMobileMenu();
+
+                    // Scroll to target with offset for sticky header
+                    const headerHeight = document.querySelector('header').offsetHeight;
+                    const targetPosition = targetElement.offsetTop - headerHeight - 20;
+
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Update active link on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.guide-section');
+            const headerHeight = document.querySelector('header').offsetHeight;
+
+            let currentSection = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - headerHeight - 100;
+                const sectionHeight = section.clientHeight;
+
+                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                    currentSection = '#' + section.id;
+                }
+            });
+
+            if (currentSection) {
+                document.querySelectorAll('.quick-link-item').forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === currentSection) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+        });
+
+        // Accordion functionality
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function () {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('i');
+
+                // Toggle current item
+                this.classList.toggle('active');
+                content.classList.toggle('show');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+
+                // Close other items
+                document.querySelectorAll('.accordion-header').forEach(otherHeader => {
+                    if (otherHeader !== this) {
+                        otherHeader.classList.remove('active');
+                        otherHeader.nextElementSibling.classList.remove('show');
+                        otherHeader.querySelector('i').classList.remove('fa-chevron-up');
+                        otherHeader.querySelector('i').classList.add('fa-chevron-down');
+                    }
+                });
+            });
+
+            // Touch events for mobile
+            header.addEventListener('touchstart', function(e) {
+                this.classList.add('touch-active');
+            });
+
+            header.addEventListener('touchend', function(e) {
+                this.classList.remove('touch-active');
+            });
+        });
+
+        // Search functionality
+        function setupSearch(inputId) {
+            const searchInput = document.getElementById(inputId);
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', function (e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                if (searchTerm.length < 2) {
+                    // Remove highlights
+                    document.querySelectorAll('.search-highlight').forEach(hl => {
+                        const parent = hl.parentNode;
+                        parent.replaceChild(document.createTextNode(hl.textContent), hl);
+                        parent.normalize();
+                    });
+                    return;
+                }
+
+                // Search in guide sections
+                document.querySelectorAll('.guide-section').forEach(section => {
+                    const elements = section.querySelectorAll('h2, h3, h4, p, li');
+                    let found = false;
+
+                    elements.forEach(element => {
+                        const text = element.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            found = true;
+                            // Highlight text
+                            const regex = new RegExp(`(${searchTerm})`, 'gi');
+                            const newHTML = element.innerHTML.replace(regex, '<span class="search-highlight">$1</span>');
+                            element.innerHTML = newHTML;
+                        }
+                    });
+
+                    // Animate section if found
+                    if (found) {
+                        section.style.backgroundColor = '#fffbeb';
+                        section.classList.add('animate-pulse-glow');
+                        setTimeout(() => {
+                            section.style.backgroundColor = '';
+                            section.classList.remove('animate-pulse-glow');
+                        }, 2000);
+                    }
+                });
+            });
+        }
+
+        setupSearch('searchGuide');
+        setupSearch('mobileSearchInput');
+
+        // Back to top button
+        const backToTopButton = document.getElementById('backToTop');
+
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Progress bar
+        const progressBar = document.getElementById('progressBar');
+
+        window.addEventListener('scroll', function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+
+        // Print guide
+        function printGuide() {
+            window.print();
+        }
+
+        // Share guide
+        function shareGuide() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'راهنمای پلتفرم دنگ',
+                    text: 'راهنمای کامل استفاده از پلتفرم سرمایه‌گذاری دنگ',
+                    url: window.location.href
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                    fallbackShare();
+                });
+            } else {
+                fallbackShare();
+            }
+        }
+
+        function fallbackShare() {
+            // Fallback for browsers that don't support Web Share API
+            const tempInput = document.createElement('input');
+            tempInput.value = window.location.href;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'لینک کپی شد!',
+                text: 'لینک صفحه در کلیپ‌بورد کپی شد',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add animation to cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-slide-in-right');
+                    }
+                });
+            }, observerOptions);
+
+            // Observe cards and sections
+            document.querySelectorAll('.card, .guide-step-item').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Auto open first accordion on mobile
+            if (window.innerWidth < 768) {
+                document.querySelector('.accordion-header')?.click();
+            }
+
+            // Add touch feedback to buttons
+            document.querySelectorAll('.btn').forEach(btn => {
+                btn.addEventListener('touchstart', function() {
+                    this.classList.add('transform', 'scale-95');
+                });
+
+                btn.addEventListener('touchend', function() {
+                    this.classList.remove('transform', 'scale-95');
+                });
+            });
+
+            // Handle orientation change
+            let orientationChangeTimeout;
+            window.addEventListener('orientationchange', function() {
+                clearTimeout(orientationChangeTimeout);
+                orientationChangeTimeout = setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            });
+
+            // Prevent zoom on double tap (mobile)
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function(event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+        });
+
+        // Handle window resize
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                // Close mobile menu on large screens
+                if (window.innerWidth >= 1024) {
+                    closeMobileMenu();
+                }
+            }, 250);
+        });
+
+        // Alert utility
+        const Alert = {
+            info: (message) => Swal.fire({
+                icon: 'info',
+                title: 'اطلاعیه',
+                text: message,
+                confirmButtonText: 'باشه',
+                timer: 3000
+            })
+        };
+    </script>
+</body>
+</html>

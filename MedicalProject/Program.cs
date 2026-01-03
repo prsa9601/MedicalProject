@@ -176,7 +176,7 @@ builder.Services.AddScoped<DecryptionService>();
 
 builder.Services.Configure<IISServerOptions>(options =>
 {
-    options.MaxRequestBodySize = 100 * 1024 * 1024; // 100 مگابایت
+    options.MaxRequestBodySize = 6 * 1024 * 1024; // 100 مگابایت
 });
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
