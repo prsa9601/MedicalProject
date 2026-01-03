@@ -68,6 +68,7 @@ builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation()
     .AddRazorPagesOptions(options =>
     {
+        //options.Conventions.AddPageRoute("/Error", "/NotFound");
         options.Conventions.AuthorizeFolder("/Account", "Account");
         //options.Conventions.AuthorizeFolder("/Admin", "Programmer");
         options.Conventions.AuthorizeFolder("/Admin", "SuperAdmin");
@@ -243,7 +244,15 @@ app.Use(async (context, next) =>
         context.Response.Redirect($"/Auth/VerificationPhoneNumber?action={ForAuthAction.Login}");
     }
 });
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
 
+    if (response.StatusCode == 404)
+    {
+        response.Redirect("/NotFound");
+    }
+});
 app.UseAuthentication();
 
 app.UseAuthorization();

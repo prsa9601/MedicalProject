@@ -1,0 +1,923 @@
+﻿@page
+@model MedicalProject.Pages.NotFoundModel
+@{
+    Layout = null;
+    ViewData["Title"] = "صفحه پیدا نشد - 404";
+}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>صفحه پیدا نشد - پلتفرم دنگ</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Vazir', 'IRANSans', system-ui, sans-serif;
+            direction: rtl;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .notfound-content {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .logo-container {
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: #1e293b;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .error-code {
+            font-size: 8rem;
+            font-weight: 900;
+            line-height: 1;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .error-code::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+        
+        .error-message {
+            font-size: 1.125rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.8;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+        
+        .btn-outline:hover {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-icon {
+            margin-left: 8px;
+            font-size: 1.125rem;
+        }
+        
+        .search-box {
+            max-width: 500px;
+            margin: 40px auto;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 24px;
+            padding-left: 50px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #1e293b;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+        
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+        }
+        
+        .search-btn {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            color: #3b82f6;
+        }
+        
+        .helpful-links {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .helpful-links-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            color: #1e293b;
+            text-align: center;
+        }
+        
+        .links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .link-card {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .link-card:hover {
+            background: white;
+            transform: translateY(-5px);
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .link-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .link-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1e293b;
+        }
+        
+        .link-desc {
+            font-size: 0.875rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+        
+        .error-animation {
+            margin: 0 auto 40px;
+            width: 150px;
+            height: 150px;
+            position: relative;
+        }
+        
+        .broken-link {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: #f1f5f9;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #94a3b8;
+            border: 2px dashed #cbd5e1;
+        }
+        
+        .link-pieces {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .piece {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border: 2px dashed #cbd5e1;
+            animation: pieceFloat 3s ease-in-out infinite;
+        }
+        
+        .piece-1 {
+            top: 0;
+            left: 0;
+            animation-delay: 0s;
+        }
+        
+        .piece-2 {
+            top: 0;
+            right: 0;
+            animation-delay: 0.5s;
+        }
+        
+        .piece-3 {
+            bottom: 0;
+            left: 0;
+            animation-delay: 1s;
+        }
+        
+        .piece-4 {
+            bottom: 0;
+            right: 0;
+            animation-delay: 1.5s;
+        }
+        
+        @@keyframes pieceFloat {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            50% {
+                transform: translate(5px, -5px);
+            }
+        }
+        
+        .error-details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: right;
+            display: none;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .error-details.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .details-title {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .details-content {
+            font-family: 'Vazir', monospace;
+            font-size: 0.875rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+        }
+        
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .copy-error-btn {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .copy-error-btn:hover {
+            background: #cbd5e1;
+        }
+        
+        .copy-success {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            animation: slideUp 0.3s ease;
+            z-index: 1000;
+            display: none;
+            font-size: 0.875rem;
+        }
+        
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .error-code {
+                font-size: 6rem;
+            }
+            
+            .error-title {
+                font-size: 1.75rem;
+            }
+            
+            .error-message {
+                font-size: 1rem;
+            }
+            
+            .notfound-content {
+                padding: 40px 20px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .links-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                padding: 0 20px;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+        }
+        
+        @@media (max-width: 480px) {
+            .error-code {
+                font-size: 5rem;
+            }
+            
+            .error-title {
+                font-size: 1.5rem;
+            }
+            
+            .error-animation {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .broken-link {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+            
+            .link-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+        }
+        
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.875rem;
+            padding: 20px 0 0;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Background pattern */
+        .pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .pattern::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #3b82f6 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #8b5cf6 2px, transparent 2px);
+            background-size: 100px 100px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Pattern -->
+    <div class="pattern"></div>
+    
+    <div class="container">
+        <div class="notfound-content">
+            <!-- Logo -->
+            <div class="logo-container">
+                <a href="/" class="logo">
+                    <div class="logo-icon">د</div>
+                    <div class="logo-text">پلتفرم دنگ</div>
+                </a>
+            </div>
+            
+            <!-- Error Animation -->
+            <div class="error-animation">
+                <div class="broken-link">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div class="link-pieces">
+                    <div class="piece piece-1"></div>
+                    <div class="piece piece-2"></div>
+                    <div class="piece piece-3"></div>
+                    <div class="piece piece-4"></div>
+                </div>
+            </div>
+            
+            <!-- Error Code -->
+            <div class="error-code">۴۰۴</div>
+            
+            <!-- Error Title -->
+            <h1 class="error-title">صفحه مورد نظر پیدا نشد!</h1>
+            
+            <!-- Error Message -->
+            <p class="error-message">
+                متأسفانه صفحه‌ای که به دنبال آن هستید وجود ندارد یا حذف شده است.
+                ممکن است آدرس را اشتباه وارد کرده باشید یا صفحه به آدرس دیگری منتقل شده باشد.
+            </p>
+            
+            <!-- Search Box -->
+           @*  <div class="search-box">
+                <input type="text" 
+                       class="search-input" 
+                       placeholder="در سایت جستجو کنید..." 
+                       id="searchInput">
+                <button class="search-btn" onclick="performSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div> *@
+            
+            <!-- Action Buttons -->
+            <div class="actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-home btn-icon"></i>
+                    بازگشت به صفحه اصلی
+                </a>
+                <a href="/Front/Projects" class="btn btn-outline">
+                    <i class="fas fa-chart-line btn-icon"></i>
+                    مشاهده پروژه‌ها
+                </a>
+                <button class="btn btn-secondary" onclick="window.history.back()">
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                    بازگشت به صفحه قبل
+                </button>
+            </div>
+            
+            <!-- Helpful Links -->
+            <div class="helpful-links">
+                <h3 class="helpful-links-title">برای ادامه کجا برویم؟</h3>
+                <div class="links-grid">
+                    <a href="/Front/Projects" class="link-card">
+                        <div class="link-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <h4 class="link-title">پروژه‌های سرمایه‌گذاری</h4>
+                        <p class="link-desc">مشاهده پروژه‌های فعال برای سرمایه‌گذاری</p>
+                    </a>
+                    
+                    <a href="/Help" class="link-card">
+                        <div class="link-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h4 class="link-title">راهنمای استفاده</h4>
+                        <p class="link-desc">آموزش کامل استفاده از پلتفرم دنگ</p>
+                    </a>
+                    
+                  @*   <a href="/Account/Dashboard" class="link-card">
+                        <div class="link-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h4 class="link-title">داشبورد کاربری</h4>
+                        <p class="link-desc">مدیریت حساب کاربری و سرمایه‌گذاری‌ها</p>
+                    </a> *@
+                    
+                    <a href="/Contact" class="link-card">
+                        <div class="link-icon">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <h4 class="link-title">تماس با پشتیبانی</h4>
+                        <p class="link-desc">ارتباط با تیم پشتیبانی برای کمک بیشتر</p>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Error Details (Hidden by default) -->
+           @*  <div class="error-details" id="errorDetails">
+                <div class="details-title" onclick="toggleErrorDetails()">
+                    <i class="fas fa-info-circle"></i>
+                    جزئیات خطا
+                </div>
+                <div class="details-content" id="detailsContent">
+                    <div><strong>کد خطا:</strong> 404 - Not Found</div>
+                    <div><strong>آدرس درخواستی:</strong> <span id="requestedUrl">@@Context.Request.Path</span></div>
+                    <div><strong>زمان:</strong> <span id="errorTime">@DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss")</span></div>
+                    <div><strong>مرورگر:</strong> <span id="userAgent">Context.Request.Headers["User-Agent"]</span></div>
+                </div>
+                <button class="copy-error-btn" onclick="copyErrorDetails()">
+                    <i class="fas fa-copy"></i> کپی جزئیات خطا
+                </button>
+            </div> *@
+            
+            <!-- Show Error Details Button -->
+          @*   <button class="btn btn-secondary" style="margin-top: 30px;" onclick="toggleErrorDetails()">
+                <i class="fas fa-bug btn-icon"></i>
+                نمایش جزئیات خطا
+            </button>
+             *@
+            <!-- Footer -->
+            <div class="footer">
+                <p>© ۱۴۰۳ پلتفرم دنگ - سرمایه‌گذاری هوشمند در تجهیزات صنعتی</p>
+                <p style="margin-top: 5px; font-size: 0.75rem; color: #cbd5e1;">ارتباط با پشتیبانی: support@dang-platform.ir</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Copy Success Message -->
+    <div class="copy-success" id="copySuccess">
+        <i class="fas fa-check-circle" style="margin-left: 8px;"></i>
+        جزئیات خطا با موفقیت کپی شد!
+    </div>
+    
+    <script>
+        // Search functionality
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim();
+            
+            if (query) {
+                // Redirect to search page or perform search
+                window.location.href = `/Search?q=${encodeURIComponent(query)}`;
+            } else {
+                searchInput.focus();
+                searchInput.placeholder = "لطفاً عبارت جستجو را وارد کنید...";
+                searchInput.style.borderColor = "#ef4444";
+                setTimeout(() => {
+                    searchInput.style.borderColor = "#e2e8f0";
+                    searchInput.placeholder = "در سایت جستجو کنید...";
+                }, 2000);
+            }
+        }
+        
+        // Allow Enter key for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        // Toggle error details
+        function toggleErrorDetails() {
+            const errorDetails = document.getElementById('errorDetails');
+            errorDetails.classList.toggle('show');
+            
+            // Change button text
+            const button = document.querySelector('[onclick="toggleErrorDetails()"]');
+            if (errorDetails.classList.contains('show')) {
+                button.innerHTML = '<i class="fas fa-eye-slash btn-icon"></i> مخفی کردن جزئیات خطا';
+            } else {
+                button.innerHTML = '<i class="fas fa-bug btn-icon"></i> نمایش جزئیات خطا';
+            }
+        }
+        
+        // Copy error details to clipboard
+        function copyErrorDetails() {
+            const detailsContent = document.getElementById('detailsContent').innerText;
+            const errorTime = document.getElementById('errorTime').innerText;
+            const requestedUrl = document.getElementById('requestedUrl').innerText;
+            
+            const textToCopy = `جزئیات خطا ۴۰۴ - پلتفرم دنگ
+زمان: ${errorTime}
+آدرس درخواستی: ${requestedUrl}
+${detailsContent}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // Show success message
+                const copySuccess = document.getElementById('copySuccess');
+                copySuccess.style.display = 'block';
+                
+                setTimeout(() => {
+                    copySuccess.style.display = 'none';
+                }, 3000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                // Show success message anyway
+                const copySuccess = document.getElementById('copySuccess');
+                copySuccess.style.display = 'block';
+                
+                setTimeout(() => {
+                    copySuccess.style.display = 'none';
+                }, 3000);
+            });
+        }
+        
+        // Auto-focus search input
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            setTimeout(() => {
+                searchInput.focus();
+            }, 500);
+            
+            // Add current URL to error details
+            document.getElementById('requestedUrl').textContent = window.location.pathname;
+            
+            // Trim user agent if too long
+            const userAgentEl = document.getElementById('userAgent');
+            if (userAgentEl.textContent.length > 100) {
+                userAgentEl.textContent = userAgentEl.textContent.substring(0, 100) + '...';
+            }
+        });
+        
+        // Handle back button with animation
+        document.querySelector('[onclick="window.history.back()"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Add animation
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    window.location.href = '/';
+                }
+            }, 200);
+        });
+        
+        // Add hover effect to link cards
+        document.querySelectorAll('.link-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const icon = this.querySelector('.link-icon');
+                icon.style.transform = 'scale(1.1)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const icon = this.querySelector('.link-icon');
+                icon.style.transform = 'scale(1)';
+            });
+        });
+        
+        // Add loading animation to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (this.getAttribute('href') || this.getAttribute('onclick')) {
+                    // Add ripple effect
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.7);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+                }
+            });
+        });
+        
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Track 404 errors (optional analytics)
+        window.addEventListener('load', function() {
+            // You can send this to your analytics service
+            console.log('404 Error:', {
+                path: window.location.pathname,
+                referrer: document.referrer,
+                timestamp: new Date().toISOString()
+            });
+        });
+    </script>
+</body>
+</html>
