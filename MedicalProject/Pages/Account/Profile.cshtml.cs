@@ -1,11 +1,13 @@
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
 
 namespace MedicalProject.Pages.Account
 {
+    [Authorize]
     public class ProfileModel : PageModel
     {
         private readonly IUserService _service;
@@ -16,9 +18,11 @@ namespace MedicalProject.Pages.Account
         }
         [BindProperty(SupportsGet = true)]
         public UserDto? user { get; set; }
-        public async Task OnGet()
+       
+        public async Task<IActionResult> OnGet()
         {
             user = await _service.GetCurrentUser();
+            return Page();
         }
         public async Task<IActionResult> OnPostSendUserDocument(IFormFile nationalCardImage
             , IFormFile birthCertificationImage, string nationalityCode)

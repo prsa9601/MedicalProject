@@ -16,10 +16,15 @@
             => $"{SiteSettings.ServerPath}{ProductImagePath.Replace("wwwroot", "")}/{imageName}";
 
 
-        public const string ProductImagePath = "wwwroot/images/product/image";
+        public const string ProductImagePath = "/images/product/image";
         public const string UserImageAccountPath = "/images/user/account";
         public const string UserNationalCardPhotoPath = "/images/user/nationalityCode";
         public const string UserBirthCertificatePhotoPath = "/images/user/birthCertificate";
+
+        //public const string ProductImagePath = "wwwroot/images/product/image";
+        //public const string UserImageAccountPath = "/images/user/account";
+        //public const string UserNationalCardPhotoPath = "/images/user/nationalityCode";
+        //public const string UserBirthCertificatePhotoPath = "/images/user/birthCertificate";
 
     }
 }

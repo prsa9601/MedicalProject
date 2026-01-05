@@ -87,11 +87,11 @@ namespace MedicalProject.Services.User
         public async Task<UserFilterResult> GetUserByFilter(UserFilterParam param)
         {
             string url = $"User/GetUserByFilter?take={param.Take}&pageId={param.PageId}";
-          
+
             if (param.Search is not null)
                 url += $"&search={param.Search}";
-         
-          
+
+
             if (param.IsActive is not null)
                 url += $"&isActive={param.IsActive}";
 
@@ -159,8 +159,16 @@ namespace MedicalProject.Services.User
 
         public async Task<UserDto?> GetCurrentUser()
         {
-            var result = await _client.GetFromJsonAsync<ApiResult<UserDto?>>($"User/GetCurrentUser");
-            return result?.Data;
+            try
+            {
+                var result = await _client.GetFromJsonAsync<ApiResult<UserDto?>>($"User/GetCurrentUser");
+                return result?.Data;
+
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public async Task<ApiResult> ChangeUserDocumentStatus(ChangeUserDocumentStatusCommand command)
@@ -176,7 +184,7 @@ namespace MedicalProject.Services.User
         }
 
         public async Task<ApiResult> ChangeConfirmationBankAccount(ChangeConfirmationBankAccountCommand command)
-        { 
+        {
             var result = await _client.PatchAsJsonAsync("User/ChangeConfirmationBankAccount", command);
             return await result.Content.ReadFromJsonAsync<ApiResult>();
         }

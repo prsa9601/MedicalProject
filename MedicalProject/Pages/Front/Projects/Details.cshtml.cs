@@ -1,4 +1,5 @@
-﻿using MedicalProject.Models.Product.DTOs;
+﻿using MedicalProject.Models;
+using MedicalProject.Models.Product.DTOs;
 using MedicalProject.Models.PurchaseReport;
 using MedicalProject.Models.User.DTOs;
 using MedicalProject.Services.Order;
@@ -35,7 +36,7 @@ namespace MedicalProject.Pages.Front.Projects
         public PurchaseReportFilterResult? purchaseReport { get; set; }
         public async Task OnGet(string slug, CancellationToken cancellationToken)
         {
-            UserDto = await _userService.GetCurrentUser();
+            UserDto = await _userService.GetCurrentUser() ?? null;
             Product = await _service.GetBySlug(slug);
             purchaseReport = await _purchaseService.GetFilterForAdmin(new PurchaseReportFilterParam
             {

@@ -806,7 +806,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز شده برای کاربران</p>
                                 <p class="text-lg sm:text-2xl font-bold mt-2">
-                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+                                    @(Model.ResultDto.EntityCount != 0 ? Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Paid)).SafeSum(i => i.ExpectedAmount).ToString("N0"):"0") <span class="text-sm">ریال</span>
                                 </p>
                             </div>
                         </div>
@@ -815,7 +815,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">تعداد تراکنش‌ها</p>
                                 <p class="text-lg sm:text-2xl font-bold mt-2">
-                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos).Count().ToString("N0")) <span class="text-sm">عدد</span>
+                                    @(Model.ResultDto.EntityCount != 0 ? Model.ResultDto.Data.SelectMany(i => i.OrderDtos).Count().ToString("N0") : "0") <span class="text-sm">عدد</span>
                                 </p>
                             </div>
                         </div>
@@ -824,7 +824,7 @@
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">سود واریز نشده برای کاربران</p>
                                 <p class="text-lg sm:text-2xl font-bold mt-2">
-                                    @(Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid)).SafeSum(i => i.ExpectedAmount).ToString("N0")) <span class="text-sm">ریال</span>
+                                    @(Model.ResultDto.EntityCount != 0 ? Model.ResultDto.Data.SelectMany(i => i.OrderDtos.SelectMany(x => x.OrderItems.Product.Unpaid)).SafeSum(i => i.ExpectedAmount).ToString("N0") : "0") <span class="text-sm">ریال</span>
                                 </p>
                             </div>
                         </div>
@@ -832,7 +832,7 @@
                         <div class="stat-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
                             <div class="relative z-10">
                                 <p class="text-sm opacity-90">کاربران فعال</p>
-                                <p class="text-lg sm:text-2xl font-bold mt-2">@Model.UserPurchaseReportResult.Data.Count.ToString("N0")</p>
+                                <p class="text-lg sm:text-2xl font-bold mt-2">@(Model.ResultDto.EntityCount != 0 ? Model.UserPurchaseReportResult.Data.Count.ToString("N0"):"0")</p>
                             </div>
                         </div>
                     </div>
@@ -848,23 +848,23 @@
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
                                         <span class="text-gray-600 text-sm">میانگین سرمایه‌گذاری:</span>
-                                        <span class="font-semibold text-green-600 text-sm">@((Model.ResultDto.Data.SafeSum(i => i.OrderDtos.Sum(x => x.OrderItems.TotalPrice)) / Model.ResultDto.Data.Select(i => i.OrderDtos).Count()).ToString("N0")) ریال</span>
+                                        <span class="font-semibold text-green-600 text-sm">@(Model.ResultDto.EntityCount != 0 ? (Model.ResultDto.Data.SafeSum(i => i.OrderDtos.Sum(x => x.OrderItems.TotalPrice)) / Model.ResultDto.Data.Select(i => i.OrderDtos).Count()).ToString("N0") : "0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
                                         <span class="text-gray-600 text-sm">بیشترین سرمایه‌گذاری:</span>
                                         <span class="font-semibold text-blue-600 text-sm">
 
-                                            @(decimal.Parse(Model.Result.Data.OrderByDescending(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0") ?? "0") ریال
+                                            @(Model.ResultDto.EntityCount != 0 ? decimal.Parse(Model.Result.Data.OrderByDescending(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0") : "0") ریال
 
                                         </span>
                                     </div>
                                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
                                         <span class="text-gray-600 text-sm">کمترین سرمایه‌گذاری:</span>
-                                        <span class="font-semibold text-orange-600 text-sm">@decimal.Parse(Model.Result.Data.OrderBy(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0") ریال</span>
+                                        <span class="font-semibold text-orange-600 text-sm">@(Model.ResultDto.EntityCount != 0 ? decimal.Parse(Model.Result.Data.OrderBy(i => i.TotalPrice).FirstOrDefault().TotalPrice).ToString("N0"):"0") ریال</span>
                                     </div>
                                     <div class="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
                                         <span class="text-gray-600 text-sm">کاربران نیازمند واریز:</span>
-                                        <span class="font-semibold text-purple-600 text-sm">@Model.ResultDto.Data.Where(i => i.OrderDtos.Any(i => i.OrderItems.Product.Unpaid.Count() >= 1)).Count().ToString("N0") نفر</span>
+                                        <span class="font-semibold text-purple-600 text-sm">@(Model.ResultDto.EntityCount!=0?(Model.ResultDto.Data.Where(i => i.OrderDtos.Any(i => i.OrderItems.Product.Unpaid.Count() >= 1)).Count().ToString("N0")):"0") نفر</span>
                                     </div>
                                 </div>
                             </div>
@@ -942,49 +942,76 @@
                                     </thead>
                                     <tbody>
                                         @{
-                                            int number = 2;
-                                            foreach (var item in Model.ResultDto.Data)
+
+                                            if (Model.ResultDto == null || Model.ResultDto.EntityCount == 0)
                                             {
                                                 <tr>
-                                                    <td>@(number++)</td>
+                                                    <td></td>
                                                     <td>
-                                                        <div class="flex items-center space-x-3 space-x-reverse">
-                                                            <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
-                                                                 alt="@item.FirstName @item.Lastame"
-                                                                 class="user-avatar">
-                                                            <div class="text-truncate">
-                                                                <div class="font-medium text-gray-900">@item.FirstName @item.Lastame</div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-truncate">@item.PhoneNumber</td>
-                                                    <td>@item.OrderDtos.SafeSum(i => i.OrderItems.TotalPrice).ToString("N0") ریال</td>
-                                                    <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
-                                                    </td>
-                                                    <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
-                                                        @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
                                                     </td>
                                                     <td>
-                                                        <span class="badge @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() == 0 ? "badge-success" : "badge-danger")">
-                                                            @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() > 0 ? "واریز نشده" : "واریز شده")
-                                                        </span>
+                                                        <i class="fas fa-box-open text-3xl sm:text-4xl mb-4 text-gray-300"></i>
+                                                        <p class="text-sm sm:text-base">اطلاعاتی یافت نشد</p>
+                                                    </td>
+
+
+                                                    <td>
                                                     </td>
                                                     <td>
-                                                        <div class="flex items-center space-x-2 space-x-reverse">
-                                                            <button onclick="location.href='Finance/UserReport/@item.Id'"
-                                                                    class="btn btn-outline btn-sm" title="مشاهده جزئیات">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
-                                                            <button onclick="showSettlementModal('@item.Id')"
-                                                                    class="btn btn-success btn-sm" title="تسویه حساب">
-                                                                <i class="fas fa-money-bill-wave"></i>
-                                                            </button>
-                                                        </div>
                                                     </td>
                                                 </tr>
                                             }
+
+
+
+                                            else
+                                            {
+                                                int number = 2;
+                                                foreach (var item in Model.ResultDto.Data)
+                                                {
+                                                    <tr>
+                                                        <td>@(number++)</td>
+                                                        <td>
+                                                            <div class="flex items-center space-x-3 space-x-reverse">
+                                                                <img src="@Directories.GetUserImageAccountPath(item.ImageName)"
+                                                                     alt="@item.FirstName @item.Lastame"
+                                                                     class="user-avatar">
+                                                                <div class="text-truncate">
+                                                                    <div class="font-medium text-gray-900">@item.FirstName @item.Lastame</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td class="text-truncate">@item.PhoneNumber</td>
+                                                        <td>@item.OrderDtos.SafeSum(i => i.OrderItems.TotalPrice).ToString("N0") ریال</td>
+                                                        <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                            @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Paid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                        </td>
+                                                        <td class="@(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount) >= 0 ? "profit-positive" : "profit-negative")">
+                                                            @item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).SafeSum(i => i.ExpectedAmount).ToString("N0") ریال
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() == 0 ? "badge-success" : "badge-danger")">
+                                                                @(item.OrderDtos.SelectMany(i => i.OrderItems.Product.Unpaid).Count() > 0 ? "واریز نشده" : "واریز شده")
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="flex items-center space-x-2 space-x-reverse">
+                                                                <button onclick="location.href='Finance/UserReport/@item.Id'"
+                                                                        class="btn btn-outline btn-sm" title="مشاهده جزئیات">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                                <button onclick="showSettlementModal('@item.Id')"
+                                                                        class="btn btn-success btn-sm" title="تسویه حساب">
+                                                                    <i class="fas fa-money-bill-wave"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
                                         }
+                                        }
+
                                     </tbody>
                                 </table>
                             </div>
@@ -1390,67 +1417,67 @@
             // موفقیت
             @if (TempData["Success"] != null)
             {
-                                <text>
-                                    setTimeout(() => {
-                                        Swal.fire({
-                                            title: 'موفقیت',
-                                            text: decodePersianText('@TempData["Success"]'),
-                                            icon: 'success',
-                                            confirmButtonText: 'باشه',
-                                            timer: 3000
-                                        });
-                                    }, 500);
-                                </text>
+                                            <text>
+                                                setTimeout(() => {
+                                                    Swal.fire({
+                                                        title: 'موفقیت',
+                                                        text: decodePersianText('@TempData["Success"]'),
+                                                        icon: 'success',
+                                                        confirmButtonText: 'باشه',
+                                                        timer: 3000
+                                                    });
+                                                }, 500);
+                                            </text>
             }
 
             // خطا
             @if (TempData["Error"] != null)
             {
-                                <text>
-                                    setTimeout(() => {
-                                        const errorMsg = decodePersianText('@TempData["Error"]');
-                                        Swal.fire({
-                                            title: 'خطا',
-                                            text: errorMsg,
-                                            icon: 'error',
-                                            confirmButtonText: 'باشه'
-                                        });
-                                    }, 500);
-                                </text>
+                                            <text>
+                                                setTimeout(() => {
+                                                    const errorMsg = decodePersianText('@TempData["Error"]');
+                                                    Swal.fire({
+                                                        title: 'خطا',
+                                                        text: errorMsg,
+                                                        icon: 'error',
+                                                        confirmButtonText: 'باشه'
+                                                    });
+                                                }, 500);
+                                            </text>
             }
 
             // هشدار
             @if (TempData["Warning"] != null)
             {
-                                <text>
-                                    setTimeout(() => {
-                                        const warningMsg = decodePersianText('@TempData["Warning"]');
-                                        Swal.fire({
-                                            title: 'هشدار',
-                                            text: warningMsg,
-                                            icon: 'warning',
-                                            confirmButtonText: 'باشه',
-                                            timer: 4000
-                                        });
-                                    }, 500);
-                                </text>
+                                            <text>
+                                                setTimeout(() => {
+                                                    const warningMsg = decodePersianText('@TempData["Warning"]');
+                                                    Swal.fire({
+                                                        title: 'هشدار',
+                                                        text: warningMsg,
+                                                        icon: 'warning',
+                                                        confirmButtonText: 'باشه',
+                                                        timer: 4000
+                                                    });
+                                                }, 500);
+                                            </text>
             }
 
             // اطلاعیه
             @if (TempData["Info"] != null)
             {
-                                <text>
-                                    setTimeout(() => {
-                                        const infoMsg = decodePersianText('@TempData["Info"]');
-                                        Swal.fire({
-                                            title: 'اطلاعیه',
-                                            text: infoMsg,
-                                            icon: 'info',
-                                            confirmButtonText: 'باشه',
-                                            timer: 3000
-                                        });
-                                    }, 500);
-                                </text>
+                                            <text>
+                                                setTimeout(() => {
+                                                    const infoMsg = decodePersianText('@TempData["Info"]');
+                                                    Swal.fire({
+                                                        title: 'اطلاعیه',
+                                                        text: infoMsg,
+                                                        icon: 'info',
+                                                        confirmButtonText: 'باشه',
+                                                        timer: 3000
+                                                    });
+                                                }, 500);
+                                            </text>
             }
         }
 

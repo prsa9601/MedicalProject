@@ -44,7 +44,7 @@
             "url": "https://example.com"
         }
     </script>
-@*     <script type="application/ld+json">
+    @*     <script type="application/ld+json">
         {
             "@@context": "https://schema.org",
             "@@type": "BreadcrumbList",
@@ -389,93 +389,104 @@
 
                         <!-- Investment Form -->
                         <div class="space-y-4">
-                                        <form method="post" asp-page-handler="SetProject" id="investmentForm">
+                            <form method="post" asp-page-handler="SetProject" id="investmentForm">
 
-                            <div>
-                                <label class="label">تعداد دانگ مورد نظر</label>
-                                <div class="select-container">
-                                    <select id="dongAmount" name="dongAmount" class="dong-select input w-full text-right">
-                                        <option value="0.5">نیم دانگ</option>
-                                        <option value="1">یک دانگ</option>
-                                        <option value="1.5">یک و نیم دانگ</option>
-                                        <option value="2">دو دانگ</option>
-                                        <option value="2.5">دو و نیم دانگ</option>
-                                        <option value="3">سه دانگ</option>
-                                        <option value="3.5">سه و نیم دانگ</option>
-                                        <option value="4">چهار دانگ</option>
-                                        <option value="4.5">چهار و نیم دانگ</option>
-                                        <option value="5">پنج دانگ</option>
-                                        <option value="5.5">پنج و نیم دانگ</option>
-                                        <option value="6">شش دانگ</option>
-                                    </select>
-                                    <div class="select-arrow">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
+                                <div>
+                                    <label class="label">تعداد دانگ مورد نظر</label>
+                                    <div class="select-container">
+                                        <select id="dongAmount" name="dongAmount" class="dong-select input w-full text-right">
+                                            <option value="0.5">نیم دانگ</option>
+                                            <option value="1">یک دانگ</option>
+                                            <option value="1.5">یک و نیم دانگ</option>
+                                            <option value="2">دو دانگ</option>
+                                            <option value="2.5">دو و نیم دانگ</option>
+                                            <option value="3">سه دانگ</option>
+                                            <option value="3.5">سه و نیم دانگ</option>
+                                            <option value="4">چهار دانگ</option>
+                                            <option value="4.5">چهار و نیم دانگ</option>
+                                            <option value="5">پنج دانگ</option>
+                                            <option value="5.5">پنج و نیم دانگ</option>
+                                            <option value="6">شش دانگ</option>
+                                        </select>
+                                        <div class="select-arrow">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Quick Dong Options -->
-                            <div class="grid grid-cols-3 gap-2">
-                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="0.5">نیم</button>
-                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1">یک</button>
-                                <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1.5">یک و نیم</button>
-                            </div>
-
-                            <!-- Investment Summary -->
-                            <div class="bg-blue-50 rounded-lg p-4 space-y-3">
-                                <div class="flex justify-between text-sm profit-item">
-                                    <span class="text-gray-600">سود ماهیانه</span>
-                                    <span class="font-medium text-green-600">
-                                        <span id="monthlyProfit">0</span> ریال
-                                    </span>
+                                <!-- Quick Dong Options -->
+                                <div class="grid grid-cols-3 gap-2">
+                                    <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="0.5">نیم</button>
+                                    <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1">یک</button>
+                                    <button type="button" class="quick-dong-btn dong-option btn btn-outline py-2 text-sm" data-dong="1.5">یک و نیم</button>
                                 </div>
-                                <div class="flex justify-between text-sm profit-item">
-                                    <span class="text-gray-600">سود تخمینی سالانه</span>
-                                    <span class="font-medium text-green-600">
-                                        <span id="annualProfit">0</span> ریال
-                                    </span>
-                                </div>
-                                <div class="flex justify-between text-sm font-bold profit-item">
-                                    <span class="text-gray-700">کل بازدهی ۵ ساله</span>
-                                    <span class="text-green-600">
-                                        <span id="totalProfit">0</span> ریال
-                                    </span>
-                                </div>
-                            </div>
 
-                            <!-- Action Buttons -->
-                            <div class="space-y-3">
-                                @if (User.Identity.IsAuthenticated)
-                                {
+                                <!-- Investment Summary -->
+                                <div class="bg-blue-50 rounded-lg p-4 space-y-3">
+                                    <div class="flex justify-between text-sm profit-item">
+                                        <span class="text-gray-600">سود ماهیانه</span>
+                                        <span class="font-medium text-green-600">
+                                            <span id="monthlyProfit">0</span> ریال
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between text-sm profit-item">
+                                        <span class="text-gray-600">سود تخمینی سالانه</span>
+                                        <span class="font-medium text-green-600">
+                                            <span id="annualProfit">0</span> ریال
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between text-sm font-bold profit-item">
+                                        <span class="text-gray-700">کل بازدهی ۵ ساله</span>
+                                        <span class="text-green-600">
+                                            <span id="totalProfit">0</span> ریال
+                                        </span>
+                                    </div>
+                                </div>
 
-                                    if (Model.UserDto.UserDocument == null)
+                                <!-- Action Buttons -->
+                                <div class="space-y-3">
+                                    @if (User.Identity.IsAuthenticated)
                                     {
-                                        <button onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
-                                            برای سرمایه گزاری ابتدا باید اطلاعات خود را وارد کنید
-                                        </button>
-                                    }
-                                    else if (!(Model.UserDto.UserDocument.Status == Models.User.Enum.UserDocumentStatus.IsConfirmed))
-                                    {
-                                        <button onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
-                                            برای سرمایه گزاری ابتدا باید اطلاعات توسط کارشناسان مربوطه تایید شود
-                                        </button>
-                                    }
-                                    else if (Model.UserDto.BankAccount.IsConfirmed == false)
-                                    {
-                                        <button onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
-                                            برای سرمایه گزاری ابتدا باید اطلاعات بانکی شما توسط کارشناسان مربوطه تایید شود
-                                        </button>
-                                    }
-                                    else if (Model.UserDto.BankAccount == null)
-                                    {
-                                        <button onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
-                                            برای سرمایه گزاری ابتدا باید اطلاعات بانکی خود را وارد کنید
-                                        </button>
-                                    }
-                                    else
-                                    {
+
+                                        if (Model.UserDto.UserDocument == null)
+                                        {
+                                            <button type="button" onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                                برای سرمایه گزاری ابتدا باید اطلاعات خود را وارد کنید
+                                            </button>
+                                        }
+                                        else if (!(Model.UserDto.UserDocument.Status == Models.User.Enum.UserDocumentStatus.IsConfirmed))
+                                        {
+                                            <button type="button" onclick="window.location.href='/Account/Profile'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                                برای سرمایه گزاری ابتدا باید اطلاعات توسط کارشناسان مربوطه تایید شود
+                                            </button>
+                                        }
+                                        else if (Model.UserDto.BankAccount == null)
+                                        {
+                                            <button type="button" onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                                برای سرمایه گزاری ابتدا باید اطلاعات بانکی خود را وارد کنید
+                                            </button>
+                                        }
+                                        else if (Model.UserDto.BankAccount.IsConfirmed == false)
+                                        {
+                                            <button type="button" onclick="window.location.href='/Account/BankInformation'" class="btn btn-primary w-full py-3 text-lg font-semibold" disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
+                                                برای سرمایه گزاری ابتدا باید اطلاعات بانکی شما توسط کارشناسان مربوطه تایید شود
+                                            </button>
+                                        }
+                                       
+                                @*         else if (Model.UserDto == null)
+                                        {
+                                            <a href="/Auth/VerificationPhoneNumber?action=Login&path=@($"{Request.Path}{Request.QueryString}")"
+                                               class="btn btn-primary w-full py-3 text-lg font-semibold">
+                                                ورود و سرمایه‌گذاری
+                                            </a>
+                                            <p class="text-center text-sm text-gray-500">
+                                                برای سرمایه‌گذاری باید وارد حساب کاربری خود شوید
+                                            </p>
+                                        } *@
+                                        else
+                                        {
                                             <!-- فیلد مخفی برای مقدار دانگ -->
                                             @* <input type="hidden" id="dongAmountInput" name="dongAmount"  value="0.5"  /> *@
                                             <input type="hidden" name="slug" value="@Model.Product.Slug" />
@@ -485,24 +496,24 @@
                                                     disabled="@(Model.Product.Status == ProductStatus.IsDone || Model.Product.Status == ProductStatus.NotActive)">
                                                 سرمایه‌گذاری می‌کنم
                                             </button>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    <a href="/Auth/VerificationPhoneNumber?action=Login&path=@($"{Request.Path}{Request.QueryString}")"
-                                       class="btn btn-primary w-full py-3 text-lg font-semibold">
-                                        ورود و سرمایه‌گذاری
-                                    </a>
-                                    <p class="text-center text-sm text-gray-500">
-                                        برای سرمایه‌گذاری باید وارد حساب کاربری خود شوید
-                                    </p>
-                                }
-                            </div>
-                                        </form>
+                                    else
+                                    {
+                                        <a href="/Auth/VerificationPhoneNumber?action=Login&path=@($"{Request.Path}{Request.QueryString}")"
+                                           class="btn btn-primary w-full py-3 text-lg font-semibold">
+                                            ورود و سرمایه‌گذاری
+                                        </a>
+                                        <p class="text-center text-sm text-gray-500">
+                                            برای سرمایه‌گذاری باید وارد حساب کاربری خود شوید
+                                        </p>
+                                    }
+                                </div>
+                            </form>
                         </div>
 
                         <!-- Trust Indicators -->
-                        <div class="border-t border-gray-200 pt-4 space-y-3">
+                        @*     <div class="border-t border-gray-200 pt-4 space-y-3">
                             <div class="flex items-center justify-center space-x-4 space-x-reverse text-sm text-gray-600">
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 text-green-500 ml-1" fill="currentColor" viewBox="0 0 20 20">
@@ -517,12 +528,12 @@
                                     مجوز رسمی
                                 </div>
                             </div>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
 
                 <!-- Contact Support -->
-                <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
+                @*   <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
                     <div class="text-center space-y-3">
                         <svg class="w-12 h-12 text-blue-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -533,7 +544,7 @@
                             تماس با پشتیبانی
                         </button>
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
 

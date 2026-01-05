@@ -102,7 +102,7 @@ namespace MedicalProject.Pages.Auth
                     //    IsEssential = true
                     //});
 
-                    if (result.Data.AuthToken is not null)
+                    if (!string.IsNullOrEmpty(result.Data.AuthToken))
                     {
                         Response.Cookies.Append("auth-Token", result!.Data.AuthToken, new CookieOptions
                         {
@@ -111,7 +111,7 @@ namespace MedicalProject.Pages.Auth
                             IsEssential = true
                         });
                     }
-                    if (result.Data.RefreshToken is not null)
+                    if (!string.IsNullOrEmpty(result.Data.RefreshToken))
                     {
                         Response.Cookies.Append("RefreshToken", result!.Data.RefreshToken, new CookieOptions
                         {

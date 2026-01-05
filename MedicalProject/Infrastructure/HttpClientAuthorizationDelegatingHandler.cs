@@ -47,6 +47,7 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
             if (response.Headers.TryGetValues("RefreshToken", out var refreshToken))
             {
+                response.Headers.Remove("RefreshToken");
                 if (refreshToken.FirstOrDefault() == "Logout")
                 {
                     _httpContextAccessor.HttpContext.Response.Cookies.Delete("RefreshToken");
@@ -59,7 +60,7 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
             {
                 if (response.Headers.TryGetValues("X-Auth-Token", out var tokens))
                 {
-                    var newToken = tokens.First();
+                    var newToken = tokens.First().Replace("Bearer ","");
                     _httpContextAccessor.HttpContext.Response.Cookies.Append("auth-Token", newToken, new CookieOptions
                     {
                         HttpOnly = true,
@@ -71,7 +72,7 @@ public class HttpClientAuthorizationDelegatingHandler : DelegatingHandler
 
 
                     var handler = new JwtSecurityTokenHandler();
-                    var jwtToken = handler.ReadJwtToken(newToken);
+                    var jwtToken = handler.ReadJwtToken(newToken.Replace("Bearer ",""));
                     var claims = jwtToken.Claims;
                     var identity = new ClaimsIdentity(claims, "jwt");
                     var principal = new ClaimsPrincipal(identity);
