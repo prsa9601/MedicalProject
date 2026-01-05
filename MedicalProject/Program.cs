@@ -187,12 +187,12 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (!app.Environment.IsDevelopment())
-//{
-//    app.UseExceptionHandler("/Error");
-//    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-//    app.UseHsts();
-//}
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 
 
@@ -216,6 +216,18 @@ app.Use(async (context, next) =>
 });
 
 app.UseHttpsRedirection();
+// بعد از builder.Services.AddAuthorization
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowApi",
+//        policy =>
+//        {
+//            policy.WithOrigins("https://api.6dongeh.ir")
+//                  .AllowAnyHeader()
+//                  .AllowAnyMethod()
+//                  .AllowCredentials(); // اگر کوکی می‌فرستی
+//        });
+//});
 app.UseStaticFiles();
 
 app.UseRouting();
